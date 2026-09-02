@@ -34,6 +34,34 @@
   --font-body: "Nunito Sans", "Helvetica Neue", Arial, sans-serif;
 }
 
+/* Light theme: same tokens, different values, chosen by the browser setting. */
+@media (prefers-color-scheme: light) {
+  :root {
+    --color-page: #f6f5ef;
+    --color-band: #edece4;
+    --color-card: #ffffff;
+    --color-well: #f0efe8;
+    --color-line: #e2e3da;
+    --color-ink: #17201a;
+    --color-ink-2: #454c45;
+    --color-ink-3: #303830;
+    --color-muted: #5f665f;
+    --color-moss: #0f9d1c;
+    --color-moss-bright: #0c8a18;
+    --color-leaf: #0a7a1c;
+    --color-leaf-bright: #08601a;
+    --color-ghost: #ffffff;
+    --color-ghost-hover: #f0efe8;
+    --color-ghost-line: #d8d9cf;
+    --color-grove: #e6f2e8;
+    --color-grove-line: #bfdcc6;
+    --color-amber-bg: #fdf3d0;
+    --color-amber-line: #ecd68a;
+    --color-amber-ink: #5a4a10;
+    --color-amber: #d9b800;
+  }
+}
+
 @layer base {
   html {
     background-color: var(--color-page);

@@ -24,7 +24,7 @@ export default function Reviews() {
               href={links.appStore}
               target="_blank"
               rel="noopener"
-              class="flex items-center gap-3 text-ink-3 hover:text-white"
+              class="flex items-center gap-3 text-ink-3 hover:text-ink"
             >
               <span class="flex text-amber" aria-hidden="true">
                 <For each={[1, 2, 3, 4, 5]}>

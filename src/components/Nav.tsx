@@ -17,7 +17,7 @@ export default function Nav() {
         <nav class="hidden items-center gap-8 md:flex" aria-label="Sections">
           <For each={navItems}>
             {(item) => (
-              <a href={item.href} class="font-bold text-ink-3 hover:text-white">
+              <a href={item.href} class="font-bold text-ink-3 hover:text-ink">
                 {item.label}
               </a>
             )}

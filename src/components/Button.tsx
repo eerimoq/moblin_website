@@ -14,7 +14,7 @@ export default function Button(props: Props) {
   const variant = () => {
     switch (props.variant) {
       case "ghost":
-        return "bg-ghost text-ink border-[1.5px] border-ghost-line hover:bg-ghost-hover hover:text-white";
+        return "bg-ghost text-ink border-[1.5px] border-ghost-line hover:bg-ghost-hover hover:text-ink";
       case "live":
         return "bg-twitch text-white hover:bg-twitch-bright";
       default:
