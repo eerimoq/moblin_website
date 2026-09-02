@@ -1,4 +1,5 @@
 import { For } from "solid-js";
+import { asset } from "../asset";
 import { links, platforms } from "../data/links";
 import Button from "./Button";
 import Icon from "./Icon";
@@ -33,7 +34,7 @@ export default function Hero() {
           </p>
           <div class="mt-1 flex flex-col items-start gap-4 sm:flex-row sm:items-center">
             <a href={links.appStore} target="_blank" rel="noopener" class="shrink-0">
-              <img src="/badges/app-store.svg" alt="Download on the App Store" class="h-14 w-auto" />
+              <img src={asset("badges/app-store.svg")} alt="Download on the App Store" class="h-14 w-auto" />
             </a>
             <Button href={links.discord} variant="ghost" class="h-14">
               <Icon name="discord" class="size-[22px]" />
@@ -50,8 +51,8 @@ export default function Hero() {
         </div>
         <div class="relative mx-auto w-full max-w-[600px] pt-6 pb-12 pl-10 sm:pl-16 lg:pl-20">
           <img
-            src="/screenshots/moblin.jpg"
-            srcset="/screenshots/moblin-800.jpg 800w, /screenshots/moblin.jpg 1600w"
+            src={asset("screenshots/moblin.jpg")}
+            srcset={`${asset("screenshots/moblin-800.jpg")} 800w, ${asset("screenshots/moblin.jpg")} 1600w`}
             sizes="(min-width: 1024px) 500px, 90vw"
             alt="Moblin streaming with chat, bitrate and controls on screen"
             class="w-full -rotate-[4deg] rounded-[22px] border-[6px] border-line shadow-[0_30px_60px_rgba(0,0,0,0.55)]"

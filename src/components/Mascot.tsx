@@ -1,3 +1,5 @@
+import { asset } from "../asset";
+
 export type MascotVariant =
   | "default"
   | "party"
@@ -18,7 +20,7 @@ type Props = {
 export default function Mascot(props: Props) {
   return (
     <img
-      src={`/logos/logo-${props.variant}.png`}
+      src={asset(`logos/logo-${props.variant}.png`)}
       alt={props.alt ?? ""}
       class={`${props.sticker ? "sticker " : ""}${props.class ?? ""}`}
       loading="lazy"

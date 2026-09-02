@@ -1,4 +1,5 @@
 import { createSignal, For, Show } from "solid-js";
+import { asset } from "../asset";
 import { links, navItems } from "../data/links";
 import Button from "./Button";
 import Icon from "./Icon";
@@ -10,7 +11,7 @@ export default function Nav() {
     <header class="sticky top-0 z-20 bg-page/92 backdrop-blur border-b border-line/40">
       <div class="mx-auto flex h-16 max-w-[1120px] items-center justify-between px-5 sm:px-8 lg:h-18">
         <a href="#top" class="flex items-center gap-3">
-          <img src="/logos/logo-default.png" alt="" class="h-9 w-auto" />
+          <img src={asset("logos/logo-default.png")} alt="" class="h-9 w-auto" />
           <span class="font-display text-2xl font-bold">Moblin</span>
         </a>
         <nav class="hidden items-center gap-8 md:flex" aria-label="Sections">

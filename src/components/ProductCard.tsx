@@ -1,4 +1,5 @@
 import { For, Show } from "solid-js";
+import { asset } from "../asset";
 import type { Product } from "../data/products";
 import Button from "./Button";
 import Icon from "./Icon";
@@ -17,7 +18,7 @@ export default function ProductCard(props: { product: Product }) {
           }
         >
           {(logo) => (
-            <img src={logo()} alt="" class="h-[90px] w-[84px] shrink-0 object-contain" loading="lazy" />
+            <img src={asset(logo())} alt="" class="h-[90px] w-[84px] shrink-0 object-contain" loading="lazy" />
           )}
         </Show>
         <div class="flex flex-col gap-1">
