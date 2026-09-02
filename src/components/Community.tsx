@@ -63,11 +63,42 @@ export default function Community() {
               Moblin is built in Erik's spare time. Sponsor the project, send a
               tip, or just drop by the stream and say hi.
             </p>
-            <div class="flex flex-col gap-3">
-              <p class="text-[15px] font-bold text-ink-3">
-                Or buy a new app icon in the app. Every icon helps keep Moblin
-                free.
-              </p>
+            <div class="flex flex-col gap-4">
+              <div class="flex flex-col items-start gap-4 sm:flex-row sm:items-center">
+                <div class="relative shrink-0 overflow-hidden rounded-xl border-[1.5px] border-line">
+                  <img
+                    src={asset("screenshots/icon-shop.jpg")}
+                    alt="Top right corner of Moblin, with the app icon button next to the settings gear"
+                    class="h-36 w-auto sm:h-40"
+                    width="720"
+                    height="419"
+                    loading="lazy"
+                  />
+                  <span
+                    class="tap-ripple"
+                    style={{
+                      left: "70.2%",
+                      top: "15%",
+                      width: "11.4%",
+                      height: "19.6%",
+                    }}
+                    aria-hidden="true"
+                  />
+                  <Icon
+                    name="tap"
+                    class="tap-hand absolute size-[22%] text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.95)] [stroke-width:1.9]"
+                    style={{ left: "68%", top: "21%" }}
+                  />
+                </div>
+                <p class="text-[15px] text-ink-2">
+                  <strong class="font-bold text-ink">
+                    Or buy a new app icon.
+                  </strong>{" "}
+                  Tap the Moblin icon in the top right corner of the app, next
+                  to the settings gear, to open the shop. Every icon helps keep
+                  Moblin free.
+                </p>
+              </div>
               <div class="flex flex-wrap items-end gap-2.5">
                 <For each={shopIcons}>
                   {(src) => (

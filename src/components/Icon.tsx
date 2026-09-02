@@ -1,4 +1,4 @@
-import { Match, Switch } from "solid-js";
+import { Match, Switch, type JSX } from "solid-js";
 
 export type IconName =
   | "chat"
@@ -7,6 +7,8 @@ export type IconName =
   | "watch"
   | "remote"
   | "plug"
+  | "star"
+  | "tap"
   | "discord"
   | "github"
   | "obs-relay"
@@ -24,6 +26,7 @@ export type IconName =
 type Props = {
   name: IconName;
   class?: string;
+  style?: JSX.CSSProperties;
 };
 
 /** Stroke-based icons on a 24px grid. Color comes from `currentColor`. */
@@ -32,6 +35,7 @@ export default function Icon(props: Props) {
     <svg
       viewBox="0 0 24 24"
       class={props.class ?? "size-7"}
+      style={props.style}
       fill="none"
       stroke="currentColor"
       stroke-width="2"
@@ -126,6 +130,20 @@ export default function Icon(props: Props) {
           <circle cx="12" cy="7.5" r="2" fill="currentColor" stroke="none" />
           <circle cx="8" cy="14.5" r="2" fill="currentColor" stroke="none" />
           <circle cx="16" cy="14.5" r="2" fill="currentColor" stroke="none" />
+        </Match>
+        <Match when={props.name === "star"}>
+          <path
+            fill="currentColor"
+            stroke="none"
+            d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3l-5.9 3.3 1.3-6.6-4.9-4.6 6.6-.8L12 2.5Z"
+          />
+        </Match>
+        <Match when={props.name === "tap"}>
+          <path d="M10 9.5V4a2 2 0 0 0-4 0v10" />
+          <path d="M14 10V9a2 2 0 0 0-4 0v1" />
+          <path d="M18 11v-1a2 2 0 0 0-4 0v1" />
+          <path d="M18 11a2 2 0 1 1 4 0v3a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.9-6-2.3l-3.6-3.6a2 2 0 0 1 2.8-2.8L6 15" />
+          <path d="M2.5 3.5 4 5M13.5 3.5 12 5M8 .5V2" />
         </Match>
         <Match when={props.name === "menu"}>
           <path d="M4 7h16M4 12h16M4 17h16" />
