@@ -1,12 +1,14 @@
-import { For } from "solid-js";
+import { For, Show } from "solid-js";
 import { asset } from "../asset";
 import { shopIcons } from "../data/features";
 import { links } from "../data/links";
+import { createTwitchLive } from "../twitch";
 import Button from "./Button";
 import Icon from "./Icon";
 import Mascot from "./Mascot";
 
 export default function Support() {
+  const live = createTwitchLive(links.twitchChannel);
   return (
     <section class="pt-16 lg:pt-20">
       <div class="mx-auto max-w-[1120px] px-5 sm:px-8">
@@ -88,9 +90,22 @@ export default function Support() {
               <Icon name="github" class="size-5" />
               GitHub Sponsors
             </Button>
-            <Button href={links.twitch} variant="ghost">
-              <Icon name="twitch" class="size-5" />
-              Watch Erik on Twitch
+            <Button href={links.twitch} variant={live() ? "live" : "ghost"}>
+              <Show
+                when={live()}
+                fallback={
+                  <>
+                    <Icon name="twitch" class="size-5" />
+                    Watch Erik on Twitch
+                  </>
+                }
+              >
+                <span class="relative flex size-3" aria-hidden="true">
+                  <span class="absolute inline-flex size-full animate-ping rounded-full bg-live opacity-75 motion-reduce:animate-none" />
+                  <span class="relative inline-flex size-3 rounded-full bg-live" />
+                </span>
+                Erik is live on Twitch
+              </Show>
             </Button>
           </div>
         </div>

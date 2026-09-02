@@ -7,6 +7,7 @@ export const links = {
   sponsor: "https://github.com/sponsors/eerimoq",
   paypal: "https://paypal.me/MoblinIRL?country.x=SE&locale.x=en_US",
   twitch: "https://www.twitch.tv/eerimoq",
+  twitchChannel: "eerimoq",
   mobcam: {
     github: "https://github.com/eerimoq/mobcam",
     releases: "https://github.com/eerimoq/mobcam/releases",
