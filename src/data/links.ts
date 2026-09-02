@@ -29,9 +29,9 @@ export const links = {
 export const navItems = [
   { label: "Get started", href: "#get-started" },
   { label: "Features", href: "#features" },
+  { label: "Support", href: "#support" },
   { label: "Ecosystem", href: "#ecosystem" },
   { label: "Community", href: "#community" },
-  { label: "Support", href: "#support" },
 ] as const;
 
 export const platforms = [

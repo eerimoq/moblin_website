@@ -6,6 +6,7 @@ import GetStarted from "./components/GetStarted";
 import Hero from "./components/Hero";
 import Nav from "./components/Nav";
 import Reviews from "./components/Reviews";
+import Support from "./components/Support";
 
 export default function App() {
   return (
@@ -15,6 +16,7 @@ export default function App() {
         <Hero />
         <GetStarted />
         <Features />
+        <Support />
         <Reviews />
         <Ecosystem />
         <Community />
