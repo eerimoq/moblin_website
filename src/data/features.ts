@@ -47,8 +47,8 @@ export const steps = [
   },
   {
     mascot: "looking",
-    title: "Add your stream",
-    text: "Paste the stream key from Twitch, YouTube or Kick. Moblin picks sensible settings for you.",
+    title: "Set up your stream",
+    text: "Pick your platform, paste your stream key and adjust the settings if you like. The defaults work fine to begin with.",
   },
   {
     mascot: "thumbs-up",

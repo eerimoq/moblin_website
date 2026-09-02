@@ -55,12 +55,12 @@ export default function Community() {
             </p>
           </div>
           <div class="flex flex-wrap gap-3 md:shrink-0 md:flex-col md:items-stretch">
-            <Button href={links.sponsor}>
+            <Button href={links.paypal}>
               <Icon name="heart" class="size-[22px]" />
-              GitHub Sponsors
-            </Button>
-            <Button href={links.paypal} variant="ghost">
               Tip on PayPal
+            </Button>
+            <Button href={links.sponsor} variant="ghost">
+              GitHub Sponsors
             </Button>
             <Button href={links.twitch} variant="ghost">
               Watch Erik on Twitch

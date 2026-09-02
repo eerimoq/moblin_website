@@ -13,7 +13,7 @@ export default function GetStarted() {
             <span class="font-display text-[15px] font-semibold uppercase tracking-[0.08em] text-leaf">
               Get started
             </span>
-            <h2 class="text-4xl font-bold sm:text-[46px]">Live in three taps.</h2>
+            <h2 class="text-4xl font-bold sm:text-[46px]">Live in three steps.</h2>
           </div>
           <p class="max-w-[420px] text-lg text-muted">
             No account, no subscription. Install it, paste your stream key, go.
