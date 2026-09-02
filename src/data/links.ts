@@ -4,6 +4,9 @@ export const links = {
   discord: "https://discord.gg/kh3KMng4JV",
   github: "https://github.com/eerimoq/moblin",
   privacyPolicy: "https://eerimoq.github.io/moblin/privacy-policy/en.html",
+  sponsor: "https://github.com/sponsors/eerimoq",
+  paypal: "https://paypal.me/MoblinIRL?country.x=SE&locale.x=en_US",
+  twitch: "https://www.twitch.tv/eerimoq",
   mobcam: {
     github: "https://github.com/eerimoq/mobcam",
     releases: "https://github.com/eerimoq/mobcam/releases",
@@ -28,6 +31,7 @@ export const navItems = [
   { label: "Features", href: "#features" },
   { label: "Ecosystem", href: "#ecosystem" },
   { label: "Community", href: "#community" },
+  { label: "Support", href: "#support" },
 ] as const;
 
 export const platforms = ["Twitch", "YouTube", "Kick", "Facebook", "OBS Studio"] as const;
