@@ -14,7 +14,7 @@ export default function Button(props: Props) {
   const variant = () =>
     props.variant === "ghost"
       ? "bg-ghost text-ink border-[1.5px] border-ghost-line hover:bg-ghost-hover hover:text-white"
-      : "bg-moss text-[#08150a] hover:bg-moss-bright";
+      : "bg-moss text-white hover:bg-moss-bright";
   const size = () => (props.size === "sm" ? "h-11 px-5 text-base" : "h-13 px-6 text-lg");
   return (
     <a
