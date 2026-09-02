@@ -6,6 +6,17 @@ export type Feature = {
   text: string;
 };
 
+export const shopIcons = [
+  "king",
+  "queen",
+  "tetris",
+  "tub",
+  "billionaire",
+  "pixels",
+  "happy",
+  "pink",
+].map((name) => `logos/icons/${name}.png`);
+
 export const features: Feature[] = [
   {
     icon: "chat",
@@ -33,9 +44,9 @@ export const features: Feature[] = [
     text: "Run OBS at home from your phone, or let a friend keep an eye on your stream while you walk.",
   },
   {
-    icon: "sparkle",
-    title: "Effects and filters",
-    text: "Beauty filter, blur, background removal and face effects while you stream. Or go full VTuber.",
+    icon: "plug",
+    title: "Integrations",
+    text: "Works with GoPro and DJI cameras, gimbals, game controllers, heart rate monitors and even your Tesla.",
   },
 ];
 

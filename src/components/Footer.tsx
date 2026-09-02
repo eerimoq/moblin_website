@@ -1,9 +1,10 @@
 import { links } from "../data/links";
+import Icon, { type IconName } from "./Icon";
 import Mascot from "./Mascot";
 
-const footerLinks = [
-  { label: "GitHub", href: links.github },
-  { label: "Discord", href: links.discord },
+const footerLinks: { label: string; href: string; icon?: IconName }[] = [
+  { label: "GitHub", href: links.github, icon: "github" },
+  { label: "Discord", href: links.discord, icon: "discord" },
   { label: "Privacy policy", href: links.privacyPolicy },
 ];
 
@@ -23,8 +24,9 @@ export default function Footer() {
               href={l.href}
               target="_blank"
               rel="noopener"
-              class="text-[15px] font-bold text-muted hover:text-ink"
+              class="flex items-center gap-1.5 text-[15px] font-bold text-muted hover:text-ink"
             >
+              {l.icon && <Icon name={l.icon} class="size-4" />}
               {l.label}
             </a>
           ))}

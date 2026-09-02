@@ -34,4 +34,10 @@ export const navItems = [
   { label: "Support", href: "#support" },
 ] as const;
 
-export const platforms = ["Twitch", "YouTube", "Kick", "Facebook", "OBS Studio"] as const;
+export const platforms = [
+  { name: "Twitch", icon: "twitch" },
+  { name: "YouTube", icon: "youtube" },
+  { name: "Kick", icon: "kick" },
+  { name: "Facebook", icon: "facebook" },
+  { name: "OBS Studio", icon: "obs" },
+] as const;

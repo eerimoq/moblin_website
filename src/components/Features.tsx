@@ -10,7 +10,9 @@ export default function Features() {
           <span class="font-display text-[15px] font-semibold uppercase tracking-[0.08em] text-leaf">
             Features
           </span>
-          <h2 class="text-4xl font-bold sm:text-[46px]">Everything a walk-and-talk stream needs.</h2>
+          <h2 class="text-4xl font-bold sm:text-[46px]">
+            Everything a walk-and-talk stream needs.
+          </h2>
         </div>
         <ul class="grid gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
           <For each={features}>

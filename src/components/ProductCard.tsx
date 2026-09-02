@@ -13,12 +13,24 @@ export default function ProductCard(props: { product: Product }) {
           when={p().logo}
           fallback={
             <div class="flex size-[84px] shrink-0 items-center justify-center">
-              <Show when={p().icon}>{(icon) => <Icon name={icon()} class="size-14 text-leaf [stroke-width:1.6]" />}</Show>
+              <Show when={p().icon}>
+                {(icon) => (
+                  <Icon
+                    name={icon()}
+                    class="size-14 text-leaf [stroke-width:1.6]"
+                  />
+                )}
+              </Show>
             </div>
           }
         >
           {(logo) => (
-            <img src={asset(logo())} alt="" class="h-[90px] w-[84px] shrink-0 object-contain" loading="lazy" />
+            <img
+              src={asset(logo())}
+              alt=""
+              class="h-[90px] w-[84px] shrink-0 object-contain"
+              loading="lazy"
+            />
           )}
         </Show>
         <div class="flex flex-col gap-1">
@@ -50,10 +62,31 @@ export default function ProductCard(props: { product: Product }) {
         </For>
       </ol>
       <div class="mt-1 flex flex-wrap gap-3">
-        <Button href={p().primary.href} size="sm">
-          {p().primary.label}
-        </Button>
+        <Show
+          when={p().badge}
+          fallback={
+            <Button href={p().primary.href} size="sm">
+              <Show when={p().primary.icon}>
+                {(icon) => <Icon name={icon()} class="size-5" />}
+              </Show>
+              {p().primary.label}
+            </Button>
+          }
+        >
+          {(badge) => (
+            <a href={badge().href} target="_blank" rel="noopener" class="flex">
+              <img
+                src={asset(badge().src)}
+                alt={badge().alt}
+                class="h-11 w-auto"
+              />
+            </a>
+          )}
+        </Show>
         <Button href={p().secondary.href} variant="ghost" size="sm">
+          <Show when={p().secondary.icon}>
+            {(icon) => <Icon name={icon()} class="size-5" />}
+          </Show>
           {p().secondary.label}
         </Button>
       </div>

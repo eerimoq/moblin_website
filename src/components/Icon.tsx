@@ -6,13 +6,18 @@ export type IconName =
   | "bonding"
   | "watch"
   | "remote"
-  | "sparkle"
+  | "plug"
   | "discord"
   | "github"
   | "obs-relay"
   | "assistant-relay"
   | "warning"
   | "heart"
+  | "twitch"
+  | "youtube"
+  | "kick"
+  | "facebook"
+  | "obs"
   | "menu"
   | "close";
 
@@ -55,9 +60,10 @@ export default function Icon(props: Props) {
           <path d="M8 21h8M12 17v4" />
           <circle cx="12" cy="11" r="2.5" />
         </Match>
-        <Match when={props.name === "sparkle"}>
-          <path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3Z" />
-          <path d="M19 16l.8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8L19 16Z" />
+        <Match when={props.name === "plug"}>
+          <path d="M9 3v5M15 3v5" />
+          <path d="M6 8h12v3a6 6 0 0 1-12 0V8Z" />
+          <path d="M12 17v4" />
         </Match>
         <Match when={props.name === "discord"}>
           <path d="M4 6.5c2-1 4-1.5 4-1.5l.6 1.3a12 12 0 0 1 6.8 0L16 5s2 .5 4 1.5c1.5 4 2 8 1.5 11-1.6 1.3-4 2.2-4 2.2l-.9-1.6c-2.8 1.2-6.4 1.2-9.2 0L6.5 19.7s-2.4-.9-4-2.2C2 14.5 2.5 10.5 4 6.5Z" />
@@ -86,6 +92,40 @@ export default function Icon(props: Props) {
         </Match>
         <Match when={props.name === "heart"}>
           <path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.5-7 10-7 10Z" />
+        </Match>
+        <Match when={props.name === "twitch"}>
+          <path
+            fill="currentColor"
+            stroke="none"
+            d="M11.571 4.714h1.715v5.143H11.571zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714Z"
+          />
+        </Match>
+        <Match when={props.name === "youtube"}>
+          <path
+            fill="currentColor"
+            stroke="none"
+            d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"
+          />
+        </Match>
+        <Match when={props.name === "kick"}>
+          <path
+            fill="currentColor"
+            stroke="none"
+            d="M1.333 0h8v5.333H12V2.667h2.667V0h8v8H20v2.667h-2.667v2.666H20V16h2.667v8h-8v-2.667H12v-2.666H9.333V24h-8Z"
+          />
+        </Match>
+        <Match when={props.name === "facebook"}>
+          <path
+            fill="currentColor"
+            stroke="none"
+            d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"
+          />
+        </Match>
+        <Match when={props.name === "obs"}>
+          <circle cx="12" cy="12" r="10" stroke-width="2.2" />
+          <circle cx="12" cy="7.5" r="2" fill="currentColor" stroke="none" />
+          <circle cx="8" cy="14.5" r="2" fill="currentColor" stroke="none" />
+          <circle cx="16" cy="14.5" r="2" fill="currentColor" stroke="none" />
         </Match>
         <Match when={props.name === "menu"}>
           <path d="M4 7h16M4 12h16M4 17h16" />

@@ -238,9 +238,10 @@ export default function Hero() {
       <div class="mx-auto flex max-w-[1120px] flex-wrap items-center gap-3 px-5 pb-16 sm:px-8 lg:pb-18">
         <span class="mr-1 text-[15px] font-bold text-muted">Goes live on</span>
         <For each={platforms}>
-          {(name) => (
-            <span class="inline-flex h-10 items-center rounded-full border-[1.5px] border-line bg-card px-4 text-[15px] font-bold text-ink-3">
-              {name}
+          {(p) => (
+            <span class="inline-flex h-10 items-center gap-2 rounded-full border-[1.5px] border-line bg-card pr-4 pl-3 text-[15px] font-bold text-ink-3">
+              <Icon name={p.icon} class="size-4" />
+              {p.name}
             </span>
           )}
         </For>

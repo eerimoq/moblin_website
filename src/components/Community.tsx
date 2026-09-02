@@ -1,4 +1,7 @@
+import { asset } from "../asset";
+import { shopIcons } from "../data/features";
 import { links } from "../data/links";
+import { For } from "solid-js";
 import Button from "./Button";
 import Icon from "./Icon";
 import Mascot from "./Mascot";
@@ -16,8 +19,8 @@ export default function Community() {
               Stuck? Someone on Discord has been there.
             </h2>
             <p class="max-w-[480px] text-lg text-ink-2">
-              Thousands of IRL streamers share setups, fix problems and vote on what Moblin does
-              next. The developer hangs out there too.
+              Thousands of IRL streamers share setups, fix problems and vote on
+              what Moblin does next. The developer hangs out there too.
             </p>
             <div class="flex flex-wrap gap-3">
               <Button href={links.discord}>
@@ -35,13 +38,20 @@ export default function Community() {
           </div>
           <div class="relative hidden h-[260px] items-center justify-center md:flex">
             <Mascot variant="discord" class="w-[220px] -rotate-[6deg]" />
-            <Mascot variant="heart" class="absolute right-10 -bottom-2.5 w-[120px] rotate-[10deg]" />
+            <Mascot
+              variant="heart"
+              class="absolute right-10 -bottom-2.5 w-[120px] rotate-[10deg]"
+            />
           </div>
         </div>
         <div
           id="support"
-          class="relative mt-6 flex scroll-mt-24 flex-col gap-5 overflow-hidden rounded-3xl border-[1.5px] border-line bg-card p-8 sm:p-12 md:flex-row md:items-center md:justify-between md:gap-10 lg:px-16">
-          <Mascot variant="heart" class="pointer-events-none absolute -right-8 -bottom-10 hidden w-[130px] -rotate-[8deg] opacity-30 lg:block" />
+          class="relative mt-6 flex scroll-mt-24 flex-col gap-5 overflow-hidden rounded-3xl border-[1.5px] border-line bg-card p-8 sm:p-12 md:flex-row md:items-center md:justify-between md:gap-10 lg:px-16"
+        >
+          <Mascot
+            variant="heart"
+            class="pointer-events-none absolute -right-8 -bottom-10 hidden w-[130px] -rotate-[8deg] opacity-30 lg:block"
+          />
           <div class="flex max-w-[560px] flex-col gap-4">
             <span class="font-display text-[15px] font-semibold uppercase tracking-[0.08em] text-leaf">
               Support Moblin
@@ -50,9 +60,27 @@ export default function Community() {
               Like Moblin? Help keep it free.
             </h2>
             <p class="text-lg text-ink-2">
-              Moblin is built in Erik's spare time. Sponsor the project, send a tip, or just drop by
-              the stream and say hi.
+              Moblin is built in Erik's spare time. Sponsor the project, send a
+              tip, or just drop by the stream and say hi.
             </p>
+            <div class="flex flex-col gap-3">
+              <p class="text-[15px] font-bold text-ink-3">
+                Or buy a new app icon in the app. Every icon helps keep Moblin
+                free.
+              </p>
+              <div class="flex flex-wrap items-end gap-2.5">
+                <For each={shopIcons}>
+                  {(src) => (
+                    <img
+                      src={asset(src)}
+                      alt=""
+                      class="h-11 w-auto"
+                      loading="lazy"
+                    />
+                  )}
+                </For>
+              </div>
+            </div>
           </div>
           <div class="flex flex-wrap gap-3 md:shrink-0 md:flex-col md:items-stretch">
             <Button href={links.paypal}>
@@ -60,9 +88,11 @@ export default function Community() {
               Tip on PayPal
             </Button>
             <Button href={links.sponsor} variant="ghost">
+              <Icon name="github" class="size-5" />
               GitHub Sponsors
             </Button>
             <Button href={links.twitch} variant="ghost">
+              <Icon name="twitch" class="size-5" />
               Watch Erik on Twitch
             </Button>
           </div>
