@@ -25,8 +25,7 @@ export default function Nav() {
         </nav>
         <div class="flex items-center gap-2">
           <Button href={links.appStore} size="sm">
-            <span class="hidden sm:inline">Download free</span>
-            <span class="sm:hidden">Download</span>
+            Download
           </Button>
           <button
             type="button"
