@@ -1,0 +1,33 @@
+export const links = {
+  appStore: "https://apps.apple.com/app/id6466745933",
+  testFlight: "https://testflight.apple.com/join/PDpxEaGh",
+  discord: "https://discord.gg/kh3KMng4JV",
+  github: "https://github.com/eerimoq/moblin",
+  privacyPolicy: "https://eerimoq.github.io/moblin/privacy-policy/en.html",
+  mobcam: {
+    github: "https://github.com/eerimoq/mobcam",
+    releases: "https://github.com/eerimoq/mobcam/releases",
+    obsPluginGuide: "https://github.com/eerimoq/mobcam/tree/main/crates/obs-plugin",
+  },
+  moblink: {
+    github: "https://github.com/eerimoq/moblink",
+    playStore: "https://play.google.com/store/apps/details?id=com.eerimoq.moblink",
+  },
+  obsRelay: {
+    site: "https://moblin.mys-lang.org/obs-remote-control-relay/",
+    github: "https://github.com/eerimoq/obs-remote-control-relay",
+  },
+  moblinRelay: {
+    site: "https://moblin.mys-lang.org/moblin-remote-control-relay/",
+    github: "https://github.com/eerimoq/moblin-remote-control-relay",
+  },
+} as const;
+
+export const navItems = [
+  { label: "Get started", href: "#get-started" },
+  { label: "Features", href: "#features" },
+  { label: "Ecosystem", href: "#ecosystem" },
+  { label: "Community", href: "#community" },
+] as const;
+
+export const platforms = ["Twitch", "YouTube", "Kick", "Facebook", "OBS Studio"] as const;
