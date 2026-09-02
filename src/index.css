@@ -74,3 +74,35 @@
     }
   }
 }
+
+@utility confetti {
+  position: absolute;
+  top: -6%;
+  border-radius: 3px;
+  animation:
+    confetti-fall var(--fall, 12s) linear infinite,
+    confetti-sway var(--sway, 3s) ease-in-out infinite alternate;
+  animation-delay: var(--delay, 0s), var(--delay, 0s);
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+    top: var(--rest, 30%);
+  }
+}
+
+@keyframes confetti-fall {
+  from {
+    top: -6%;
+  }
+  to {
+    top: 104%;
+  }
+}
+
+@keyframes confetti-sway {
+  from {
+    transform: translateX(-14px) rotate(0deg);
+  }
+  to {
+    transform: translateX(14px) rotate(200deg);
+  }
+}
