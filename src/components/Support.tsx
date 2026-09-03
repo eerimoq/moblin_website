@@ -35,35 +35,34 @@ export default function Support() {
               <div class="flex flex-col items-start gap-4 sm:flex-row sm:items-center">
                 <div class="relative shrink-0 overflow-hidden rounded-xl border-[1.5px] border-line">
                   <img
-                    src={asset("screenshots/icon-shop.jpg")}
+                    src={asset("screenshots/icon-shop.webp")}
                     alt="Top right corner of Moblin, with the app icon button next to the settings gear"
                     class="h-36 w-auto sm:h-40"
-                    width="720"
-                    height="419"
+                    width="426"
+                    height="225"
                     loading="lazy"
                   />
                   <span
                     class="tap-ripple"
                     style={{
-                      left: "70.2%",
-                      top: "15%",
-                      width: "11.4%",
-                      height: "19.6%",
+                      left: "59.3%",
+                      top: "10.2%",
+                      width: "11.7%",
+                      height: "22.2%",
                     }}
                     aria-hidden="true"
                   />
                   <Icon
                     name="tap"
-                    class="tap-hand absolute size-[22%] text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.95)] [stroke-width:1.9]"
-                    style={{ left: "68%", top: "21%" }}
+                    class="tap-hand absolute size-[24.9%] text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.95)] [stroke-width:1.9]"
+                    style={{ left: "56.3%", top: "21.3%" }}
                   />
                 </div>
                 <p class="text-[15px] text-ink-2">
                   <strong class="font-bold text-ink">
-                    Or buy a new app icon.
+                    Buy app icons.
                   </strong>{" "}
-                  Tap the Moblin icon in the top right corner of the app, next
-                  to the settings gear, to open the shop. Every icon helps keep
+                  Tap the Moblin icon in the top right corner of the app to open the store. Every icon helps keep
                   Moblin free.
                 </p>
               </div>

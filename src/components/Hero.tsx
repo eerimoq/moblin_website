@@ -218,13 +218,13 @@ export default function Hero() {
           </div>
           <div class="relative mx-auto w-full max-w-[600px] pt-6 pb-12 pl-10 sm:pl-16 lg:pl-20">
             <img
-              src={asset("screenshots/moblin.jpg")}
-              srcset={`${asset("screenshots/moblin-800.jpg")} 800w, ${asset("screenshots/moblin.jpg")} 1600w`}
+              src={asset("screenshots/moblin.webp")}
+              srcset={`${asset("screenshots/moblin-800.webp")} 800w, ${asset("screenshots/moblin.webp")} 1146w`}
               sizes="(min-width: 1024px) 500px, 90vw"
               alt="Moblin streaming with chat, bitrate and controls on screen"
-              class="w-full -rotate-[4deg] rounded-[22px] border-[6px] border-line shadow-[0_30px_60px_rgba(0,0,0,0.55)]"
-              width="1600"
-              height="813"
+              class="w-full -rotate-[4deg] drop-shadow-[0_30px_60px_rgba(0,0,0,0.55)]"
+              width="1146"
+              height="557"
               fetchpriority="high"
             />
             <Mascot

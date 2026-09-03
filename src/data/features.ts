@@ -4,6 +4,8 @@ export type Feature = {
   icon: IconName;
   title: string;
   text: string;
+  /** Screenshots shown faintly behind the top right corner of the card. */
+  shots?: { src: string; alt: string }[];
 };
 
 export const shopIcons = [
@@ -37,6 +39,16 @@ export const features: Feature[] = [
     icon: "watch",
     title: "Apple Watch companion",
     text: "Preview, audio level, bitrate and viewer count on your wrist. The phone stays in your pocket.",
+    shots: [
+      {
+        src: "screenshots/watch.webp",
+        alt: "Apple Watch showing the stream preview, bitrate, zoom and scene controls",
+      },
+      {
+        src: "screenshots/watch-chat.webp",
+        alt: "Apple Watch showing Twitch chat messages",
+      },
+    ],
   },
   {
     icon: "remote",
