@@ -1,3 +1,12 @@
+style:
+	oxfmt
+
+style-check:
+	oxfmt --check
+
+lint:
+	oxlint --deny-warnings
+
 npm-latest-args := "python -c \"import json,sys; print(' '.join(f'{d}@latest' for d in json.load(open('package.json'))[sys.argv[1]]))\""
 
 update-dependencies:

@@ -28,8 +28,8 @@ export default function Support() {
               Like Moblin? Help keep it free.
             </h2>
             <p class="text-lg text-ink-2">
-              Made by Erik and the Moblin community. Sponsor the project, send a
-              tip, or just drop by the stream and say hi.
+              Made by Erik and the Moblin community. Sponsor the project, send a tip, or just drop
+              by the stream and say hi.
             </p>
             <div class="flex flex-col gap-4">
               <div class="flex flex-col items-start gap-4 sm:flex-row sm:items-center">
@@ -59,23 +59,14 @@ export default function Support() {
                   />
                 </div>
                 <p class="text-[15px] text-ink-2">
-                  <strong class="font-bold text-ink">
-                    Buy app icons.
-                  </strong>{" "}
-                  Tap the Moblin icon in the top right corner of the app to open the store. Every icon helps keep
-                  Moblin free.
+                  <strong class="font-bold text-ink">Buy app icons.</strong> Tap the Moblin icon in
+                  the top right corner of the app to open the store. Every icon helps keep Moblin
+                  free.
                 </p>
               </div>
               <div class="flex flex-wrap items-end gap-2.5">
                 <For each={shopIcons}>
-                  {(src) => (
-                    <img
-                      src={asset(src)}
-                      alt=""
-                      class="h-11 w-auto"
-                      loading="lazy"
-                    />
-                  )}
+                  {(src) => <img src={asset(src)} alt="" class="h-11 w-auto" loading="lazy" />}
                 </For>
               </div>
             </div>

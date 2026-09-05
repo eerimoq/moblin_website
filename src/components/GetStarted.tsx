@@ -27,7 +27,9 @@ export default function GetStarted() {
                   variant={step.mascot}
                   class={`absolute -top-7 right-6 w-[66px] ${tilt[i()]}`}
                 />
-                <span class="font-display text-[54px] leading-none font-bold text-moss">{i() + 1}</span>
+                <span class="font-display text-[54px] leading-none font-bold text-moss">
+                  {i() + 1}
+                </span>
                 <h3 class="text-[26px] font-semibold">{step.title}</h3>
                 <p class="text-ink-2">{step.text}</p>
               </li>

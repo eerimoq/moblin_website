@@ -14,9 +14,7 @@ export function createTwitchLive(channel: string, refreshMs = 5 * 60 * 1000) {
         cache: "no-store",
       });
       const text = (await res.text()).trim();
-      setLive(
-        res.ok && text !== "" && !/is offline|not found|error/i.test(text),
-      );
+      setLive(res.ok && text !== "" && !/is offline|not found|error/i.test(text));
     } catch {
       setLive(false);
     }

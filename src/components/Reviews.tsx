@@ -16,9 +16,7 @@ export default function Reviews() {
               <span class="font-display text-[15px] font-semibold uppercase tracking-[0.08em] text-leaf">
                 Reviews
               </span>
-              <h2 class="text-[32px] font-bold sm:text-[40px]">
-                What streamers say.
-              </h2>
+              <h2 class="text-[32px] font-bold sm:text-[40px]">What streamers say.</h2>
             </div>
             <a
               href={links.appStore}
@@ -27,16 +25,11 @@ export default function Reviews() {
               class="flex items-center gap-3 text-ink-3 hover:text-ink"
             >
               <span class="flex text-amber" aria-hidden="true">
-                <For each={[1, 2, 3, 4, 5]}>
-                  {() => <Icon name="star" class="size-5" />}
-                </For>
+                <For each={[1, 2, 3, 4, 5]}>{() => <Icon name="star" class="size-5" />}</For>
               </span>
               <span class="text-[15px] font-bold">
                 {appStoreRating.score} out of 5 on the App Store
-                <span class="font-normal text-muted">
-                  {" "}
-                  · {appStoreRating.count} ratings
-                </span>
+                <span class="font-normal text-muted"> · {appStoreRating.count} ratings</span>
               </span>
             </a>
           </div>
@@ -47,8 +40,7 @@ export default function Reviews() {
                   <h3 class="text-lg font-semibold">{r.title}</h3>
                   <p class="text-[15px] text-ink-2">“{r.text}”</p>
                   <p class="mt-auto text-sm text-muted">
-                    <span class="font-bold">{r.name}</span> ·{" "}
-                    {formatDate(r.date)}
+                    <span class="font-bold">{r.name}</span> · {formatDate(r.date)}
                   </p>
                 </li>
               )}

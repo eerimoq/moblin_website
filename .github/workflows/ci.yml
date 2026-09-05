@@ -1,0 +1,24 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Source code styling
+        run: |
+          brew install oxfmt
+          just style-check
+      - name: Linting
+        run: |
+          brew install oxlint
+          just lint

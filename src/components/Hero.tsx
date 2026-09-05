@@ -181,17 +181,11 @@ export default function Hero() {
               Stream IRL straight from your iPhone.
             </h1>
             <p class="max-w-[520px] text-lg leading-normal text-ink-2 text-pretty sm:text-[21px]">
-              Moblin is a free app for going live on Twitch, YouTube, Kick and
-              more. Chat on your screen, bonding for bad signal, and a friendly
-              green face to keep you company.
+              Moblin is a free app for going live on Twitch, YouTube, Kick and more. Chat on your
+              screen, bonding for bad signal, and a friendly green face to keep you company.
             </p>
             <div class="mt-1 flex flex-col items-start gap-4 sm:flex-row sm:items-center">
-              <a
-                href={links.appStore}
-                target="_blank"
-                rel="noopener"
-                class="shrink-0"
-              >
+              <a href={links.appStore} target="_blank" rel="noopener" class="shrink-0">
                 <img
                   src={asset("badges/app-store.svg")}
                   alt="Download on the App Store"

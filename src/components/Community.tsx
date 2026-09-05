@@ -16,8 +16,8 @@ export default function Community() {
               Stuck? Someone on Discord has been there.
             </h2>
             <p class="max-w-[480px] text-lg text-ink-2">
-              Thousands of IRL streamers share setups, fix problems and vote on
-              what Moblin does next. The developer hangs out there too.
+              Thousands of IRL streamers share setups, fix problems and vote on what Moblin does
+              next. The developer hangs out there too.
             </p>
             <div class="flex flex-wrap gap-3">
               <Button href={links.discord}>
