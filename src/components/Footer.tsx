@@ -1,12 +1,16 @@
-import { links } from "../data/links";
+import { asset } from "../asset";
+import { links, pages } from "../data/links";
 import Icon, { type IconName } from "./Icon";
 import Mascot from "./Mascot";
 
 const footerLinks: { label: string; href: string; icon?: IconName }[] = [
+  { label: "Chat bot", href: asset(pages.chatBot) },
   { label: "GitHub", href: links.github, icon: "github" },
   { label: "Discord", href: links.discord, icon: "discord" },
   { label: "Privacy policy", href: links.privacyPolicy },
 ];
+
+const isExternal = (href: string) => /^https?:/.test(href);
 
 export default function Footer() {
   return (
@@ -22,8 +26,8 @@ export default function Footer() {
           {footerLinks.map((l) => (
             <a
               href={l.href}
-              target="_blank"
-              rel="noopener"
+              target={isExternal(l.href) ? "_blank" : undefined}
+              rel={isExternal(l.href) ? "noopener" : undefined}
               class="flex items-center gap-1.5 text-[15px] font-bold text-muted hover:text-ink"
             >
               {l.icon && <Icon name={l.icon} class="size-4" />}

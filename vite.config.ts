@@ -10,4 +10,11 @@ const base = existsSync("public/CNAME") ? "/" : "/moblin_website/";
 export default defineConfig({
   base,
   plugins: [solid(), tailwindcss()],
+  build: {
+    rollupOptions: {
+      // One HTML entry per page. Sub pages live in their own directory so
+      // GitHub Pages serves them at clean URLs like /chat-bot/.
+      input: ["index.html", "chat-bot/index.html"],
+    },
+  },
 });

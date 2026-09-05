@@ -3,6 +3,7 @@ export const links = {
   testFlight: "https://testflight.apple.com/join/PDpxEaGh",
   discord: "https://discord.gg/kh3KMng4JV",
   github: "https://github.com/eerimoq/moblin",
+  chatBotHelp: "https://github.com/eerimoq/moblin/blob/main/docs/chat-bot-help.md",
   privacyPolicy: "https://eerimoq.github.io/moblin/privacy-policy/en.html",
   sponsor: "https://github.com/sponsors/eerimoq",
   paypal: "https://paypal.me/MoblinIRL?country.x=SE&locale.x=en_US",
@@ -27,13 +28,19 @@ export const links = {
   },
 } as const;
 
+/** Section links, anchored to the home page so they work from every page. */
 export const navItems = [
-  { label: "Get started", href: "#get-started" },
-  { label: "Features", href: "#features" },
-  { label: "Support", href: "#support" },
-  { label: "Ecosystem", href: "#ecosystem" },
-  { label: "Community", href: "#community" },
+  { label: "Get started", href: "/#get-started" },
+  { label: "Features", href: "/#features" },
+  { label: "Support", href: "/#support" },
+  { label: "Ecosystem", href: "/#ecosystem" },
+  { label: "Community", href: "/#community" },
 ] as const;
+
+/** Pages other than the home page, relative to the site root. */
+export const pages = {
+  chatBot: "/chat-bot/",
+} as const;
 
 export const platforms = [
   { name: "Twitch", icon: "twitch" },

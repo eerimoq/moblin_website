@@ -10,14 +10,14 @@ export default function Nav() {
   return (
     <header class="sticky top-0 z-20 bg-page/92 backdrop-blur border-b border-line/40">
       <div class="mx-auto flex h-16 max-w-[1120px] items-center justify-between px-5 sm:px-8 lg:h-18">
-        <a href="#top" class="flex items-center gap-3">
+        <a href={asset("/#top")} class="flex items-center gap-3">
           <img src={asset("logos/logo-default.png")} alt="" class="h-9 w-auto" />
           <span class="font-display text-2xl font-bold">Moblin</span>
         </a>
         <nav class="hidden items-center gap-8 md:flex" aria-label="Sections">
           <For each={navItems}>
             {(item) => (
-              <a href={item.href} class="font-bold text-ink-3 hover:text-ink">
+              <a href={asset(item.href)} class="font-bold text-ink-3 hover:text-ink">
                 {item.label}
               </a>
             )}
@@ -43,7 +43,7 @@ export default function Nav() {
           <For each={navItems}>
             {(item) => (
               <a
-                href={item.href}
+                href={asset(item.href)}
                 class="block rounded-xl px-3 py-3 text-lg font-bold text-ink-3 hover:bg-card"
                 onClick={() => setOpen(false)}
               >
