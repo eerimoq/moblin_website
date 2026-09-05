@@ -11,12 +11,12 @@ permissions:
 
 jobs:
   check:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v7
       - name: Source code styling
         run: |
-          brew install oxfmt
+          brew install just oxfmt
           just style-check
       - name: Linting
         run: |
