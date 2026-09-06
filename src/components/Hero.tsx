@@ -174,7 +174,7 @@ export default function Hero() {
             </a>
             <Button href={links.discord} variant="ghost" class="h-14">
               <Icon name="discord" class="size-[22px]" />
-              Join the Discord
+              Join our Discord
             </Button>
           </div>
           <p class="text-[15px] text-muted">

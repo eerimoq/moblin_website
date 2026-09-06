@@ -22,7 +22,7 @@ export default function Community() {
             <div class="flex flex-wrap gap-3">
               <Button href={links.discord}>
                 <Icon name="discord" class="size-[22px]" />
-                Join the Discord
+                Join our Discord
               </Button>
               <Button href={links.github} variant="ghost">
                 <Icon name="github" class="size-[22px]" />
