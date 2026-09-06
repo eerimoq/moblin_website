@@ -21,7 +21,7 @@ type Confetti = {
 const confetti: Confetti[] = [
   {
     shape: "size-[18px] bg-amber",
-    left: "74%",
+    left: "53%",
     fall: 13,
     delay: -2,
     sway: 2.6,
@@ -29,7 +29,7 @@ const confetti: Confetti[] = [
   },
   {
     shape: "size-[14px] rounded-full bg-confetti-blue",
-    left: "86%",
+    left: "78%",
     fall: 11,
     delay: -7,
     sway: 3.4,
@@ -37,7 +37,7 @@ const confetti: Confetti[] = [
   },
   {
     shape: "h-[26px] w-[12px] bg-confetti-red",
-    left: "58%",
+    left: "20%",
     fall: 15,
     delay: -11,
     sway: 2.2,
@@ -53,7 +53,7 @@ const confetti: Confetti[] = [
   },
   {
     shape: "size-[14px] rounded-full bg-amber",
-    left: "66%",
+    left: "37%",
     fall: 14,
     delay: -9,
     sway: 3,
@@ -61,7 +61,7 @@ const confetti: Confetti[] = [
   },
   {
     shape: "h-6 w-3 bg-confetti-blue",
-    left: "90%",
+    left: "86%",
     fall: 10,
     delay: -1,
     sway: 2.8,
@@ -69,7 +69,7 @@ const confetti: Confetti[] = [
   },
   {
     shape: "size-3 rounded-full bg-confetti-red",
-    left: "51%",
+    left: "6%",
     fall: 12,
     delay: -6,
     sway: 3.2,
@@ -77,7 +77,7 @@ const confetti: Confetti[] = [
   },
   {
     shape: "h-5 w-[10px] bg-confetti-purple",
-    left: "80%",
+    left: "65%",
     fall: 16,
     delay: -13,
     sway: 2.4,
@@ -85,7 +85,7 @@ const confetti: Confetti[] = [
   },
   {
     shape: "size-[13px] bg-amber",
-    left: "97%",
+    left: "100%",
     fall: 11,
     delay: -3,
     sway: 3.6,
@@ -93,7 +93,7 @@ const confetti: Confetti[] = [
   },
   {
     shape: "h-[22px] w-[11px] bg-confetti-blue",
-    left: "62%",
+    left: "29%",
     fall: 14,
     delay: -10,
     sway: 2.9,
@@ -101,7 +101,7 @@ const confetti: Confetti[] = [
   },
   {
     shape: "size-[15px] bg-confetti-purple",
-    left: "54%",
+    left: "12%",
     fall: 13,
     delay: -8,
     sway: 3.1,
@@ -109,7 +109,7 @@ const confetti: Confetti[] = [
   },
   {
     shape: "h-5 w-[9px] bg-amber",
-    left: "70%",
+    left: "45%",
     fall: 15,
     delay: -5,
     sway: 2.5,
@@ -117,7 +117,7 @@ const confetti: Confetti[] = [
   },
   {
     shape: "size-[12px] rounded-full bg-confetti-blue",
-    left: "83%",
+    left: "71%",
     fall: 11,
     delay: -12,
     sway: 3.3,
@@ -125,7 +125,7 @@ const confetti: Confetti[] = [
   },
   {
     shape: "h-[24px] w-[12px] bg-confetti-red",
-    left: "48%",
+    left: "0%",
     fall: 16,
     delay: -2,
     sway: 2.7,
@@ -133,7 +133,7 @@ const confetti: Confetti[] = [
   },
   {
     shape: "size-[13px] bg-amber",
-    left: "77%",
+    left: "59%",
     fall: 12,
     delay: -14,
     sway: 3.5,
@@ -141,7 +141,7 @@ const confetti: Confetti[] = [
   },
   {
     shape: "size-3 rounded-full bg-confetti-purple",
-    left: "92%",
+    left: "90%",
     fall: 14,
     delay: -7,
     sway: 2.3,
@@ -152,65 +152,65 @@ const confetti: Confetti[] = [
 export default function Hero() {
   return (
     <section id="top" class="overflow-hidden">
-      <div class="relative">
-        <div
-          class="pointer-events-none absolute inset-x-0 top-0 bottom-22 hidden overflow-hidden lg:block"
-          aria-hidden="true"
-        >
-          <For each={confetti}>
-            {(c) => (
-              <span
-                class={`confetti ${c.shape}`}
-                style={{
-                  left: c.left,
-                  "--fall": `${c.fall}s`,
-                  "--delay": `${c.delay}s`,
-                  "--sway": `${c.sway}s`,
-                  "--rest": c.rest,
-                }}
+      <div class="mx-auto grid max-w-[1120px] items-center gap-12 px-5 pt-12 pb-16 sm:px-8 lg:grid-cols-2 lg:pt-18 lg:pb-22">
+        <div class="flex flex-col gap-6">
+          <span class="font-display text-sm font-semibold uppercase tracking-[0.08em] text-leaf sm:text-[15px]">
+            Free · Open source · iPhone, iPad and Mac
+          </span>
+          <h1 class="text-[46px] leading-[1.02] font-bold text-balance sm:text-6xl lg:text-[76px] lg:leading-none">
+            Stream IRL straight from your iPhone.
+          </h1>
+          <p class="max-w-[520px] text-lg leading-normal text-ink-2 text-pretty sm:text-[21px]">
+            Moblin is a free app for going live on Twitch, YouTube, Kick and more. Chat on your
+            screen, bonding for bad signal, and a friendly green face to keep you company.
+          </p>
+          <div class="mt-1 flex flex-col items-start gap-4 sm:flex-row sm:items-center">
+            <a href={links.appStore} target="_blank" rel="noopener" class="shrink-0">
+              <img
+                src={asset("badges/app-store.svg")}
+                alt="Download on the App Store"
+                class="h-14 w-auto"
               />
-            )}
-          </For>
-        </div>
-        <div class="mx-auto grid max-w-[1120px] items-center gap-12 px-5 pt-12 pb-16 sm:px-8 lg:grid-cols-2 lg:pt-18 lg:pb-22">
-          <div class="flex flex-col gap-6">
-            <span class="font-display text-sm font-semibold uppercase tracking-[0.08em] text-leaf sm:text-[15px]">
-              Free · Open source · iPhone, iPad and Mac
-            </span>
-            <h1 class="text-[46px] leading-[1.02] font-bold text-balance sm:text-6xl lg:text-[76px] lg:leading-none">
-              Stream IRL straight from your iPhone.
-            </h1>
-            <p class="max-w-[520px] text-lg leading-normal text-ink-2 text-pretty sm:text-[21px]">
-              Moblin is a free app for going live on Twitch, YouTube, Kick and more. Chat on your
-              screen, bonding for bad signal, and a friendly green face to keep you company.
-            </p>
-            <div class="mt-1 flex flex-col items-start gap-4 sm:flex-row sm:items-center">
-              <a href={links.appStore} target="_blank" rel="noopener" class="shrink-0">
-                <img
-                  src={asset("badges/app-store.svg")}
-                  alt="Download on the App Store"
-                  class="h-14 w-auto"
-                />
-              </a>
-              <Button href={links.discord} variant="ghost" class="h-14">
-                <Icon name="discord" class="size-[22px]" />
-                Join the Discord
-              </Button>
-            </div>
-            <p class="text-[15px] text-muted">
-              Want the newest features first?{" "}
-              <a
-                href={links.testFlight}
-                target="_blank"
-                rel="noopener"
-                class="text-leaf hover:text-leaf-bright"
-              >
-                Join the TestFlight beta
-              </a>
-              .
-            </p>
+            </a>
+            <Button href={links.discord} variant="ghost" class="h-14">
+              <Icon name="discord" class="size-[22px]" />
+              Join the Discord
+            </Button>
           </div>
-          <div class="relative mx-auto w-full max-w-[600px] pt-6 pb-12 pl-10 sm:pl-16 lg:pl-20">
+          <p class="text-[15px] text-muted">
+            Want the newest features first?{" "}
+            <a
+              href={links.testFlight}
+              target="_blank"
+              rel="noopener"
+              class="text-leaf hover:text-leaf-bright"
+            >
+              Join the TestFlight beta
+            </a>
+            .
+          </p>
+        </div>
+        <div class="relative mx-auto w-full max-w-[600px] lg:flex lg:flex-col lg:justify-center lg:self-stretch">
+          <div
+            class="pointer-events-none absolute inset-0 overflow-hidden lg:-top-18"
+            aria-hidden="true"
+          >
+            <For each={confetti}>
+              {(c) => (
+                <span
+                  class={`confetti ${c.shape}`}
+                  style={{
+                    left: c.left,
+                    "--fall": `${c.fall}s`,
+                    "--delay": `${c.delay}s`,
+                    "--sway": `${c.sway}s`,
+                    "--rest": c.rest,
+                  }}
+                />
+              )}
+            </For>
+          </div>
+          <div class="relative pt-6 pb-12 pl-10 sm:pl-16 lg:pl-20">
             <img
               src={asset("screenshots/moblin.webp")}
               srcset={`${asset("screenshots/moblin-800.webp")} 800w, ${asset("screenshots/moblin.webp")} 1146w`}
