@@ -239,9 +239,7 @@ export default function Hero() {
             </span>
           )}
         </For>
-        <span class="ml-1 hidden text-[15px] text-muted sm:inline">
-          and anything that speaks RTMP or SRT.
-        </span>
+        <span class="ml-1 text-[15px] text-muted">and anything that speaks RTMP or SRT.</span>
       </div>
     </section>
   );
