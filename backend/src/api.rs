@@ -53,8 +53,6 @@ async fn went_live(
             .collect::<Vec<_>>()
             .join(", ")
     );
-    store
-        .went_live(request.channels)
-        .map_err(|error| (StatusCode::INTERNAL_SERVER_ERROR, error.to_string()))?;
+    store.went_live(request.channels);
     Ok(StatusCode::NO_CONTENT)
 }
