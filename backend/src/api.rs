@@ -19,7 +19,7 @@ pub fn router(store: Arc<Store>) -> Router {
         .allow_headers(Any);
     Router::new()
         .route("/streamers", get(streamers))
-        .route("/streamers/went-live", post(went_live))
+        .route("/streamers/live", post(live))
         .layer(cors)
         .with_state(store)
 }
@@ -37,7 +37,7 @@ async fn streamers(State(store): State<Arc<Store>>) -> Json<StreamersResponse> {
 }
 
 /// Called by Moblin when a streamer who opted in starts streaming.
-async fn went_live(
+async fn live(
     State(store): State<Arc<Store>>,
     Json(request): Json<WentLive>,
 ) -> Result<StatusCode, (StatusCode, String)> {

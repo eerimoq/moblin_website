@@ -42,7 +42,7 @@ backend-seed:
 	#!/usr/bin/env bash
 	set -euo pipefail
 	went_live() {
-		curl -sf -X POST localhost:8080/streamers/went-live \
+		curl -sf -X POST localhost:8080/streamers/live \
 			-H 'content-type: application/json' -d "{\"channels\": [$1]}"
 	}
 	went_live '{"platform": "twitch", "channel": "sofiacycles"}'
