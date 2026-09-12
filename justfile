@@ -51,3 +51,9 @@ backend-seed:
 	went_live '{"platform": "twitch", "channel": "tokyotom"}'
 	went_live '{"platform": "twitch", "channel": "kayla_walks"}, {"platform": "kick", "channel": "kaylawalksirl"}'
 	went_live '{"platform": "twitch", "channel": "eerimoq"}'
+
+backend-docker-build:
+	docker build -t moblin-website-backend backend
+
+backend-docker-run *args: backend-docker-build
+	docker run --rm -it --init -p 8080:8080 moblin-website-backend {{args}}
