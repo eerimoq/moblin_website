@@ -1,13 +1,13 @@
 style:
-	oxfmt
+	cd frontend && oxfmt
 	cd backend && cargo fmt
 
 style-check:
-	oxfmt --check
+	cd frontend && oxfmt --check
 	cd backend && cargo fmt --check
 
 lint:
-	oxlint --deny-warnings
+	cd frontend && oxlint --deny-warnings
 	cd backend && cargo clippy --all-targets -- -D warnings
 
 test:
@@ -16,8 +16,8 @@ test:
 npm-latest-args := "python -c \"import json,sys; print(' '.join(f'{d}@latest' for d in json.load(open('package.json'))[sys.argv[1]]))\""
 
 update-dependencies:
-	npm install $({{npm-latest-args}} dependencies)
-	npm install --save-dev $({{npm-latest-args}} devDependencies)
+	cd frontend && npm install $({{npm-latest-args}} dependencies)
+	cd frontend && npm install --save-dev $({{npm-latest-args}} devDependencies)
 
 # Runs the backend and fills it with a few streamers, for developing the website.
 backend-run *args:

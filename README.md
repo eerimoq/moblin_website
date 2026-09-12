@@ -3,9 +3,12 @@
 Landing page for Moblin and the rest of the Moblin family: Mobcam, Moblink and
 the remote control relays.
 
+The website lives in `frontend/` and its backend in `backend/`.
+
 ## Develop
 
 ```
+cd frontend
 npm install
 npm run dev
 ```
@@ -21,6 +24,7 @@ just backend-run
 ## Build
 
 ```
+cd frontend
 npm run build
 ```
 
@@ -32,6 +36,7 @@ Every push to `main` builds the site and deploys it to GitHub Pages through
 
 Without a custom domain the site is served from
 https://eerimoq.github.io/moblin_website/ and the build uses `/moblin_website/`
-as its base path. To serve it on a custom domain, add a `public/CNAME` file
+as its base path. To serve it on a custom domain, add a `frontend/public/CNAME` file
 containing the domain and point the domain's DNS at GitHub Pages. When that
-file exists the build switches to `/` automatically (see `vite.config.ts`).
+file exists the build switches to `/` automatically (see
+`frontend/vite.config.ts`).
