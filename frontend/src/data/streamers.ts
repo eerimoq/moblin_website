@@ -30,7 +30,7 @@ export type Streamer = {
 /** The dev server proxies `/api` to a local backend (see `vite.config.ts`). */
 const backendUrl = import.meta.env.DEV ? "/api" : links.api;
 
-/** Most recently live first. */
+/** Newcomers first; a streamer already listed keeps its position. */
 async function fetchStreamers(): Promise<Streamer[]> {
   const res = await fetch(`${backendUrl}/streamers`);
   if (!res.ok) throw new Error(`fetching streamers failed with status ${res.status}`);

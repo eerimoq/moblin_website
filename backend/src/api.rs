@@ -29,7 +29,7 @@ struct StreamersResponse {
     streamers: Vec<Streamer>,
 }
 
-/// Streamers who recently went live with Moblin, most recent first.
+/// Streamers who recently went live with Moblin, newcomers first.
 async fn streamers(State(store): State<Arc<Store>>) -> Json<StreamersResponse> {
     Json(StreamersResponse {
         streamers: store.streamers(),

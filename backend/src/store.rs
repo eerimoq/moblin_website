@@ -83,7 +83,7 @@ impl Store {
         }
     }
 
-    /// Most recently live first.
+    /// Newcomers first; a streamer already listed keeps its position.
     pub fn streamers(&self) -> Vec<Streamer> {
         self.streamers.lock().unwrap().clone()
     }
@@ -92,11 +92,17 @@ impl Store {
     pub fn went_live(&self, channels: Vec<Channel>) {
         let streamer = Streamer { channels };
         let mut streamers = self.streamers.lock().unwrap();
-        // Newest first, and a streamer sharing any channel with the new one is
-        // the same streamer.
+        // A streamer sharing any channel with the new one is the same
+        // streamer, and keeps its position. Newcomers go first.
+        let position = streamers.iter().position(|other| other.is(&streamer));
         streamers.retain(|other| !other.is(&streamer));
-        streamers.insert(0, streamer);
-        streamers.truncate(self.max_streamers);
+        match position {
+            Some(index) => streamers.insert(index, streamer),
+            None => {
+                streamers.insert(0, streamer);
+                streamers.truncate(self.max_streamers);
+            }
+        }
     }
 }
 
@@ -120,12 +126,15 @@ mod tests {
     }
 
     #[test]
-    fn newest_first_and_one_entry_per_streamer() {
+    fn newcomers_first_and_one_entry_per_streamer() {
         let store = Store::new(24);
         store.went_live(twitch("anna"));
         store.went_live(twitch("bob"));
         store.went_live(twitch("Anna"));
-        assert_eq!(handles(&store), ["Anna", "bob"]);
+        assert_eq!(handles(&store), ["bob", "Anna"]);
+        store.went_live(twitch("carl"));
+        store.went_live(twitch("bob"));
+        assert_eq!(handles(&store), ["carl", "bob", "Anna"]);
     }
 
     #[test]
