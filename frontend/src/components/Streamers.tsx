@@ -1,4 +1,5 @@
-import { For, Match, Switch } from "solid-js";
+import { createResource, createSignal, For, Match, Show, Switch } from "solid-js";
+import { fetchProfileImage } from "../data/profileImages";
 import {
   channelUrl,
   streamers,
@@ -31,16 +32,40 @@ const initials = (name: string) =>
     .join("");
 
 /** The channel's initials on a color of its own. */
-function Avatar(props: { channel: StreamerChannel }) {
+function Initials(props: { channel: StreamerChannel }) {
   return (
     <span
       class="flex size-11 shrink-0 items-center justify-center rounded-full font-display text-base font-bold text-white"
       style={{
         background: `linear-gradient(135deg, hsl(${hue(props.channel.channel)} 55% 50%), hsl(${hue(props.channel.channel) + 40} 60% 30%))`,
       }}
-      aria-hidden="true"
     >
       {initials(props.channel.channel)}
+    </span>
+  );
+}
+
+/**
+ * The channel's profile image, once fetched from its platform. Shows the
+ * initials until then, and for good when there is no image to show.
+ */
+function Avatar(props: { channel: StreamerChannel }) {
+  const [image] = createResource(() => props.channel, fetchProfileImage);
+  const [broken, setBroken] = createSignal(false);
+  return (
+    <span aria-hidden="true">
+      <Show when={!broken() && image()} fallback={<Initials channel={props.channel} />}>
+        {(src) => (
+          <img
+            src={src()}
+            alt=""
+            loading="lazy"
+            referrerpolicy="no-referrer"
+            class="size-11 shrink-0 rounded-full bg-ghost object-cover"
+            onError={() => setBroken(true)}
+          />
+        )}
+      </Show>
     </span>
   );
 }

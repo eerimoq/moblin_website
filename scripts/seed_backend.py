@@ -11,10 +11,10 @@ URL = "http://localhost:8080/streamers/live"
 
 STREAMERS = [
     [("twitch", "sofiacycles")],
-    [("kick", "mikeydrives")],
+    [("kick", "iChrisIRL")],
     [("youtube", "BjornPaTur"), ("twitch", "bjorn_pa_tur")],
     [("twitch", "tokyotom")],
-    [("twitch", "kayla_walks"), ("kick", "kaylawalksirl")],
+    [("twitch", "eerimoq"), ("kick", "eerimoq")],
     [("twitch", "eerimoq")],
 ]
 
