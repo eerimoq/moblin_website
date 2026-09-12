@@ -39,18 +39,11 @@ backend-run *args:
 
 # Tells the backend that a few made-up streamers went live.
 backend-seed:
-	#!/usr/bin/env bash
-	set -euo pipefail
-	went_live() {
-		curl -sf -X POST localhost:8080/streamers/live \
-			-H 'content-type: application/json' -d "{\"channels\": [$1]}"
-	}
-	went_live '{"platform": "twitch", "channel": "sofiacycles"}'
-	went_live '{"platform": "kick", "channel": "mikeydrives"}'
-	went_live '{"platform": "youtube", "channel": "BjornPaTur"}, {"platform": "twitch", "channel": "bjorn_pa_tur"}'
-	went_live '{"platform": "twitch", "channel": "tokyotom"}'
-	went_live '{"platform": "twitch", "channel": "kayla_walks"}, {"platform": "kick", "channel": "kaylawalksirl"}'
-	went_live '{"platform": "twitch", "channel": "eerimoq"}'
+	python3 scripts/seed_backend.py
+
+# Keeps telling the backend that new made-up streamers went live, for testing that the website updates.
+backend-seed-forever interval="2":
+	python3 scripts/seed_backend.py --forever {{interval}}
 
 backend-docker-build:
 	docker build -t moblin-website-backend backend
