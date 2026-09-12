@@ -21,7 +21,7 @@ struct Cli {
     #[arg(long, env = "LISTEN", default_value = "127.0.0.1:8080")]
     listen: SocketAddr,
     /// Never list more than this many streamers, most recently live first.
-    #[arg(long, env = "MAX_STREAMERS", default_value_t = 24)]
+    #[arg(long, env = "MAX_STREAMERS", default_value_t = 8)]
     max_streamers: usize,
 }
 
