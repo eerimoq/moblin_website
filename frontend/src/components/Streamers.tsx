@@ -1,4 +1,4 @@
-import { createSignal, For, Show } from "solid-js";
+import { For, Show } from "solid-js";
 import {
   channelUrl,
   haveStreamers,
@@ -15,7 +15,7 @@ const platformName: Record<StreamerPlatform, string> = {
   kick: "Kick",
 };
 
-/** A stable hue (0-360) per name, for the placeholder avatar. */
+/** A stable hue (0-360) per handle, for the avatar. */
 const hue = (name: string) => {
   let hash = 0;
   for (const char of name) hash = (hash * 31 + char.codePointAt(0)!) % 360;
@@ -31,34 +31,18 @@ const initials = (name: string) =>
     .map((part) => part[0]!.toUpperCase())
     .join("");
 
-/** The channel's profile image, or its initials when there is none or it fails to load. */
+/** The channel's initials on a color of its own. */
 function Avatar(props: { channel: StreamerChannel }) {
-  const [broken, setBroken] = createSignal(false);
   return (
-    <Show
-      when={props.channel.image && !broken()}
-      fallback={
-        <span
-          class="flex size-11 shrink-0 items-center justify-center rounded-full font-display text-base font-bold text-white"
-          style={{
-            background: `linear-gradient(135deg, hsl(${hue(props.channel.name)} 55% 50%), hsl(${hue(props.channel.name) + 40} 60% 30%))`,
-          }}
-          aria-hidden="true"
-        >
-          {initials(props.channel.name)}
-        </span>
-      }
+    <span
+      class="flex size-11 shrink-0 items-center justify-center rounded-full font-display text-base font-bold text-white"
+      style={{
+        background: `linear-gradient(135deg, hsl(${hue(props.channel.channel)} 55% 50%), hsl(${hue(props.channel.channel) + 40} 60% 30%))`,
+      }}
+      aria-hidden="true"
     >
-      <img
-        src={props.channel.image!}
-        alt=""
-        class="size-11 shrink-0 rounded-full bg-ghost object-cover"
-        width="44"
-        height="44"
-        loading="lazy"
-        onError={() => setBroken(true)}
-      />
-    </Show>
+      {initials(props.channel.channel)}
+    </span>
   );
 }
 
@@ -78,7 +62,9 @@ function ChannelRow(props: { channel: StreamerChannel }) {
             <Icon name={props.channel.platform} class="size-3" />
           </span>
         </span>
-        <span class="truncate font-bold text-ink group-hover:text-leaf">{props.channel.name}</span>
+        <span class="truncate font-bold text-ink group-hover:text-leaf">
+          {props.channel.channel}
+        </span>
       </a>
     </li>
   );

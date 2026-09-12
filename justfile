@@ -19,6 +19,12 @@ update-dependencies:
 	cd frontend && npm install $({{npm-latest-args}} dependencies)
 	cd frontend && npm install --save-dev $({{npm-latest-args}} devDependencies)
 
+frontend-run:
+	#!/usr/bin/env bash
+	set -euo pipefail
+	cd frontend
+	npm run dev
+
 # Runs the backend and fills it with a few streamers, for developing the website.
 backend-run *args:
 	#!/usr/bin/env bash

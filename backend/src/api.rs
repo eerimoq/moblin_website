@@ -8,7 +8,6 @@ use log::info;
 use serde::Serialize;
 use tower_http::cors::{Any, CorsLayer};
 
-use crate::profiles;
 use crate::store::{Store, Streamer, WentLive};
 
 pub fn router(store: Arc<Store>) -> Router {
@@ -45,20 +44,17 @@ async fn went_live(
     request
         .validate()
         .map_err(|error| (StatusCode::BAD_REQUEST, error.to_string()))?;
-    let mut channels = Vec::with_capacity(request.channels.len());
-    for channel in request.channels {
-        channels.push(profiles::resolve(channel).await);
-    }
     info!(
         "{} went live",
-        channels
+        request
+            .channels
             .iter()
             .map(|channel| format!("{:?}/{}", channel.platform, channel.channel))
             .collect::<Vec<_>>()
             .join(", ")
     );
     store
-        .went_live(channels)
+        .went_live(request.channels)
         .map_err(|error| (StatusCode::INTERNAL_SERVER_ERROR, error.to_string()))?;
     Ok(StatusCode::NO_CONTENT)
 }

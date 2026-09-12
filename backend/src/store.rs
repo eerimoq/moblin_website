@@ -17,8 +17,7 @@ pub enum Platform {
     Kick,
 }
 
-/// A channel as Moblin reports it: just where the stream goes.
-#[derive(Clone, Debug, PartialEq, Eq, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Channel {
     pub platform: Platform,
     /// The streamer's handle on that platform, which usually differs between platforms.
@@ -37,28 +36,15 @@ impl Channel {
         }
         Ok(())
     }
-}
 
-/// A channel as the website lists it, with the profile the platform knows.
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
-pub struct ListedChannel {
-    pub platform: Platform,
-    pub channel: String,
-    pub name: String,
-    /// Profile image URL, if the platform has one.
-    #[serde(default)]
-    pub image: Option<String>,
-}
-
-impl ListedChannel {
-    fn is(&self, other: &ListedChannel) -> bool {
+    fn is(&self, other: &Channel) -> bool {
         self.platform == other.platform && self.channel.eq_ignore_ascii_case(&other.channel)
     }
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Streamer {
-    pub channels: Vec<ListedChannel>,
+    pub channels: Vec<Channel>,
 }
 
 impl Streamer {
@@ -136,12 +122,12 @@ impl Store {
             .collect()
     }
 
-    /// Records a streamer going live. The channels must already be validated and named.
-    pub fn went_live(&self, channels: Vec<ListedChannel>) -> Result<()> {
+    /// Records a streamer going live. The channels must already be validated.
+    pub fn went_live(&self, channels: Vec<Channel>) -> Result<()> {
         self.went_live_at(channels, Utc::now())
     }
 
-    fn went_live_at(&self, channels: Vec<ListedChannel>, now: DateTime<Utc>) -> Result<()> {
+    fn went_live_at(&self, channels: Vec<Channel>, now: DateTime<Utc>) -> Result<()> {
         let streamer = Streamer { channels };
         let mut entries = self.entries.lock().unwrap();
         // Newest first, old ones expire, and a streamer sharing any channel with
@@ -186,12 +172,10 @@ mod tests {
         (store, dir)
     }
 
-    fn twitch(handle: &str) -> Vec<ListedChannel> {
-        vec![ListedChannel {
+    fn twitch(handle: &str) -> Vec<Channel> {
+        vec![Channel {
             platform: Platform::Twitch,
             channel: handle.to_string(),
-            name: handle.to_string(),
-            image: None,
         }]
     }
 
@@ -223,11 +207,9 @@ mod tests {
         let now = Utc::now();
         store.went_live_at(twitch("anna"), now).unwrap();
         let mut channels = twitch("anna");
-        channels.push(ListedChannel {
+        channels.push(Channel {
             platform: Platform::Kick,
             channel: "anna_irl".into(),
-            name: "Anna IRL".into(),
-            image: None,
         });
         store
             .went_live_at(channels, now + Duration::minutes(1))
