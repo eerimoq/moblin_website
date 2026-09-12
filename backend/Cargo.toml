@@ -17,4 +17,3 @@ tower-http = { version = "0.6", features = ["cors"] }
 
 [profile.release]
 panic = "unwind"
-debug = true
