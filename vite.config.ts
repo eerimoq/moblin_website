@@ -10,6 +10,12 @@ const base = existsSync("public/CNAME") ? "/" : "/moblin_website/";
 export default defineConfig({
   base,
   plugins: [solid(), tailwindcss()],
+  server: {
+    // Talk to a local backend (`just backend-run`) during development.
+    proxy: {
+      "/api": { target: "http://127.0.0.1:8080", rewrite: (path) => path.replace(/^\/api/, "") },
+    },
+  },
   build: {
     rollupOptions: {
       // One HTML entry per page. Sub pages live in their own directory so

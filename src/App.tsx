@@ -6,6 +6,7 @@ import GetStarted from "./components/GetStarted";
 import Hero from "./components/Hero";
 import Nav from "./components/Nav";
 import Reviews from "./components/Reviews";
+import Streamers from "./components/Streamers";
 import Support from "./components/Support";
 
 export default function App() {
@@ -16,6 +17,7 @@ export default function App() {
         <Hero />
         <GetStarted />
         <Features />
+        <Streamers />
         <Support />
         <Reviews />
         <Ecosystem />

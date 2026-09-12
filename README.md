@@ -10,6 +10,14 @@ npm install
 npm run dev
 ```
 
+The "Streamers" section is fetched from the backend in `backend/`, a small
+Rust service the deployed site expects at `https://api.moblin.app`. The dev
+server proxies `/api` to one running locally, so start it in another terminal:
+
+```
+just backend-run
+```
+
 ## Build
 
 ```

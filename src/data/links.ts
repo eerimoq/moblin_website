@@ -1,4 +1,5 @@
 export const links = {
+  api: "https://api.moblin.app",
   appStore: "https://apps.apple.com/app/id6466745933",
   testFlight: "https://testflight.apple.com/join/PDpxEaGh",
   discord: "https://discord.gg/kh3KMng4JV",
@@ -32,6 +33,8 @@ export const links = {
 export const navItems = [
   { label: "Get started", href: "/#get-started" },
   { label: "Features", href: "/#features" },
+  // Only shown while the backend answers, see `haveStreamers`.
+  { label: "Streamers", href: "/#streamers", needsBackend: true },
   { label: "Support", href: "/#support" },
   { label: "Ecosystem", href: "/#ecosystem" },
   { label: "Community", href: "/#community" },
