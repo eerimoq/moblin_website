@@ -38,11 +38,5 @@ async function fetchStreamers(): Promise<Streamer[]> {
   return body.streamers;
 }
 
-/** Fetched once, shared by the nav and the section so they appear together. */
+/** Fetched once; the section shows placeholders until it answers. */
 export const [streamers] = createRoot(() => createResource(fetchStreamers));
-
-/**
- * Until the backend is known to be stable, nothing about streamers is shown
- * unless it answered with at least one. Remove this check once it is.
- */
-export const haveStreamers = () => (streamers()?.length ?? 0) > 0;

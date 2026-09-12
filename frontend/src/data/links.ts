@@ -33,8 +33,7 @@ export const links = {
 export const navItems = [
   { label: "Get started", href: "/#get-started" },
   { label: "Features", href: "/#features" },
-  // Only shown while the backend answers, see `haveStreamers`.
-  { label: "Streamers", href: "/#streamers", needsBackend: true },
+  { label: "Streamers", href: "/#streamers" },
   { label: "Support", href: "/#support" },
   { label: "Ecosystem", href: "/#ecosystem" },
   { label: "Community", href: "/#community" },

@@ -1,13 +1,11 @@
 import { createSignal, For, Show } from "solid-js";
 import { asset } from "../asset";
 import { links, navItems } from "../data/links";
-import { haveStreamers } from "../data/streamers";
 import Button from "./Button";
 import Icon from "./Icon";
 
 export default function Nav() {
   const [open, setOpen] = createSignal(false);
-  const items = () => navItems.filter((item) => !("needsBackend" in item) || haveStreamers());
 
   return (
     <header class="sticky top-0 z-20 bg-page/92 backdrop-blur border-b border-line/40">
@@ -17,7 +15,7 @@ export default function Nav() {
           <span class="font-display text-2xl font-bold">Moblin</span>
         </a>
         <nav class="hidden items-center gap-8 md:flex" aria-label="Sections">
-          <For each={items()}>
+          <For each={navItems}>
             {(item) => (
               <a href={asset(item.href)} class="font-bold text-ink-3 hover:text-ink">
                 {item.label}
@@ -42,7 +40,7 @@ export default function Nav() {
       </div>
       <Show when={open()}>
         <nav class="border-t border-line bg-page px-5 py-3 md:hidden" aria-label="Sections">
-          <For each={items()}>
+          <For each={navItems}>
             {(item) => (
               <a
                 href={asset(item.href)}
