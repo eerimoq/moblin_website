@@ -8,6 +8,8 @@ export type StreamerChannel = {
   platform: StreamerPlatform;
   /** The streamer's handle on that platform, which usually differs between platforms. */
   channel: string;
+  /** The channel's profile image URL, once the backend has looked it up on the platform. */
+  avatar: string | null;
 };
 
 export const channelUrl = ({ platform, channel }: StreamerChannel) => {

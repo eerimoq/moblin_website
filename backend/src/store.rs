@@ -1,3 +1,4 @@
+use std::fmt;
 use std::sync::Mutex;
 
 use anyhow::{Result, bail};
@@ -6,7 +7,7 @@ use serde::{Deserialize, Serialize};
 const MAX_CHANNELS: usize = 5;
 const MAX_CHANNEL_LENGTH: usize = 40;
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum Platform {
     Twitch,
@@ -36,6 +37,12 @@ impl Channel {
 
     fn is(&self, other: &Channel) -> bool {
         self.platform == other.platform && self.channel.eq_ignore_ascii_case(&other.channel)
+    }
+}
+
+impl fmt::Display for Channel {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{:?}/{}", self.platform, self.channel)
     }
 }
 

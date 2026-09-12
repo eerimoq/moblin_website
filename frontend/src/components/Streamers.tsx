@@ -1,5 +1,4 @@
-import { createResource, createSignal, For, Match, Show, Switch } from "solid-js";
-import { fetchProfileImage } from "../data/profileImages";
+import { createSignal, For, Match, Show, Switch } from "solid-js";
 import {
   channelUrl,
   streamers,
@@ -46,15 +45,17 @@ function Initials(props: { channel: StreamerChannel }) {
 }
 
 /**
- * The channel's profile image, once fetched from its platform. Shows the
- * initials until then, and for good when there is no image to show.
+ * The channel's profile image, when the backend has found one and it loads,
+ * and the initials otherwise.
  */
 function Avatar(props: { channel: StreamerChannel }) {
-  const [image] = createResource(() => props.channel, fetchProfileImage);
   const [broken, setBroken] = createSignal(false);
   return (
     <span aria-hidden="true">
-      <Show when={!broken() && image()} fallback={<Initials channel={props.channel} />}>
+      <Show
+        when={!broken() && props.channel.avatar}
+        fallback={<Initials channel={props.channel} />}
+      >
         {(src) => (
           <img
             src={src()}
