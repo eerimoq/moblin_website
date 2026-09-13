@@ -14,8 +14,7 @@ STREAMERS = [
     [("kick", "iChrisIRL")],
     [("youtube", "BjornPaTur"), ("twitch", "bjorn_pa_tur")],
     [("twitch", "tokyotom")],
-    [("twitch", "eerimoq"), ("kick", "eerimoq")],
-    [("twitch", "eerimoq")],
+    [("twitch", "eerimoq"), ("kick", "eerimoq"), ("youtube", "erimo144")],
 ]
 
 

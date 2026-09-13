@@ -10,7 +10,12 @@ export type StreamerChannel = {
   name: string;
   /** The channel's profile image URL, once the backend has looked it up on the platform. */
   avatar: string | null;
+  /** The name shown on the platform, once looked up; Twitch never has one. */
+  displayName: string | null;
 };
+
+/** The name to show for the channel: its display name when known, its handle otherwise. */
+export const channelLabel = ({ displayName, name }: StreamerChannel) => displayName ?? name;
 
 export const channelUrl = ({ platform, name }: StreamerChannel) => {
   const encodedName = encodeURIComponent(name);

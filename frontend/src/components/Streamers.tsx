@@ -1,5 +1,6 @@
 import { createSignal, For, Match, Show, Switch } from "solid-js";
 import {
+  channelLabel,
   channelUrl,
   streamers,
   type Streamer,
@@ -22,8 +23,8 @@ const hue = (name: string) => {
 };
 
 /** Up to two initials, so "sofia.cycles" becomes "SC" and "TokyoTom" becomes "T". */
-const initials = (name: string) =>
-  name
+const initials = (label: string) =>
+  label
     .split(/[\s._-]+/)
     .filter(Boolean)
     .slice(0, 2)
@@ -39,7 +40,7 @@ function Initials(props: { channel: StreamerChannel }) {
         background: `linear-gradient(135deg, hsl(${hue(props.channel.name)} 55% 50%), hsl(${hue(props.channel.name) + 40} 60% 30%))`,
       }}
     >
-      {initials(props.channel.name)}
+      {initials(channelLabel(props.channel))}
     </span>
   );
 }
@@ -79,7 +80,7 @@ function ChannelRow(props: { channel: StreamerChannel }) {
         target="_blank"
         rel="noopener"
         class="group flex items-center gap-3"
-        title={`${props.channel.name} on ${platformName[props.channel.platform]}`}
+        title={`${channelLabel(props.channel)} on ${platformName[props.channel.platform]}`}
       >
         <span class="relative shrink-0">
           <Avatar channel={props.channel} />
@@ -88,7 +89,9 @@ function ChannelRow(props: { channel: StreamerChannel }) {
             class="absolute -right-1 -bottom-1 size-5 border-2 border-card"
           />
         </span>
-        <span class="truncate font-bold text-ink group-hover:text-leaf">{props.channel.name}</span>
+        <span class="truncate font-bold text-ink group-hover:text-leaf">
+          {channelLabel(props.channel)}
+        </span>
       </a>
     </li>
   );

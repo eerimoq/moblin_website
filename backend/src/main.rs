@@ -1,5 +1,5 @@
 mod api;
-mod avatars;
+mod profiles;
 mod store;
 
 use std::net::SocketAddr;
@@ -10,7 +10,7 @@ use anyhow::{Context, Result};
 use clap::Parser;
 use log::info;
 
-use crate::avatars::Avatars;
+use crate::profiles::Profiles;
 use crate::store::Store;
 
 #[derive(Parser)]
@@ -27,9 +27,9 @@ struct Cli {
     #[arg(long, env = "MAX_STREAMERS", default_value_t = 8)]
     max_streamers: usize,
     /// Pause at least this many seconds between two requests to the
-    /// platforms, when looking profile images up.
-    #[arg(long, env = "AVATAR_SPACING", default_value_t = 2)]
-    avatar_spacing: u64,
+    /// platforms, when looking profiles up.
+    #[arg(long, env = "LOOKUP_SPACING", default_value_t = 2)]
+    lookup_spacing: u64,
 }
 
 #[tokio::main]
@@ -37,8 +37,8 @@ async fn main() -> Result<()> {
     env_logger::Builder::from_env(env_logger::Env::default().default_filter_or("info")).init();
     let cli = Cli::parse();
     let store = Arc::new(Store::new(cli.max_streamers));
-    let avatars = Avatars::new(Duration::from_secs(cli.avatar_spacing), store.clone());
-    tokio::spawn(async move { avatars.run().await });
+    let profiles = Profiles::new(Duration::from_secs(cli.lookup_spacing), store.clone());
+    tokio::spawn(async move { profiles.run().await });
     let listener = tokio::net::TcpListener::bind(cli.listen)
         .await
         .with_context(|| format!("failed to listen on {}", cli.listen))?;

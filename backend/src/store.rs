@@ -56,32 +56,43 @@ impl fmt::Display for Channel {
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Eq)]
-pub enum Avatar {
-    Pending { failures: u32, due: Instant },
-    Missing,
-    Found(String),
+#[derive(Clone, Debug, Default, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Profile {
+    pub avatar: Option<String>,
+    pub display_name: Option<String>,
 }
 
-impl Avatar {
+const NO_PROFILE: Profile = Profile {
+    avatar: None,
+    display_name: None,
+};
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum Lookup {
+    Pending { failures: u32, due: Instant },
+    Done(Profile),
+}
+
+impl Lookup {
     fn pending() -> Self {
-        Avatar::Pending {
+        Lookup::Pending {
             failures: 0,
             due: Instant::now(),
         }
     }
 
-    pub fn url(&self) -> Option<&str> {
+    pub fn profile(&self) -> &Profile {
         match self {
-            Avatar::Found(url) => Some(url),
-            Avatar::Pending { .. } | Avatar::Missing => None,
+            Lookup::Done(profile) => profile,
+            Lookup::Pending { .. } => &NO_PROFILE,
         }
     }
 }
 
-impl Serialize for Avatar {
+impl Serialize for Lookup {
     fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
-        self.url().serialize(serializer)
+        self.profile().serialize(serializer)
     }
 }
 
@@ -89,7 +100,8 @@ impl Serialize for Avatar {
 pub struct ListedChannel {
     #[serde(flatten)]
     pub channel: Channel,
-    pub avatar: Avatar,
+    #[serde(flatten)]
+    pub lookup: Lookup,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize)]
@@ -107,11 +119,11 @@ impl Streamer {
         })
     }
 
-    fn avatar_of(&self, channel: &Channel) -> Option<&Avatar> {
+    fn lookup_of(&self, channel: &Channel) -> Option<&Lookup> {
         self.channels
             .iter()
             .find(|listed| listed.channel.same_as(channel))
-            .map(|listed| &listed.avatar)
+            .map(|listed| &listed.lookup)
     }
 }
 
@@ -158,7 +170,7 @@ impl Store {
                 .into_iter()
                 .map(|channel| ListedChannel {
                     channel,
-                    avatar: Avatar::pending(),
+                    lookup: Lookup::pending(),
                 })
                 .collect(),
         };
@@ -168,11 +180,11 @@ impl Store {
             .partition(|other| other.same_as(&streamer));
         *streamers = others;
         for listed in &mut streamer.channels {
-            if let Some(avatar) = same
+            if let Some(lookup) = same
                 .iter()
-                .find_map(|other| other.avatar_of(&listed.channel))
+                .find_map(|other| other.lookup_of(&listed.channel))
             {
-                listed.avatar = avatar.clone();
+                listed.lookup = lookup.clone();
             }
         }
         match position {
@@ -185,15 +197,15 @@ impl Store {
         self.lookup_pending.notify_one();
     }
 
-    pub fn next_avatar_lookup(&self) -> Option<(Channel, Instant)> {
+    pub fn next_lookup(&self) -> Option<(Channel, Instant)> {
         self.streamers
             .lock()
             .unwrap()
             .iter()
             .flat_map(|streamer| &streamer.channels)
-            .filter_map(|listed| match listed.avatar {
-                Avatar::Pending { due, .. } => Some((&listed.channel, due)),
-                Avatar::Missing | Avatar::Found(_) => None,
+            .filter_map(|listed| match listed.lookup {
+                Lookup::Pending { due, .. } => Some((&listed.channel, due)),
+                Lookup::Done(_) => None,
             })
             .min_by_key(|(_, due)| *due)
             .map(|(channel, due)| (channel.clone(), due))
@@ -203,25 +215,22 @@ impl Store {
         self.lookup_pending.notified()
     }
 
-    pub fn avatar_looked_up(&self, channel: &Channel, url: Option<String>) {
-        self.set_avatar(channel, |_| match url {
-            Some(url) => Avatar::Found(url),
-            None => Avatar::Missing,
-        });
+    pub fn looked_up(&self, channel: &Channel, profile: Profile) {
+        self.set_lookup(channel, |_| Lookup::Done(profile));
     }
 
-    pub fn avatar_lookup_failed(&self, channel: &Channel) -> Option<Duration> {
+    pub fn lookup_failed(&self, channel: &Channel) -> Option<Duration> {
         let mut delay = None;
-        self.set_avatar(channel, |avatar| {
-            let failures = match avatar {
-                Avatar::Pending { failures, .. } => failures + 1,
-                Avatar::Missing | Avatar::Found(_) => 1,
+        self.set_lookup(channel, |lookup| {
+            let failures = match lookup {
+                Lookup::Pending { failures, .. } => failures + 1,
+                Lookup::Done(_) => 1,
             };
             let retry_in = RETRY_DELAY
                 .saturating_mul(2u32.saturating_pow(failures - 1))
                 .min(RETRY_MAX_DELAY);
             delay = Some(retry_in);
-            Avatar::Pending {
+            Lookup::Pending {
                 failures,
                 due: Instant::now() + retry_in,
             }
@@ -229,14 +238,14 @@ impl Store {
         delay
     }
 
-    fn set_avatar(&self, channel: &Channel, avatar: impl FnOnce(&Avatar) -> Avatar) {
+    fn set_lookup(&self, channel: &Channel, lookup: impl FnOnce(&Lookup) -> Lookup) {
         let mut streamers = self.streamers.lock().unwrap();
         let listed = streamers
             .iter_mut()
             .flat_map(|streamer| &mut streamer.channels)
             .find(|listed| listed.channel.same_as(channel));
         if let Some(listed) = listed {
-            listed.avatar = avatar(&listed.avatar);
+            listed.lookup = lookup(&listed.lookup);
         }
     }
 }
@@ -264,19 +273,26 @@ mod tests {
             .collect()
     }
 
-    fn avatars(store: &Store) -> Vec<Avatar> {
+    fn lookups(store: &Store) -> Vec<Lookup> {
         store
             .streamers()
             .into_iter()
             .flat_map(|streamer| streamer.channels)
-            .map(|listed| listed.avatar)
+            .map(|listed| listed.lookup)
             .collect()
     }
 
-    fn pending_in(avatar: &Avatar) -> Duration {
-        match avatar {
-            Avatar::Pending { due, .. } => due.saturating_duration_since(Instant::now()),
-            _ => panic!("{avatar:?} is not pending"),
+    fn pending_in(lookup: &Lookup) -> Duration {
+        match lookup {
+            Lookup::Pending { due, .. } => due.saturating_duration_since(Instant::now()),
+            Lookup::Done(_) => panic!("{lookup:?} is not pending"),
+        }
+    }
+
+    fn profile(avatar: &str, display_name: &str) -> Profile {
+        Profile {
+            avatar: Some(avatar.to_string()),
+            display_name: Some(display_name.to_string()),
         }
     }
 
@@ -335,29 +351,38 @@ mod tests {
     fn a_channel_is_looked_up_once() {
         let store = Store::new(24);
         let anna = channel(Platform::Twitch, "anna");
-        assert_eq!(store.next_avatar_lookup(), None);
+        assert_eq!(store.next_lookup(), None);
         store.streamer_live(vec![anna.clone()]);
-        let (channel, due) = store.next_avatar_lookup().unwrap();
+        let (channel, due) = store.next_lookup().unwrap();
         assert_eq!(channel, anna);
         assert!(due <= Instant::now());
-        store.avatar_looked_up(&anna, Some("https://a/1.png".into()));
-        assert_eq!(store.next_avatar_lookup(), None);
-        assert_eq!(avatars(&store), [Avatar::Found("https://a/1.png".into())]);
-        // Going live again keeps the avatar.
+        store.looked_up(&anna, profile("https://a/1.png", "Anna"));
+        assert_eq!(store.next_lookup(), None);
+        assert_eq!(
+            lookups(&store),
+            [Lookup::Done(profile("https://a/1.png", "Anna"))]
+        );
+        // Going live again keeps the profile.
         store.streamer_live(twitch("Anna"));
-        assert_eq!(store.next_avatar_lookup(), None);
-        assert_eq!(avatars(&store), [Avatar::Found("https://a/1.png".into())]);
+        assert_eq!(store.next_lookup(), None);
+        assert_eq!(
+            lookups(&store),
+            [Lookup::Done(profile("https://a/1.png", "Anna"))]
+        );
     }
 
     #[test]
-    fn no_avatar_is_an_answer_too() {
+    fn no_profile_is_an_answer_too() {
         let store = Store::new(24);
         let bob = channel(Platform::Twitch, "bob");
         store.streamer_live(vec![bob.clone()]);
-        store.avatar_looked_up(&bob, None);
-        assert_eq!(store.next_avatar_lookup(), None);
-        assert_eq!(avatars(&store), [Avatar::Missing]);
-        assert_eq!(store.streamers()[0].channels[0].avatar.url(), None);
+        assert_eq!(
+            store.streamers()[0].channels[0].lookup.profile(),
+            &NO_PROFILE
+        );
+        store.looked_up(&bob, Profile::default());
+        assert_eq!(store.next_lookup(), None);
+        assert_eq!(lookups(&store), [Lookup::Done(Profile::default())]);
     }
 
     #[test]
@@ -366,11 +391,14 @@ mod tests {
         let anna = channel(Platform::Twitch, "anna");
         let kick = channel(Platform::Kick, "anna_irl");
         store.streamer_live(vec![anna.clone()]);
-        store.avatar_looked_up(&anna, Some("https://a/1.png".into()));
+        store.looked_up(&anna, profile("https://a/1.png", "Anna"));
         store.streamer_live(vec![anna.clone(), kick.clone()]);
-        assert_eq!(store.next_avatar_lookup().unwrap().0, kick);
-        assert_eq!(avatars(&store)[0], Avatar::Found("https://a/1.png".into()));
-        assert_eq!(pending_in(&avatars(&store)[1]), Duration::ZERO);
+        assert_eq!(store.next_lookup().unwrap().0, kick);
+        assert_eq!(
+            lookups(&store)[0],
+            Lookup::Done(profile("https://a/1.png", "Anna"))
+        );
+        assert_eq!(pending_in(&lookups(&store)[1]), Duration::ZERO);
     }
 
     #[test]
@@ -380,17 +408,17 @@ mod tests {
         store.streamer_live(vec![anna.clone()]);
         let mut previous = Duration::ZERO;
         for _ in 0..10 {
-            let delay = store.avatar_lookup_failed(&anna).unwrap();
+            let delay = store.lookup_failed(&anna).unwrap();
             assert!(delay > previous || delay >= RETRY_MAX_DELAY);
             assert!(delay <= RETRY_MAX_DELAY);
-            let due = store.next_avatar_lookup().unwrap().1;
+            let due = store.next_lookup().unwrap().1;
             assert!(due > Instant::now() + delay - Duration::from_secs(1));
             previous = delay;
         }
         assert_eq!(previous, RETRY_MAX_DELAY);
         // Going live again does not hurry the retry.
         store.streamer_live(twitch("Anna"));
-        assert!(pending_in(&avatars(&store)[0]) >= RETRY_MAX_DELAY - Duration::from_secs(1));
+        assert!(pending_in(&lookups(&store)[0]) >= RETRY_MAX_DELAY - Duration::from_secs(1));
     }
 
     #[test]
@@ -401,24 +429,37 @@ mod tests {
         store.streamer_live(vec![anna.clone()]);
         store.streamer_live(vec![bob.clone()]);
         assert_eq!(handles(&store), ["bob"]);
-        store.avatar_looked_up(&anna, Some("https://a/1.png".into()));
-        assert_eq!(store.avatar_lookup_failed(&anna), None);
+        store.looked_up(&anna, profile("https://a/1.png", "Anna"));
+        assert_eq!(store.lookup_failed(&anna), None);
         assert_eq!(handles(&store), ["bob"]);
-        assert_eq!(store.next_avatar_lookup().unwrap().0, bob);
+        assert_eq!(store.next_lookup().unwrap().0, bob);
     }
 
     #[test]
-    fn serializes_the_avatar_as_a_url_or_null() {
+    fn serializes_the_profile_flat_with_nulls_for_the_unknown() {
         let store = Store::new(24);
         let anna = channel(Platform::Twitch, "anna");
-        store.streamer_live(vec![anna.clone(), channel(Platform::Kick, "anna_irl")]);
-        store.avatar_looked_up(&anna, Some("https://a/1.png".into()));
+        let kick = channel(Platform::Kick, "anna_irl");
+        store.streamer_live(vec![
+            anna.clone(),
+            kick.clone(),
+            channel(Platform::YouTube, "AnnaIRL"),
+        ]);
+        store.looked_up(&anna, profile("https://a/1.png", "Anna"));
+        store.looked_up(
+            &kick,
+            Profile {
+                avatar: None,
+                display_name: Some("Anna_IRL".into()),
+            },
+        );
         let json = serde_json::to_value(store.streamers()).unwrap();
         assert_eq!(
             json,
             serde_json::json!([{"channels": [
-                {"platform": "twitch", "name": "anna", "avatar": "https://a/1.png"},
-                {"platform": "kick", "name": "anna_irl", "avatar": null},
+                {"platform": "twitch", "name": "anna", "avatar": "https://a/1.png", "displayName": "Anna"},
+                {"platform": "kick", "name": "anna_irl", "avatar": null, "displayName": "Anna_IRL"},
+                {"platform": "youtube", "name": "AnnaIRL", "avatar": null, "displayName": null},
             ]}])
         );
     }
