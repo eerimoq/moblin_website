@@ -11,7 +11,6 @@ use crate::store::{Channel, Platform, Profile, Store};
 
 const TIMEOUT: Duration = Duration::from_secs(15);
 
-/// Looks the profiles of listed channels up on their platforms, one at a time.
 pub struct Profiles {
     client: Client,
     spacing: Duration,
@@ -83,8 +82,6 @@ impl Profiles {
         }
     }
 
-    /// Only the avatar; decapi.me has no display name endpoint and the channel
-    /// page carries the name only while the channel is live.
     async fn twitch(&self, name: &str) -> Result<Profile> {
         let text = self
             .client
@@ -180,7 +177,6 @@ impl Profiles {
     }
 }
 
-/// The content of the first `<meta property="og:{name}">` tag, unescaped.
 fn og(html: &str, name: &str) -> Option<String> {
     let properties = [
         format!("property=\"og:{name}\""),
@@ -200,7 +196,6 @@ fn og(html: &str, name: &str) -> Option<String> {
     })
 }
 
-/// Decodes the character references an attribute value may contain.
 fn unescape(text: &str) -> String {
     let mut out = String::with_capacity(text.len());
     let mut rest = text;

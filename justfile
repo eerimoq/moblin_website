@@ -31,7 +31,7 @@ backend-run *args:
 	set -euo pipefail
 	cd backend
 	cargo build
-	cargo run -q -- {{args}} &
+	cargo run -q -- --allow-unattested {{args}} &
 	trap 'kill $!' EXIT
 	until curl -sf localhost:8080/streamers > /dev/null; do sleep 0.2; done
 	just backend-seed

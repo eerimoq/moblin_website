@@ -21,6 +21,21 @@ server proxies `/api` to one running locally, so start it in another terminal:
 just backend-run
 ```
 
+## Backend
+
+The Moblin app tells the backend who went live by posting to
+`/streamers/live`. Only the Moblin app itself may do so: every post is signed
+with [App Attest](https://developer.apple.com/documentation/devicecheck/establishing-your-app-s-integrity),
+and the backend verifies the attestation and assertion before listing anyone
+(see `backend/src/app_attest.rs`). Posts must carry a fresh one-time
+challenge from `/streamers/live/challenge`.
+
+The App ID and App Attest environment the backend accepts default to the
+distributed Moblin app, and can be changed with `--app-id` and
+`--app-attest-environment` (apps installed by Xcode use the `development`
+environment). `just backend-run` starts the backend with `--allow-unattested`
+so that `scripts/seed_backend.py` can fill it with made-up streamers.
+
 ## Build
 
 ```

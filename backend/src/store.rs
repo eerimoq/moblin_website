@@ -41,6 +41,16 @@ impl Channel {
         Ok(())
     }
 
+    pub fn validate_all(channels: &[Channel]) -> Result<()> {
+        if channels.is_empty() {
+            bail!("at least one channel");
+        }
+        if channels.len() > MAX_CHANNELS {
+            bail!("at most {MAX_CHANNELS} channels");
+        }
+        channels.iter().try_for_each(Channel::validate)
+    }
+
     pub fn key(&self) -> ChannelKey {
         (self.platform, self.name.to_ascii_lowercase())
     }
@@ -124,23 +134,6 @@ impl Streamer {
             .iter()
             .find(|listed| listed.channel.same_as(channel))
             .map(|listed| &listed.lookup)
-    }
-}
-
-#[derive(Clone, Debug, Deserialize)]
-pub struct Live {
-    pub channels: Vec<Channel>,
-}
-
-impl Live {
-    pub fn validate(&self) -> Result<()> {
-        if self.channels.is_empty() {
-            bail!("at least one channel");
-        }
-        if self.channels.len() > MAX_CHANNELS {
-            bail!("at most {MAX_CHANNELS} channels");
-        }
-        self.channels.iter().try_for_each(Channel::validate)
     }
 }
 
@@ -331,7 +324,7 @@ mod tests {
 
     #[test]
     fn rejects_bad_requests() {
-        let request = |channels: Vec<Channel>| Live { channels }.validate();
+        let request = |channels: Vec<Channel>| Channel::validate_all(&channels);
         let twitch = |handle: &str| channel(Platform::Twitch, handle);
         assert!(request(vec![]).is_err());
         assert!(request((0..6).map(|i| twitch(&format!("anna{i}"))).collect()).is_err());
