@@ -23,7 +23,7 @@ pub struct Api {
     pub store: Arc<Store>,
     pub challenges: Challenges,
     pub app_attest: Option<AppAttest>,
-    pub live: Live,
+    pub live: Option<Live>,
 }
 
 pub fn router(api: Arc<Api>) -> Router {
@@ -61,19 +61,19 @@ struct TwitchLiveResponse {
 async fn handle_twitch_live(
     State(api): State<Arc<Api>>,
 ) -> Result<Json<TwitchLiveResponse>, (StatusCode, String)> {
-    if !api.live.enabled() {
+    let Some(live) = &api.live else {
         return Err((
             StatusCode::SERVICE_UNAVAILABLE,
             "no Twitch client ID and secret".to_string(),
         ));
-    }
-    let live = api.live.is_live().await.map_err(|error| {
-        warn!("checking if {} is live failed: {error:#}", api.live.login());
+    };
+    let is_live = live.is_live().await.map_err(|error| {
+        warn!("checking if {} is live failed: {error:#}", live.login());
         (StatusCode::SERVICE_UNAVAILABLE, format!("{error:#}"))
     })?;
     Ok(Json(TwitchLiveResponse {
-        channel: api.live.login().to_string(),
-        live,
+        channel: live.login().to_string(),
+        live: is_live,
     }))
 }
 

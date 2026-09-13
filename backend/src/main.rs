@@ -130,7 +130,7 @@ async fn main() -> Result<()> {
         store,
         challenges: Challenges::new(),
         app_attest,
-        live: Live::new(twitch, cli.twitch_live_channel),
+        live: twitch.map(|twitch| Live::new(twitch, cli.twitch_live_channel)),
     });
     let listener = tokio::net::TcpListener::bind(cli.listen)
         .await

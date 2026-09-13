@@ -85,11 +85,11 @@ impl Twitch {
         struct Body<T> {
             data: Vec<T>,
         }
-        let mut token = self.token().await?;
+        let mut token = self.token(None).await?;
         let mut res = self.get(url, parameter, value, &token).await?;
         if res.status() == StatusCode::UNAUTHORIZED {
             info!("Twitch rejected the app access token, getting a new one");
-            token = self.renew_token(&token).await?;
+            token = self.token(Some(&token)).await?;
             res = self.get(url, parameter, value, &token).await?;
         }
         if res.status() == StatusCode::BAD_REQUEST {
@@ -120,27 +120,14 @@ impl Twitch {
             .await?)
     }
 
-    /// The cached app access token, or a new one if there is none or it is
-    /// about to expire.
-    async fn token(&self) -> Result<Arc<str>> {
+    /// The cached app access token, or a new one if there is none, it is
+    /// about to expire or Twitch `rejected` it (unless another lookup
+    /// already replaced it since it was handed out).
+    async fn token(&self, rejected: Option<&str>) -> Result<Arc<str>> {
         let mut token = self.token.lock().await;
         if let Some(current) = token.as_ref()
             && current.expires_at > Instant::now() + EXPIRY_MARGIN
-        {
-            return Ok(current.access_token.clone());
-        }
-        let new = self.fetch_token().await?;
-        let access_token = new.access_token.clone();
-        *token = Some(new);
-        Ok(access_token)
-    }
-
-    /// A new app access token, unless another lookup already replaced
-    /// `rejected` since it was handed out.
-    async fn renew_token(&self, rejected: &str) -> Result<Arc<str>> {
-        let mut token = self.token.lock().await;
-        if let Some(current) = token.as_ref()
-            && &*current.access_token != rejected
+            && rejected.is_none_or(|rejected| &*current.access_token != rejected)
         {
             return Ok(current.access_token.clone());
         }
