@@ -1,6 +1,3 @@
-//! Whether the Twitch channel shown on the website is live, asked from Twitch
-//! at most once per `REFRESH`, no matter how many visitors ask.
-
 use std::sync::Arc;
 use std::time::Duration;
 
@@ -36,10 +33,7 @@ impl Live {
         &self.login
     }
 
-    /// Whether the channel is live, as of at most `REFRESH` ago.
     pub async fn is_live(&self) -> Result<bool> {
-        // Held while asking Twitch, so that visitors arriving in the meantime
-        // wait for that answer instead of asking Twitch too.
         let mut cached = self.cached.lock().await;
         if let Some(current) = cached.as_ref()
             && current.checked.elapsed() < REFRESH

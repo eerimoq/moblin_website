@@ -57,7 +57,6 @@ struct TwitchLiveResponse {
     live: bool,
 }
 
-/// Whether the Twitch channel the website features is live right now.
 async fn handle_twitch_live(
     State(api): State<Arc<Api>>,
 ) -> Result<Json<TwitchLiveResponse>, (StatusCode, String)> {

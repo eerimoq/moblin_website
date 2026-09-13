@@ -1,6 +1,3 @@
-//! Looks Twitch users up with the Helix API, authenticated with an app access
-//! token from the client credentials grant flow.
-
 use std::sync::Arc;
 use std::time::Duration;
 
@@ -17,8 +14,6 @@ use crate::store::Profile;
 const TOKEN_URL: &str = "https://id.twitch.tv/oauth2/token";
 const USERS_URL: &str = "https://api.twitch.tv/helix/users";
 const STREAMS_URL: &str = "https://api.twitch.tv/helix/streams";
-/// Get a new token this long before the current one expires, so that a
-/// request never starts with a token that expires while in flight.
 const EXPIRY_MARGIN: Duration = Duration::from_secs(60);
 
 pub struct Twitch {
@@ -43,8 +38,6 @@ impl Twitch {
         }
     }
 
-    /// Looks the user with the given login up, returning an empty profile if
-    /// there is no such user.
     pub async fn user(&self, login: &str) -> Result<Profile> {
         #[derive(Deserialize)]
         struct User {
@@ -61,7 +54,6 @@ impl Twitch {
         })
     }
 
-    /// Whether the channel with the given login is live right now.
     pub async fn is_live(&self, login: &str) -> Result<bool> {
         #[derive(Deserialize)]
         struct Stream {
@@ -72,9 +64,6 @@ impl Twitch {
         Ok(streams.iter().any(|stream| stream.kind == "live"))
     }
 
-    /// The `data` of a Helix endpoint filtered on one query parameter, empty
-    /// if Helix rejects the value (it answers 400 to logins that cannot
-    /// exist, for example ones with a period in them).
     async fn helix<T: DeserializeOwned>(
         &self,
         url: &str,
@@ -120,9 +109,6 @@ impl Twitch {
             .await?)
     }
 
-    /// The cached app access token, or a new one if there is none, it is
-    /// about to expire or Twitch `rejected` it (unless another lookup
-    /// already replaced it since it was handed out).
     async fn token(&self, rejected: Option<&str>) -> Result<Arc<str>> {
         let mut token = self.token.lock().await;
         if let Some(current) = token.as_ref()
@@ -137,7 +123,6 @@ impl Twitch {
         Ok(access_token)
     }
 
-    /// The client credentials grant flow.
     async fn fetch_token(&self) -> Result<Token> {
         #[derive(Deserialize)]
         struct Body {

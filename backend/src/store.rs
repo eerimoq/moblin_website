@@ -355,7 +355,6 @@ mod tests {
             lookups(&store),
             [Lookup::Done(profile("https://a/1.png", "Anna"))]
         );
-        // Going live again keeps the profile.
         store.streamer_live(twitch("Anna"));
         assert_eq!(store.next_lookup(), None);
         assert_eq!(
@@ -409,7 +408,6 @@ mod tests {
             previous = delay;
         }
         assert_eq!(previous, RETRY_MAX_DELAY);
-        // Going live again does not hurry the retry.
         store.streamer_live(twitch("Anna"));
         assert!(pending_in(&lookups(&store)[0]) >= RETRY_MAX_DELAY - Duration::from_secs(1));
     }

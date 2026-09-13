@@ -23,7 +23,6 @@ use crate::profiles::Profiles;
 use crate::store::Store;
 use crate::twitch::Twitch;
 
-/// How long a request to a platform may take.
 const TIMEOUT: Duration = Duration::from_secs(15);
 
 #[derive(Parser)]
@@ -75,7 +74,6 @@ struct Cli {
     allow_unattested: bool,
 }
 
-/// The client for every request to the platforms.
 fn http_client() -> Client {
     Client::builder()
         .user_agent(concat!(
