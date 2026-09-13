@@ -20,6 +20,7 @@ All checks are driven by the `justfile` at the repo root (CI runs exactly these)
 just style          # oxfmt (frontend) + cargo fmt (backend)
 just style-check
 just lint           # oxlint --deny-warnings + cargo clippy --all-targets -D warnings
+just spell-check    # codespell, configured in .codespellrc
 just test           # cargo test (backend only; the frontend has no tests)
 ```
 

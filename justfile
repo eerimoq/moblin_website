@@ -10,6 +10,9 @@ lint:
 	cd frontend && oxlint --deny-warnings
 	cd backend && cargo clippy --all-targets -- -D warnings
 
+spell-check:
+	codespell
+
 test:
 	cd backend && cargo test
 
