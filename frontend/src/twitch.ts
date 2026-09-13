@@ -1,20 +1,20 @@
 import { createSignal, onCleanup, onMount } from "solid-js";
+import { backendUrl } from "./data/backend";
 
 /**
- * Whether a Twitch channel is live right now, via the public decapi.me uptime
- * endpoint (Twitch's own API needs a secret, which a static site cannot hold).
- * Falls back to "not live" whenever the check fails.
+ * Whether the Twitch channel the backend keeps an eye on (Erik's) is live
+ * right now. The backend asks Twitch, since that needs a secret a static site
+ * cannot hold. Falls back to "not live" whenever the check fails.
  */
-export function createTwitchLive(channel: string, refreshMs = 5 * 60 * 1000) {
+export function createTwitchLive(refreshMs = 5 * 60 * 1000) {
   const [live, setLive] = createSignal(false);
 
   const check = async () => {
     try {
-      const res = await fetch(`https://decapi.me/twitch/uptime/${channel}`, {
-        cache: "no-store",
-      });
-      const text = (await res.text()).trim();
-      setLive(res.ok && text !== "" && !/is offline|not found|error/i.test(text));
+      const res = await fetch(`${backendUrl}/twitch/live`, { cache: "no-store" });
+      if (!res.ok) throw new Error(`checking Twitch live status failed with status ${res.status}`);
+      const body: { live: boolean } = await res.json();
+      setLive(body.live === true);
     } catch {
       setLive(false);
     }

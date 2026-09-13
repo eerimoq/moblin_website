@@ -8,7 +8,7 @@ import Icon from "./Icon";
 import Mascot from "./Mascot";
 
 export default function Support() {
-  const live = createTwitchLive(links.twitchChannel);
+  const live = createTwitchLive();
   return (
     <section class="pt-16 lg:pt-20">
       <div class="mx-auto max-w-[1120px] px-5 sm:px-8">

@@ -14,6 +14,7 @@ use tower_http::cors::{Any, CorsLayer};
 
 use crate::app_attest::AppAttest;
 use crate::challenges::Challenges;
+use crate::live::Live;
 use crate::store::{Channel, Store, Streamer};
 
 const ASSERTION_HEADER: &str = "moblin-assertion";
@@ -22,6 +23,7 @@ pub struct Api {
     pub store: Arc<Store>,
     pub challenges: Challenges,
     pub app_attest: Option<AppAttest>,
+    pub live: Live,
 }
 
 pub fn router(api: Arc<Api>) -> Router {
@@ -33,6 +35,7 @@ pub fn router(api: Arc<Api>) -> Router {
         .route("/streamers", get(handle_streamers))
         .route("/streamers/live/challenge", post(handle_challenge))
         .route("/streamers/live", post(handle_streamers_live))
+        .route("/twitch/live", get(handle_twitch_live))
         .layer(cors)
         .with_state(api)
 }
@@ -46,6 +49,32 @@ async fn handle_streamers(State(api): State<Arc<Api>>) -> Json<StreamersResponse
     Json(StreamersResponse {
         streamers: api.store.streamers(),
     })
+}
+
+#[derive(Serialize)]
+struct TwitchLiveResponse {
+    channel: String,
+    live: bool,
+}
+
+/// Whether the Twitch channel the website features is live right now.
+async fn handle_twitch_live(
+    State(api): State<Arc<Api>>,
+) -> Result<Json<TwitchLiveResponse>, (StatusCode, String)> {
+    if !api.live.enabled() {
+        return Err((
+            StatusCode::SERVICE_UNAVAILABLE,
+            "no Twitch client ID and secret".to_string(),
+        ));
+    }
+    let live = api.live.is_live().await.map_err(|error| {
+        warn!("checking if {} is live failed: {error:#}", api.live.login());
+        (StatusCode::SERVICE_UNAVAILABLE, format!("{error:#}"))
+    })?;
+    Ok(Json(TwitchLiveResponse {
+        channel: api.live.login().to_string(),
+        live,
+    }))
 }
 
 #[derive(Serialize)]

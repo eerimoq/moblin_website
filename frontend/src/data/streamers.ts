@@ -1,6 +1,6 @@
 /** Streamers who recently went live with Moblin, served by the backend in `backend/`. */
 import { createResource, createRoot } from "solid-js";
-import { links } from "./links";
+import { backendUrl } from "./backend";
 
 export type StreamerPlatform = "twitch" | "youtube" | "kick";
 
@@ -33,9 +33,6 @@ export type Streamer = {
   /** Every platform they stream to, at least one. */
   channels: StreamerChannel[];
 };
-
-/** The dev server proxies `/api` to a local backend (see `vite.config.ts`). */
-const backendUrl = import.meta.env.DEV ? "/api" : links.api;
 
 /** Newcomers first; a streamer already listed keeps its position. */
 async function fetchStreamers(): Promise<Streamer[]> {

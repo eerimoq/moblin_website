@@ -10,39 +10,20 @@ use tokio::time::Instant;
 use crate::store::{Channel, Platform, Profile, Store};
 use crate::twitch::Twitch;
 
-const TIMEOUT: Duration = Duration::from_secs(15);
-
 pub struct Profiles {
     client: Client,
-    twitch: Option<Twitch>,
+    twitch: Option<Arc<Twitch>>,
     spacing: Duration,
     store: Arc<Store>,
 }
 
-pub struct TwitchCredentials {
-    pub client_id: String,
-    pub client_secret: String,
-}
-
 impl Profiles {
-    pub fn new(spacing: Duration, twitch: Option<TwitchCredentials>, store: Arc<Store>) -> Self {
-        let client = Client::builder()
-            .user_agent(concat!(
-                env!("CARGO_PKG_NAME"),
-                "/",
-                env!("CARGO_PKG_VERSION"),
-                " (+https://moblin.app)"
-            ))
-            .timeout(TIMEOUT)
-            .build()
-            .expect("a client without a proxy or TLS config always builds");
-        let twitch = twitch.map(|credentials| {
-            Twitch::new(
-                client.clone(),
-                credentials.client_id,
-                credentials.client_secret,
-            )
-        });
+    pub fn new(
+        client: Client,
+        twitch: Option<Arc<Twitch>>,
+        spacing: Duration,
+        store: Arc<Store>,
+    ) -> Self {
         Self {
             client,
             twitch,

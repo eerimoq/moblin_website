@@ -1,6 +1,7 @@
 mod api;
 mod app_attest;
 mod challenges;
+mod live;
 mod profiles;
 mod store;
 mod twitch;
@@ -12,12 +13,18 @@ use std::time::Duration;
 use anyhow::{Context, Result};
 use clap::Parser;
 use log::{info, warn};
+use reqwest::Client;
 
 use crate::api::Api;
 use crate::app_attest::{AppAttest, Environment};
 use crate::challenges::Challenges;
-use crate::profiles::{Profiles, TwitchCredentials};
+use crate::live::Live;
+use crate::profiles::Profiles;
 use crate::store::Store;
+use crate::twitch::Twitch;
+
+/// How long a request to a platform may take.
+const TIMEOUT: Duration = Duration::from_secs(15);
 
 #[derive(Parser)]
 #[command(
@@ -49,6 +56,11 @@ struct Cli {
         requires = "twitch_client_id"
     )]
     twitch_client_secret: Option<String>,
+    /// The Twitch channel whose live status the website shows, for the
+    /// "Erik is live on Twitch" button. Needs the Twitch client ID and
+    /// secret.
+    #[arg(long, env = "TWITCH_LIVE_CHANNEL", default_value = "eerimoq")]
+    twitch_live_channel: String,
     /// The App ID (team ID, a period and the bundle ID) of the Moblin app.
     /// Only live posts signed by it, with App Attest, are accepted.
     #[arg(long, env = "APP_ID", default_value = "L82N7LD4N5.com.eerimoq.Mobs")]
@@ -63,24 +75,44 @@ struct Cli {
     allow_unattested: bool,
 }
 
+/// The client for every request to the platforms.
+fn http_client() -> Client {
+    Client::builder()
+        .user_agent(concat!(
+            env!("CARGO_PKG_NAME"),
+            "/",
+            env!("CARGO_PKG_VERSION"),
+            " (+https://moblin.app)"
+        ))
+        .timeout(TIMEOUT)
+        .build()
+        .expect("a client without a proxy or TLS config always builds")
+}
+
 #[tokio::main]
 async fn main() -> Result<()> {
     env_logger::Builder::from_env(env_logger::Env::default().default_filter_or("info")).init();
     let cli = Cli::parse();
     let store = Arc::new(Store::new(cli.max_streamers));
+    let client = http_client();
     let twitch = match (cli.twitch_client_id, cli.twitch_client_secret) {
-        (Some(client_id), Some(client_secret)) => Some(TwitchCredentials {
+        (Some(client_id), Some(client_secret)) => Some(Arc::new(Twitch::new(
+            client.clone(),
             client_id,
             client_secret,
-        }),
+        ))),
         _ => {
-            warn!("no Twitch client ID and secret, not looking Twitch profiles up");
+            warn!(
+                "no Twitch client ID and secret, not looking Twitch profiles up nor checking if {} is live",
+                cli.twitch_live_channel
+            );
             None
         }
     };
     let profiles = Profiles::new(
+        client,
+        twitch.clone(),
         Duration::from_secs(cli.lookup_spacing),
-        twitch,
         store.clone(),
     );
     tokio::spawn(async move { profiles.run().await });
@@ -98,6 +130,7 @@ async fn main() -> Result<()> {
         store,
         challenges: Challenges::new(),
         app_attest,
+        live: Live::new(twitch, cli.twitch_live_channel),
     });
     let listener = tokio::net::TcpListener::bind(cli.listen)
         .await

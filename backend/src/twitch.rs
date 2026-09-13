@@ -8,6 +8,7 @@ use anyhow::{Context, Result, bail};
 use log::info;
 use reqwest::{Client, StatusCode};
 use serde::Deserialize;
+use serde::de::DeserializeOwned;
 use tokio::sync::Mutex;
 use tokio::time::Instant;
 
@@ -15,6 +16,7 @@ use crate::store::Profile;
 
 const TOKEN_URL: &str = "https://id.twitch.tv/oauth2/token";
 const USERS_URL: &str = "https://api.twitch.tv/helix/users";
+const STREAMS_URL: &str = "https://api.twitch.tv/helix/streams";
 /// Get a new token this long before the current one expires, so that a
 /// request never starts with a token that expires while in flight.
 const EXPIRY_MARGIN: Duration = Duration::from_secs(60);
@@ -45,32 +47,12 @@ impl Twitch {
     /// there is no such user.
     pub async fn user(&self, login: &str) -> Result<Profile> {
         #[derive(Deserialize)]
-        struct Body {
-            data: Vec<User>,
-        }
-        #[derive(Deserialize)]
         struct User {
             display_name: Option<String>,
             profile_image_url: Option<String>,
         }
-        let mut token = self.token().await?;
-        let mut res = self.users(login, &token).await?;
-        if res.status() == StatusCode::UNAUTHORIZED {
-            info!("Twitch rejected the app access token, getting a new one");
-            token = self.renew_token(&token).await?;
-            res = self.users(login, &token).await?;
-        }
-        // Helix answers 400 to logins that cannot exist, for example ones
-        // with a period in them.
-        if res.status() == StatusCode::BAD_REQUEST {
-            return Ok(Profile::default());
-        }
-        let body: Body = res
-            .error_for_status()?
-            .json()
-            .await
-            .context("unexpected answer")?;
-        Ok(match body.data.into_iter().next() {
+        let users: Vec<User> = self.helix(USERS_URL, "login", login).await?;
+        Ok(match users.into_iter().next() {
             Some(user) => Profile {
                 avatar: user.profile_image_url,
                 display_name: user.display_name,
@@ -79,11 +61,59 @@ impl Twitch {
         })
     }
 
-    async fn users(&self, login: &str, token: &str) -> Result<reqwest::Response> {
+    /// Whether the channel with the given login is live right now.
+    pub async fn is_live(&self, login: &str) -> Result<bool> {
+        #[derive(Deserialize)]
+        struct Stream {
+            #[serde(rename = "type")]
+            kind: String,
+        }
+        let streams: Vec<Stream> = self.helix(STREAMS_URL, "user_login", login).await?;
+        Ok(streams.iter().any(|stream| stream.kind == "live"))
+    }
+
+    /// The `data` of a Helix endpoint filtered on one query parameter, empty
+    /// if Helix rejects the value (it answers 400 to logins that cannot
+    /// exist, for example ones with a period in them).
+    async fn helix<T: DeserializeOwned>(
+        &self,
+        url: &str,
+        parameter: &str,
+        value: &str,
+    ) -> Result<Vec<T>> {
+        #[derive(Deserialize)]
+        struct Body<T> {
+            data: Vec<T>,
+        }
+        let mut token = self.token().await?;
+        let mut res = self.get(url, parameter, value, &token).await?;
+        if res.status() == StatusCode::UNAUTHORIZED {
+            info!("Twitch rejected the app access token, getting a new one");
+            token = self.renew_token(&token).await?;
+            res = self.get(url, parameter, value, &token).await?;
+        }
+        if res.status() == StatusCode::BAD_REQUEST {
+            return Ok(Vec::new());
+        }
+        let body: Body<T> = res
+            .error_for_status()?
+            .json()
+            .await
+            .context("unexpected answer")?;
+        Ok(body.data)
+    }
+
+    async fn get(
+        &self,
+        url: &str,
+        parameter: &str,
+        value: &str,
+        token: &str,
+    ) -> Result<reqwest::Response> {
         Ok(self
             .client
-            .get(USERS_URL)
-            .query(&[("login", login)])
+            .get(url)
+            .query(&[(parameter, value)])
             .bearer_auth(token)
             .header("Client-Id", &self.client_id)
             .send()
