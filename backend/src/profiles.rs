@@ -1,24 +1,31 @@
 use std::sync::Arc;
 use std::time::Duration;
 
-use anyhow::{Context, Result, bail};
+use anyhow::{Context, Result};
 use log::{info, warn};
 use reqwest::{Client, StatusCode};
 use serde::Deserialize;
 use tokio::time::Instant;
 
 use crate::store::{Channel, Platform, Profile, Store};
+use crate::twitch::Twitch;
 
 const TIMEOUT: Duration = Duration::from_secs(15);
 
 pub struct Profiles {
     client: Client,
+    twitch: Option<Twitch>,
     spacing: Duration,
     store: Arc<Store>,
 }
 
+pub struct TwitchCredentials {
+    pub client_id: String,
+    pub client_secret: String,
+}
+
 impl Profiles {
-    pub fn new(spacing: Duration, store: Arc<Store>) -> Self {
+    pub fn new(spacing: Duration, twitch: Option<TwitchCredentials>, store: Arc<Store>) -> Self {
         let client = Client::builder()
             .user_agent(concat!(
                 env!("CARGO_PKG_NAME"),
@@ -29,8 +36,16 @@ impl Profiles {
             .timeout(TIMEOUT)
             .build()
             .expect("a client without a proxy or TLS config always builds");
+        let twitch = twitch.map(|credentials| {
+            Twitch::new(
+                client.clone(),
+                credentials.client_id,
+                credentials.client_secret,
+            )
+        });
         Self {
             client,
+            twitch,
             spacing,
             store,
         }
@@ -83,26 +98,10 @@ impl Profiles {
     }
 
     async fn twitch(&self, name: &str) -> Result<Profile> {
-        let text = self
-            .client
-            .get(format!("https://decapi.me/twitch/avatar/{name}"))
-            .send()
-            .await?
-            .error_for_status()?
-            .text()
-            .await?;
-        let text = text.trim();
-        let avatar = if text.starts_with("https://") {
-            Some(text.to_string())
-        } else if text.starts_with("User not found") {
-            None
-        } else {
-            bail!("unexpected answer {text:?}")
-        };
-        Ok(Profile {
-            avatar,
-            display_name: None,
-        })
+        match &self.twitch {
+            Some(twitch) => twitch.user(name).await,
+            None => Ok(Profile::default()),
+        }
     }
 
     async fn youtube(&self, name: &str) -> Result<Profile> {

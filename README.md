@@ -36,6 +36,16 @@ distributed Moblin app, and can be changed with `--app-id` and
 environment). `just backend-run` starts the backend with `--allow-unattested`
 so that `scripts/seed_backend.py` can fill it with made-up streamers.
 
+Twitch display names and avatars come from the
+[Helix users endpoint](https://dev.twitch.tv/docs/api/reference/#get-users),
+authenticated with an app access token from the
+[client credentials grant flow](https://dev.twitch.tv/docs/authentication/getting-tokens-oauth/#client-credentials-grant-flow).
+Register an application in the
+[Twitch developer console](https://dev.twitch.tv/console/apps) and pass its
+client ID and secret with `--twitch-client-id` and `--twitch-client-secret`
+(or `TWITCH_CLIENT_ID` and `TWITCH_CLIENT_SECRET`). Without them Twitch
+streamers are listed without a display name and avatar.
+
 ## Build
 
 ```

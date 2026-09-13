@@ -3,6 +3,7 @@ mod app_attest;
 mod challenges;
 mod profiles;
 mod store;
+mod twitch;
 
 use std::net::SocketAddr;
 use std::sync::Arc;
@@ -15,7 +16,7 @@ use log::{info, warn};
 use crate::api::Api;
 use crate::app_attest::{AppAttest, Environment};
 use crate::challenges::Challenges;
-use crate::profiles::Profiles;
+use crate::profiles::{Profiles, TwitchCredentials};
 use crate::store::Store;
 
 #[derive(Parser)]
@@ -35,6 +36,19 @@ struct Cli {
     /// platforms, when looking profiles up.
     #[arg(long, env = "LOOKUP_SPACING", default_value_t = 2)]
     lookup_spacing: u64,
+    /// The client ID of a Twitch application, used together with its secret
+    /// to look Twitch profiles up. Without one Twitch streamers are listed
+    /// without a display name and avatar.
+    #[arg(long, env = "TWITCH_CLIENT_ID", requires = "twitch_client_secret")]
+    twitch_client_id: Option<String>,
+    /// The client secret of the Twitch application.
+    #[arg(
+        long,
+        env = "TWITCH_CLIENT_SECRET",
+        hide_env_values = true,
+        requires = "twitch_client_id"
+    )]
+    twitch_client_secret: Option<String>,
     /// The App ID (team ID, a period and the bundle ID) of the Moblin app.
     /// Only live posts signed by it, with App Attest, are accepted.
     #[arg(long, env = "APP_ID", default_value = "L82N7LD4N5.com.eerimoq.Mobs")]
@@ -54,7 +68,21 @@ async fn main() -> Result<()> {
     env_logger::Builder::from_env(env_logger::Env::default().default_filter_or("info")).init();
     let cli = Cli::parse();
     let store = Arc::new(Store::new(cli.max_streamers));
-    let profiles = Profiles::new(Duration::from_secs(cli.lookup_spacing), store.clone());
+    let twitch = match (cli.twitch_client_id, cli.twitch_client_secret) {
+        (Some(client_id), Some(client_secret)) => Some(TwitchCredentials {
+            client_id,
+            client_secret,
+        }),
+        _ => {
+            warn!("no Twitch client ID and secret, not looking Twitch profiles up");
+            None
+        }
+    };
+    let profiles = Profiles::new(
+        Duration::from_secs(cli.lookup_spacing),
+        twitch,
+        store.clone(),
+    );
     tokio::spawn(async move { profiles.run().await });
     let app_attest = if cli.allow_unattested {
         warn!("accepting live posts from anyone");
