@@ -2,6 +2,7 @@ import { For } from "solid-js";
 import { asset } from "../asset";
 import { links, platforms } from "../data/links";
 import Button from "./Button";
+import BrandIcon from "./BrandIcon";
 import Icon from "./Icon";
 import Mascot from "./Mascot";
 
@@ -233,8 +234,8 @@ export default function Hero() {
         <span class="mr-1 text-[15px] font-bold text-muted">Goes live on</span>
         <For each={platforms}>
           {(p) => (
-            <span class="inline-flex h-10 items-center gap-2 rounded-full border-[1.5px] border-line bg-card pr-4 pl-3 text-[15px] font-bold text-ink-3">
-              <Icon name={p.icon} class="size-4" />
+            <span class="inline-flex h-10 items-center gap-2 rounded-full border-[1.5px] border-line bg-card pr-4 pl-2.5 text-[15px] font-bold text-ink-3">
+              <BrandIcon name={p.icon} class="size-5" />
               {p.name}
             </span>
           )}

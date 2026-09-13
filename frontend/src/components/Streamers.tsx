@@ -6,7 +6,7 @@ import {
   type StreamerChannel,
   type StreamerPlatform,
 } from "../data/streamers";
-import Icon from "./Icon";
+import BrandIcon from "./BrandIcon";
 
 const platformName: Record<StreamerPlatform, string> = {
   twitch: "Twitch",
@@ -83,9 +83,10 @@ function ChannelRow(props: { channel: StreamerChannel }) {
       >
         <span class="relative shrink-0">
           <Avatar channel={props.channel} />
-          <span class="absolute -right-1 -bottom-1 flex size-5 items-center justify-center rounded-full border-2 border-card bg-page text-ink">
-            <Icon name={props.channel.platform} class="size-3" />
-          </span>
+          <BrandIcon
+            name={props.channel.platform}
+            class="absolute -right-1 -bottom-1 size-5 border-2 border-card"
+          />
         </span>
         <span class="truncate font-bold text-ink group-hover:text-leaf">{props.channel.name}</span>
       </a>
