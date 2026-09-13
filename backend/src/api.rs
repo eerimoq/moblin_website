@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use axum::extract::State;
-use axum::http::{Method, StatusCode};
+use axum::http::{HeaderValue, Method, StatusCode};
 use axum::routing::{get, post};
 use axum::{Json, Router};
 use log::info;
@@ -12,7 +12,7 @@ use crate::store::{Channel, Live, Store, Streamer};
 
 pub fn router(store: Arc<Store>) -> Router {
     let cors = CorsLayer::new()
-        .allow_origin(Any)
+        .allow_origin(HeaderValue::from_static("https://moblin.app"))
         .allow_methods([Method::GET, Method::POST])
         .allow_headers(Any);
     Router::new()
