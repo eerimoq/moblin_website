@@ -7,20 +7,20 @@ export type StreamerPlatform = "twitch" | "youtube" | "kick";
 export type StreamerChannel = {
   platform: StreamerPlatform;
   /** The streamer's handle on that platform, which usually differs between platforms. */
-  channel: string;
+  name: string;
   /** The channel's profile image URL, once the backend has looked it up on the platform. */
   avatar: string | null;
 };
 
-export const channelUrl = ({ platform, channel }: StreamerChannel) => {
-  const name = encodeURIComponent(channel);
+export const channelUrl = ({ platform, name }: StreamerChannel) => {
+  const encodedName = encodeURIComponent(name);
   switch (platform) {
     case "twitch":
-      return `https://www.twitch.tv/${name}`;
+      return `https://www.twitch.tv/${encodedName}`;
     case "youtube":
-      return `https://www.youtube.com/@${name}`;
+      return `https://www.youtube.com/@${encodedName}`;
     case "kick":
-      return `https://kick.com/${name}`;
+      return `https://kick.com/${encodedName}`;
   }
 };
 

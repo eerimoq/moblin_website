@@ -36,10 +36,10 @@ function Initials(props: { channel: StreamerChannel }) {
     <span
       class="flex size-11 shrink-0 items-center justify-center rounded-full font-display text-base font-bold text-white"
       style={{
-        background: `linear-gradient(135deg, hsl(${hue(props.channel.channel)} 55% 50%), hsl(${hue(props.channel.channel) + 40} 60% 30%))`,
+        background: `linear-gradient(135deg, hsl(${hue(props.channel.name)} 55% 50%), hsl(${hue(props.channel.name) + 40} 60% 30%))`,
       }}
     >
-      {initials(props.channel.channel)}
+      {initials(props.channel.name)}
     </span>
   );
 }
@@ -79,7 +79,7 @@ function ChannelRow(props: { channel: StreamerChannel }) {
         target="_blank"
         rel="noopener"
         class="group flex items-center gap-3"
-        title={`${props.channel.channel} on ${platformName[props.channel.platform]}`}
+        title={`${props.channel.name} on ${platformName[props.channel.platform]}`}
       >
         <span class="relative shrink-0">
           <Avatar channel={props.channel} />
@@ -87,9 +87,7 @@ function ChannelRow(props: { channel: StreamerChannel }) {
             <Icon name={props.channel.platform} class="size-3" />
           </span>
         </span>
-        <span class="truncate font-bold text-ink group-hover:text-leaf">
-          {props.channel.channel}
-        </span>
+        <span class="truncate font-bold text-ink group-hover:text-leaf">{props.channel.name}</span>
       </a>
     </li>
   );

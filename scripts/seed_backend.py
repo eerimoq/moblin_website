@@ -20,7 +20,7 @@ STREAMERS = [
 
 
 def went_live(channels):
-    channels = [{"platform": platform, "channel": channel} for platform, channel in channels]
+    channels = [{"platform": platform, "name": channel} for platform, channel in channels]
     request = urllib.request.Request(
         URL,
         data=json.dumps({"channels": channels}).encode(),

@@ -10,7 +10,6 @@ use anyhow::{Context, Result};
 use clap::Parser;
 use log::info;
 
-use crate::api::App;
 use crate::avatars::Avatars;
 use crate::store::Store;
 
@@ -37,16 +36,13 @@ struct Cli {
 async fn main() -> Result<()> {
     env_logger::Builder::from_env(env_logger::Env::default().default_filter_or("info")).init();
     let cli = Cli::parse();
-    let app = App {
-        store: Arc::new(Store::new(cli.max_streamers)),
-        avatars: Arc::new(Avatars::new(Duration::from_secs(cli.avatar_spacing))),
-    };
-    let avatars = app.avatars.clone();
+    let store = Arc::new(Store::new(cli.max_streamers));
+    let avatars = Avatars::new(Duration::from_secs(cli.avatar_spacing), store.clone());
     tokio::spawn(async move { avatars.run().await });
     let listener = tokio::net::TcpListener::bind(cli.listen)
         .await
         .with_context(|| format!("failed to listen on {}", cli.listen))?;
     info!("listening on http://{}", cli.listen);
-    axum::serve(listener, api::router(app)).await?;
+    axum::serve(listener, api::router(store)).await?;
     Ok(())
 }
