@@ -106,6 +106,12 @@ impl Serialize for Lookup {
     }
 }
 
+#[derive(Clone, Debug, Default, PartialEq, Eq, Serialize)]
+pub struct Stream {
+    pub category: Option<String>,
+    pub title: Option<String>,
+}
+
 #[derive(Clone, Debug, PartialEq, Eq, Serialize)]
 pub struct ListedChannel {
     #[serde(flatten)]
@@ -113,6 +119,8 @@ pub struct ListedChannel {
     #[serde(flatten)]
     pub lookup: Lookup,
     pub live: bool,
+    #[serde(flatten)]
+    pub stream: Stream,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize)]
@@ -167,6 +175,7 @@ impl Store {
                     channel,
                     lookup: Lookup::pending(),
                     live: false,
+                    stream: Stream::default(),
                 })
                 .collect(),
         };
@@ -179,6 +188,7 @@ impl Store {
             if let Some(known) = same.iter().find_map(|other| other.listed(&listed.channel)) {
                 listed.lookup = known.lookup.clone();
                 listed.live = known.live;
+                listed.stream = known.stream.clone();
             }
         }
         match position {
@@ -207,14 +217,15 @@ impl Store {
             .collect()
     }
 
-    pub fn set_live(&self, channel: &Channel, live: bool) {
+    pub fn set_live(&self, channel: &Channel, stream: Option<Stream>) {
         let mut streamers = self.streamers.lock().unwrap();
         if let Some(listed) = streamers
             .iter_mut()
             .flat_map(|streamer| &mut streamer.channels)
             .find(|listed| listed.channel.same_as(channel))
         {
-            listed.live = live;
+            listed.live = stream.is_some();
+            listed.stream = stream.unwrap_or_default();
         }
     }
 
@@ -309,6 +320,22 @@ mod tests {
             .into_iter()
             .flat_map(|streamer| streamer.channels)
             .map(|listed| listed.live)
+            .collect()
+    }
+
+    fn stream(category: &str) -> Stream {
+        Stream {
+            category: Some(category.to_string()),
+            title: None,
+        }
+    }
+
+    fn categories(store: &Store) -> Vec<Option<String>> {
+        store
+            .streamers()
+            .into_iter()
+            .flat_map(|streamer| streamer.channels)
+            .map(|listed| listed.stream.category)
             .collect()
     }
 
@@ -476,13 +503,15 @@ mod tests {
         );
         assert_eq!(store.channels(Platform::Kick), std::slice::from_ref(&kick));
         assert_eq!(lives(&store), [false, false, false]);
-        store.set_live(&channel(Platform::Twitch, "anna"), true);
-        store.set_live(&kick, true);
+        store.set_live(&channel(Platform::Twitch, "anna"), Some(stream("IRL")));
+        store.set_live(&kick, Some(Stream::default()));
         assert_eq!(lives(&store), [false, true, true]);
+        assert_eq!(categories(&store), [None, Some("IRL".into()), None]);
         store.streamer_live(vec![anna.clone(), channel(Platform::YouTube, "AnnaIRL")]);
         assert_eq!(lives(&store), [false, true, false]);
-        store.set_live(&anna, false);
-        store.set_live(&channel(Platform::Twitch, "carl"), true);
+        assert_eq!(categories(&store), [None, Some("IRL".into()), None]);
+        store.set_live(&anna, None);
+        store.set_live(&channel(Platform::Twitch, "carl"), Some(stream("IRL")));
         assert_eq!(lives(&store), [false, false, false]);
     }
 
@@ -504,14 +533,20 @@ mod tests {
                 display_name: Some("Anna_IRL".into()),
             },
         );
-        store.set_live(&anna, true);
+        store.set_live(
+            &anna,
+            Some(Stream {
+                title: Some("Walking around Stockholm".into()),
+                ..stream("Just Chatting")
+            }),
+        );
         let json = serde_json::to_value(store.streamers()).unwrap();
         assert_eq!(
             json,
             serde_json::json!([{"channels": [
-                {"platform": "twitch", "name": "anna", "avatar": "https://a/1.png", "displayName": "Anna", "live": true},
-                {"platform": "kick", "name": "anna_irl", "avatar": null, "displayName": "Anna_IRL", "live": false},
-                {"platform": "youtube", "name": "AnnaIRL", "avatar": null, "displayName": null, "live": false},
+                {"platform": "twitch", "name": "anna", "avatar": "https://a/1.png", "displayName": "Anna", "live": true, "category": "Just Chatting", "title": "Walking around Stockholm"},
+                {"platform": "kick", "name": "anna_irl", "avatar": null, "displayName": "Anna_IRL", "live": false, "category": null, "title": null},
+                {"platform": "youtube", "name": "AnnaIRL", "avatar": null, "displayName": null, "live": false, "category": null, "title": null},
             ]}])
         );
     }

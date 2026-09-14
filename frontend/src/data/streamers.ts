@@ -13,6 +13,10 @@ export type StreamerChannel = {
   /** The name shown on the platform, once looked up; Twitch never has one. */
   displayName: string | null;
   live: boolean;
+  /** What the channel streams, such as "Just Chatting", while live and when the platform knows. */
+  category: string | null;
+  /** The stream's title, while live and when the platform knows. */
+  title: string | null;
 };
 
 /** The name to show for the channel: its display name when known, its handle otherwise. */

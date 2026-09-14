@@ -67,7 +67,7 @@ impl LiveStatus {
                 );
                 for channel in &channels {
                     self.store
-                        .set_live(channel, live.contains(&channel.key().1));
+                        .set_live(channel, live.get(&channel.key().1).cloned());
                 }
             }
             Err(error) => {
@@ -83,10 +83,10 @@ impl LiveStatus {
             if index > 0 {
                 tokio::time::sleep(self.spacing).await;
             }
-            match self.kick.is_live(&channel.name).await {
-                Ok(live) => {
-                    live_count += usize::from(live);
-                    self.store.set_live(channel, live);
+            match self.kick.live(&channel.name).await {
+                Ok(stream) => {
+                    live_count += usize::from(stream.is_some());
+                    self.store.set_live(channel, stream);
                 }
                 Err(error) => warn!("checking if {channel} is live failed: {error:#}"),
             }

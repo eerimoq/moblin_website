@@ -80,7 +80,10 @@ function ChannelRow(props: { channel: StreamerChannel }) {
         target="_blank"
         rel="noopener"
         class="group flex items-center gap-3"
-        title={`${channelLabel(props.channel)} on ${platformName[props.channel.platform]}`}
+        title={
+          props.channel.title ??
+          `${channelLabel(props.channel)} on ${platformName[props.channel.platform]}`
+        }
       >
         <span class="relative shrink-0">
           <Avatar channel={props.channel} />
@@ -89,14 +92,14 @@ function ChannelRow(props: { channel: StreamerChannel }) {
             class="absolute -right-1 -bottom-1 size-5 border-2 border-card"
           />
         </span>
-        <span class="truncate font-bold text-ink group-hover:text-leaf">
-          {channelLabel(props.channel)}
-        </span>
-        <Show when={props.channel.live}>
-          <span class="shrink-0 rounded-full bg-live px-2 py-0.5 font-display text-[11px] font-bold uppercase tracking-[0.08em] text-white">
-            Live
+        <span class="flex min-w-0 flex-col">
+          <span class="truncate font-bold text-ink group-hover:text-leaf">
+            {channelLabel(props.channel)}
           </span>
-        </Show>
+          <Show when={props.channel.category}>
+            <span class="truncate text-sm text-muted">{props.channel.category}</span>
+          </Show>
+        </span>
       </a>
     </li>
   );

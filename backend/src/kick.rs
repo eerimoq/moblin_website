@@ -2,7 +2,7 @@ use anyhow::{Context, Result};
 use reqwest::{Client, StatusCode};
 use serde::Deserialize;
 
-use crate::store::Profile;
+use crate::store::{Profile, Stream};
 
 #[derive(Deserialize)]
 struct Channel {
@@ -19,6 +19,14 @@ struct User {
 #[derive(Deserialize)]
 struct Livestream {
     is_live: bool,
+    session_title: Option<String>,
+    #[serde(default)]
+    categories: Vec<Category>,
+}
+
+#[derive(Deserialize)]
+struct Category {
+    name: String,
 }
 
 pub struct Kick {
@@ -42,12 +50,20 @@ impl Kick {
         )
     }
 
-    pub async fn is_live(&self, name: &str) -> Result<bool> {
+    pub async fn live(&self, name: &str) -> Result<Option<Stream>> {
         Ok(self
             .channel(name)
             .await?
             .and_then(|channel| channel.livestream)
-            .is_some_and(|livestream| livestream.is_live))
+            .filter(|livestream| livestream.is_live)
+            .map(|livestream| Stream {
+                category: livestream
+                    .categories
+                    .into_iter()
+                    .next()
+                    .map(|category| category.name),
+                title: livestream.session_title.filter(|title| !title.is_empty()),
+            }))
     }
 
     async fn channel(&self, name: &str) -> Result<Option<Channel>> {

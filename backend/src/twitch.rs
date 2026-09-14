@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+use std::collections::HashMap;
 use std::sync::Arc;
 use std::time::Duration;
 
@@ -10,7 +10,7 @@ use serde::de::DeserializeOwned;
 use tokio::sync::Mutex;
 use tokio::time::Instant;
 
-use crate::store::Profile;
+use crate::store::{Profile, Stream};
 
 const TOKEN_URL: &str = "https://id.twitch.tv/oauth2/token";
 const USERS_URL: &str = "https://api.twitch.tv/helix/users";
@@ -57,31 +57,41 @@ impl Twitch {
 
     pub async fn is_live(&self, login: &str) -> Result<bool> {
         let live = self.live(&[login.to_string()]).await?;
-        Ok(live.contains(&login.to_ascii_lowercase()))
+        Ok(live.contains_key(&login.to_ascii_lowercase()))
     }
 
-    pub async fn live(&self, logins: &[String]) -> Result<HashSet<String>> {
+    pub async fn live(&self, logins: &[String]) -> Result<HashMap<String, Stream>> {
         #[derive(Deserialize)]
-        struct Stream {
+        struct LiveStream {
             user_login: String,
             #[serde(rename = "type")]
             kind: String,
+            game_name: Option<String>,
+            title: Option<String>,
         }
         let logins: Vec<&str> = logins
             .iter()
             .map(String::as_str)
             .filter(|login| login.chars().all(|c| c.is_ascii_alphanumeric() || c == '_'))
             .collect();
-        let mut live = HashSet::new();
+        let mut live = HashMap::new();
         for chunk in logins.chunks(100) {
             let mut query = vec![("first", "100")];
             query.extend(chunk.iter().map(|login| ("user_login", *login)));
-            let streams: Vec<Stream> = self.helix(STREAMS_URL, &query).await?;
+            let streams: Vec<LiveStream> = self.helix(STREAMS_URL, &query).await?;
             live.extend(
                 streams
                     .into_iter()
                     .filter(|stream| stream.kind == "live")
-                    .map(|stream| stream.user_login.to_ascii_lowercase()),
+                    .map(|stream| {
+                        (
+                            stream.user_login.to_ascii_lowercase(),
+                            Stream {
+                                category: stream.game_name.filter(|name| !name.is_empty()),
+                                title: stream.title.filter(|title| !title.is_empty()),
+                            },
+                        )
+                    }),
             );
         }
         Ok(live)

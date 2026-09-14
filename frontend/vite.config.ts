@@ -13,7 +13,48 @@ export default defineConfig({
   server: {
     // Talk to a local backend (`just backend-run`) during development.
     proxy: {
-      "/api": { target: "http://127.0.0.1:8080", rewrite: (path) => path.replace(/^\/api/, "") },
+      "/api": {
+        target: "http://127.0.0.1:8080",
+        rewrite: (path) => path.replace(/^\/api/, ""),
+        // Every other Twitch and Kick channel is shown as live, with varying
+        // categories and titles, whatever the backend says, to see how live
+        // channels look without real streams.
+        selfHandleResponse: true,
+        configure: (proxy) => {
+          proxy.on("proxyRes", (proxyRes, req, res) => {
+            const chunks: Buffer[] = [];
+            proxyRes.on("data", (chunk) => chunks.push(chunk));
+            proxyRes.on("end", () => {
+              let body = Buffer.concat(chunks);
+              if (req.url === "/streamers" && proxyRes.statusCode === 200) {
+                const { streamers } = JSON.parse(body.toString());
+                const counts = { twitch: 0, kick: 0 };
+                for (const { channels } of streamers) {
+                  for (const channel of channels) {
+                    if (channel.platform in counts) {
+                      const count = counts[channel.platform as keyof typeof counts]++;
+                      channel.live = count % 2 === 0;
+                      channel.category = channel.live
+                        ? ["Just Chatting", null, "Travel & Outdoors"][count % 3]
+                        : null;
+                      channel.title =
+                        channel.live && count % 4 === 0
+                          ? `Walking around town with ${channel.name} 🚶`
+                          : null;
+                    }
+                  }
+                }
+                body = Buffer.from(JSON.stringify({ streamers }));
+              }
+              res.writeHead(proxyRes.statusCode ?? 500, {
+                ...proxyRes.headers,
+                "content-length": body.length,
+              });
+              res.end(body);
+            });
+          });
+        },
+      },
     },
   },
   build: {
