@@ -12,6 +12,7 @@ export type StreamerChannel = {
   avatar: string | null;
   /** The name shown on the platform, once looked up; Twitch never has one. */
   displayName: string | null;
+  live: boolean;
 };
 
 /** The name to show for the channel: its display name when known, its handle otherwise. */

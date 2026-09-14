@@ -92,6 +92,11 @@ function ChannelRow(props: { channel: StreamerChannel }) {
         <span class="truncate font-bold text-ink group-hover:text-leaf">
           {channelLabel(props.channel)}
         </span>
+        <Show when={props.channel.live}>
+          <span class="shrink-0 rounded-full bg-live px-2 py-0.5 font-display text-[11px] font-bold uppercase tracking-[0.08em] text-white">
+            Live
+          </span>
+        </Show>
       </a>
     </li>
   );

@@ -46,14 +46,17 @@ client ID and secret with `--twitch-client-id` and `--twitch-client-secret`
 (or `TWITCH_CLIENT_ID` and `TWITCH_CLIENT_SECRET`). Without them Twitch
 streamers are listed without a display name and avatar.
 
-The same credentials let the backend tell whether Erik is live on Twitch, for
-the "Erik is live on Twitch" button in the Support section. The website asks
-`/twitch/live`, which answers `{"channel": "eerimoq", "live": true}` from the
-[Helix streams endpoint](https://dev.twitch.tv/docs/api/reference/#get-streams),
-asking Twitch at most once a minute no matter how many visitors ask. The
-channel can be changed with `--twitch-live-channel`. Without Twitch
-credentials the endpoint answers 503 and the website shows the button as not
-live.
+The same credentials let the backend tell who is live on Twitch, from the
+[Helix streams endpoint](https://dev.twitch.tv/docs/api/reference/#get-streams).
+Every channel in `/streamers` carries a `live` flag, refreshed for all listed
+Twitch channels in a single request every five minutes, and one minute after
+anyone posts that they went live. Channels on other platforms are never
+live. The "Erik is live on Twitch"
+button in the Support section asks `/twitch/live` instead, which answers
+`{"channel": "eerimoq", "live": true}`, asking Twitch at most once a minute
+no matter how many visitors ask. The channel can be changed with
+`--twitch-live-channel`. Without Twitch credentials nobody is ever live, the
+endpoint answers 503 and the website shows the button as not live.
 
 ## Build
 

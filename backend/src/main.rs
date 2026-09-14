@@ -2,6 +2,7 @@ mod api;
 mod app_attest;
 mod challenges;
 mod live;
+mod live_status;
 mod profiles;
 mod store;
 mod twitch;
@@ -19,6 +20,7 @@ use crate::api::Api;
 use crate::app_attest::{AppAttest, Environment};
 use crate::challenges::Challenges;
 use crate::live::Live;
+use crate::live_status::LiveStatus;
 use crate::profiles::Profiles;
 use crate::store::Store;
 use crate::twitch::Twitch;
@@ -101,8 +103,7 @@ async fn main() -> Result<()> {
         ))),
         _ => {
             warn!(
-                "no Twitch client ID and secret, not looking Twitch profiles up nor checking if {} is live",
-                cli.twitch_live_channel
+                "no Twitch client ID and secret, not looking Twitch profiles up nor checking who is live"
             );
             None
         }
@@ -114,6 +115,10 @@ async fn main() -> Result<()> {
         store.clone(),
     );
     tokio::spawn(async move { profiles.run().await });
+    if let Some(twitch) = twitch.clone() {
+        let live_status = LiveStatus::new(twitch, store.clone());
+        tokio::spawn(async move { live_status.run().await });
+    }
     let app_attest = if cli.allow_unattested {
         warn!("accepting live posts from anyone");
         None

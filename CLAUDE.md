@@ -50,11 +50,11 @@ Frontend build: `cd frontend && npm run build` (runs `tsc --noEmit` first, so ty
 One binary, `backend/src/main.rs`, wired together from:
 
 - `api.rs` — the axum router. Routes: `GET /streamers`, `POST /streamers/live/challenge`, `POST /streamers/live`, `GET /twitch/live`. CORS allows only `https://moblin.app` (hardcoded).
-- `store.rs` — in-memory list of streamers, newest first, capped at `--max-streamers`. A streamer is identified by sharing any channel (platform + case-insensitive name); going live again keeps the position and any already-looked-up profile. Each listed channel carries a `Lookup` (pending with retry backoff, or done) that serializes flat into the channel JSON as `avatar`/`displayName`.
+- `store.rs` — in-memory list of streamers, newest first, capped at `--max-streamers`. A streamer is identified by sharing any channel (platform + case-insensitive name); going live again keeps the position, any already-looked-up profile and the live flag. Each listed channel carries a `Lookup` (pending with retry backoff, or done) that serializes flat into the channel JSON as `avatar`/`displayName`, plus `live` (only ever true for Twitch channels).
 - `profiles.rs` — a background task that pulls the next due lookup from the store and resolves display name and avatar per platform (Twitch via Helix, YouTube via `og:` meta tags with unavatar.io fallback, Kick via its public API), with `--lookup-spacing` between requests.
 - `app_attest.rs` — verifies Apple App Attest attestations and assertions so only the Moblin app can post live. Stateless by design: the app resends its attestation every time and the server re-verifies the chain each time, deliberately ignoring certificate validity dates. Tests use public sample vectors in `src/testdata/`.
 - `challenges.rs` — one-time 32-byte challenges, 120 s lifetime, that every live post must consume.
-- `twitch.rs` / `live.rs` — Helix client with a cached app access token, and a once-per-minute cache of whether the featured channel is live.
+- `twitch.rs` / `live.rs` / `live_status.rs` — Helix client with a cached app access token; a once-per-minute cache of whether the featured channel is live; and a background task that asks Twitch which listed channels are live, all in one streams request, every five minutes and one minute after a live post.
 
 Everything optional degrades rather than fails: without Twitch credentials, Twitch profiles come back empty and `/twitch/live` answers 503. `--allow-unattested` disables App Attest for local development only.
 

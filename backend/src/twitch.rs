@@ -1,3 +1,4 @@
+use std::collections::HashSet;
 use std::sync::Arc;
 use std::time::Duration;
 
@@ -44,7 +45,7 @@ impl Twitch {
             display_name: Option<String>,
             profile_image_url: Option<String>,
         }
-        let users: Vec<User> = self.helix(USERS_URL, "login", login).await?;
+        let users: Vec<User> = self.helix(USERS_URL, &[("login", login)]).await?;
         Ok(match users.into_iter().next() {
             Some(user) => Profile {
                 avatar: user.profile_image_url,
@@ -55,31 +56,52 @@ impl Twitch {
     }
 
     pub async fn is_live(&self, login: &str) -> Result<bool> {
+        let live = self.live(&[login.to_string()]).await?;
+        Ok(live.contains(&login.to_ascii_lowercase()))
+    }
+
+    pub async fn live(&self, logins: &[String]) -> Result<HashSet<String>> {
         #[derive(Deserialize)]
         struct Stream {
+            user_login: String,
             #[serde(rename = "type")]
             kind: String,
         }
-        let streams: Vec<Stream> = self.helix(STREAMS_URL, "user_login", login).await?;
-        Ok(streams.iter().any(|stream| stream.kind == "live"))
+        let logins: Vec<&str> = logins
+            .iter()
+            .map(String::as_str)
+            .filter(|login| login.chars().all(|c| c.is_ascii_alphanumeric() || c == '_'))
+            .collect();
+        let mut live = HashSet::new();
+        for chunk in logins.chunks(100) {
+            let mut query = vec![("first", "100")];
+            query.extend(chunk.iter().map(|login| ("user_login", *login)));
+            let streams: Vec<Stream> = self.helix(STREAMS_URL, &query).await?;
+            live.extend(
+                streams
+                    .into_iter()
+                    .filter(|stream| stream.kind == "live")
+                    .map(|stream| stream.user_login.to_ascii_lowercase()),
+            );
+        }
+        Ok(live)
     }
 
     async fn helix<T: DeserializeOwned>(
         &self,
         url: &str,
-        parameter: &str,
-        value: &str,
+        query: &[(&str, &str)],
     ) -> Result<Vec<T>> {
         #[derive(Deserialize)]
         struct Body<T> {
             data: Vec<T>,
         }
         let mut token = self.token(None).await?;
-        let mut res = self.get(url, parameter, value, &token).await?;
+        let mut res = self.get(url, query, &token).await?;
         if res.status() == StatusCode::UNAUTHORIZED {
             info!("Twitch rejected the app access token, getting a new one");
             token = self.token(Some(&token)).await?;
-            res = self.get(url, parameter, value, &token).await?;
+            res = self.get(url, query, &token).await?;
         }
         if res.status() == StatusCode::BAD_REQUEST {
             return Ok(Vec::new());
@@ -95,14 +117,13 @@ impl Twitch {
     async fn get(
         &self,
         url: &str,
-        parameter: &str,
-        value: &str,
+        query: &[(&str, &str)],
         token: &str,
     ) -> Result<reqwest::Response> {
         Ok(self
             .client
             .get(url)
-            .query(&[(parameter, value)])
+            .query(query)
             .bearer_auth(token)
             .header("Client-Id", &self.client_id)
             .send()

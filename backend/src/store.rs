@@ -1,3 +1,4 @@
+use std::collections::HashSet;
 use std::fmt;
 use std::sync::Mutex;
 use std::time::Duration;
@@ -112,6 +113,7 @@ pub struct ListedChannel {
     pub channel: Channel,
     #[serde(flatten)]
     pub lookup: Lookup,
+    pub live: bool,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize)]
@@ -129,11 +131,10 @@ impl Streamer {
         })
     }
 
-    fn lookup_of(&self, channel: &Channel) -> Option<&Lookup> {
+    fn listed(&self, channel: &Channel) -> Option<&ListedChannel> {
         self.channels
             .iter()
             .find(|listed| listed.channel.same_as(channel))
-            .map(|listed| &listed.lookup)
     }
 }
 
@@ -141,6 +142,7 @@ pub struct Store {
     max_streamers: usize,
     streamers: Mutex<Vec<Streamer>>,
     lookup_pending: Notify,
+    went_live: Notify,
 }
 
 impl Store {
@@ -149,6 +151,7 @@ impl Store {
             max_streamers,
             streamers: Mutex::new(Vec::new()),
             lookup_pending: Notify::new(),
+            went_live: Notify::new(),
         }
     }
 
@@ -164,6 +167,7 @@ impl Store {
                 .map(|channel| ListedChannel {
                     channel,
                     lookup: Lookup::pending(),
+                    live: false,
                 })
                 .collect(),
         };
@@ -173,11 +177,9 @@ impl Store {
             .partition(|other| other.same_as(&streamer));
         *streamers = others;
         for listed in &mut streamer.channels {
-            if let Some(lookup) = same
-                .iter()
-                .find_map(|other| other.lookup_of(&listed.channel))
-            {
-                listed.lookup = lookup.clone();
+            if let Some(known) = same.iter().find_map(|other| other.listed(&listed.channel)) {
+                listed.lookup = known.lookup.clone();
+                listed.live = known.live;
             }
         }
         match position {
@@ -188,6 +190,33 @@ impl Store {
             }
         }
         self.lookup_pending.notify_one();
+        self.went_live.notify_one();
+    }
+
+    pub fn went_live(&self) -> Notified<'_> {
+        self.went_live.notified()
+    }
+
+    pub fn twitch_logins(&self) -> Vec<String> {
+        self.streamers
+            .lock()
+            .unwrap()
+            .iter()
+            .flat_map(|streamer| &streamer.channels)
+            .filter(|listed| listed.channel.platform == Platform::Twitch)
+            .map(|listed| listed.channel.name.clone())
+            .collect()
+    }
+
+    pub fn set_live(&self, live_logins: &HashSet<String>) {
+        let mut streamers = self.streamers.lock().unwrap();
+        for listed in streamers
+            .iter_mut()
+            .flat_map(|streamer| &mut streamer.channels)
+            .filter(|listed| listed.channel.platform == Platform::Twitch)
+        {
+            listed.live = live_logins.contains(&listed.channel.key().1);
+        }
     }
 
     pub fn next_lookup(&self) -> Option<(Channel, Instant)> {
@@ -272,6 +301,15 @@ mod tests {
             .into_iter()
             .flat_map(|streamer| streamer.channels)
             .map(|listed| listed.lookup)
+            .collect()
+    }
+
+    fn lives(store: &Store) -> Vec<bool> {
+        store
+            .streamers()
+            .into_iter()
+            .flat_map(|streamer| streamer.channels)
+            .map(|listed| listed.live)
             .collect()
     }
 
@@ -427,6 +465,23 @@ mod tests {
     }
 
     #[test]
+    fn live_is_checked_for_twitch_channels_only() {
+        let store = Store::new(24);
+        let anna = channel(Platform::Twitch, "Anna");
+        let kick = channel(Platform::Kick, "anna_irl");
+        store.streamer_live(vec![anna.clone(), kick.clone()]);
+        store.streamer_live(twitch("bob"));
+        assert_eq!(store.twitch_logins(), ["bob", "Anna"]);
+        assert_eq!(lives(&store), [false, false, false]);
+        store.set_live(&HashSet::from(["anna".to_string()]));
+        assert_eq!(lives(&store), [false, true, false]);
+        store.streamer_live(vec![anna.clone(), channel(Platform::YouTube, "AnnaIRL")]);
+        assert_eq!(lives(&store), [false, true, false]);
+        store.set_live(&HashSet::new());
+        assert_eq!(lives(&store), [false, false, false]);
+    }
+
+    #[test]
     fn serializes_the_profile_flat_with_nulls_for_the_unknown() {
         let store = Store::new(24);
         let anna = channel(Platform::Twitch, "anna");
@@ -444,13 +499,14 @@ mod tests {
                 display_name: Some("Anna_IRL".into()),
             },
         );
+        store.set_live(&HashSet::from(["anna".to_string()]));
         let json = serde_json::to_value(store.streamers()).unwrap();
         assert_eq!(
             json,
             serde_json::json!([{"channels": [
-                {"platform": "twitch", "name": "anna", "avatar": "https://a/1.png", "displayName": "Anna"},
-                {"platform": "kick", "name": "anna_irl", "avatar": null, "displayName": "Anna_IRL"},
-                {"platform": "youtube", "name": "AnnaIRL", "avatar": null, "displayName": null},
+                {"platform": "twitch", "name": "anna", "avatar": "https://a/1.png", "displayName": "Anna", "live": true},
+                {"platform": "kick", "name": "anna_irl", "avatar": null, "displayName": "Anna_IRL", "live": false},
+                {"platform": "youtube", "name": "AnnaIRL", "avatar": null, "displayName": null, "live": false},
             ]}])
         );
     }
