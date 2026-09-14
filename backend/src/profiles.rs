@@ -1,18 +1,20 @@
 use std::sync::Arc;
 use std::time::Duration;
 
-use anyhow::{Context, Result};
+use anyhow::Result;
 use log::{info, warn};
 use reqwest::{Client, StatusCode};
 use serde::Deserialize;
 use tokio::time::Instant;
 
+use crate::kick::Kick;
 use crate::store::{Channel, Platform, Profile, Store};
 use crate::twitch::Twitch;
 
 pub struct Profiles {
     client: Client,
     twitch: Option<Arc<Twitch>>,
+    kick: Arc<Kick>,
     spacing: Duration,
     store: Arc<Store>,
 }
@@ -21,12 +23,14 @@ impl Profiles {
     pub fn new(
         client: Client,
         twitch: Option<Arc<Twitch>>,
+        kick: Arc<Kick>,
         spacing: Duration,
         store: Arc<Store>,
     ) -> Self {
         Self {
             client,
             twitch,
+            kick,
             spacing,
             store,
         }
@@ -74,7 +78,7 @@ impl Profiles {
         match channel.platform {
             Platform::Twitch => self.twitch(name).await,
             Platform::YouTube => self.youtube(name).await,
-            Platform::Kick => self.kick(name).await,
+            Platform::Kick => self.kick.user(name).await,
         }
     }
 
@@ -121,38 +125,6 @@ impl Profiles {
         Ok(Profile {
             avatar: body.url,
             display_name,
-        })
-    }
-
-    async fn kick(&self, name: &str) -> Result<Profile> {
-        #[derive(Deserialize)]
-        struct Body {
-            user: Option<User>,
-        }
-        #[derive(Deserialize)]
-        struct User {
-            username: Option<String>,
-            profile_pic: Option<String>,
-        }
-        let res = self
-            .client
-            .get(format!("https://kick.com/api/v2/channels/{name}"))
-            .send()
-            .await?;
-        if res.status() == StatusCode::NOT_FOUND {
-            return Ok(Profile::default());
-        }
-        let body: Body = res
-            .error_for_status()?
-            .json()
-            .await
-            .context("unexpected answer")?;
-        Ok(match body.user {
-            Some(user) => Profile {
-                avatar: user.profile_pic,
-                display_name: user.username,
-            },
-            None => Profile::default(),
         })
     }
 }

@@ -1,4 +1,3 @@
-use std::collections::HashSet;
 use std::fmt;
 use std::sync::Mutex;
 use std::time::Duration;
@@ -197,25 +196,25 @@ impl Store {
         self.went_live.notified()
     }
 
-    pub fn twitch_logins(&self) -> Vec<String> {
+    pub fn channels(&self, platform: Platform) -> Vec<Channel> {
         self.streamers
             .lock()
             .unwrap()
             .iter()
             .flat_map(|streamer| &streamer.channels)
-            .filter(|listed| listed.channel.platform == Platform::Twitch)
-            .map(|listed| listed.channel.name.clone())
+            .filter(|listed| listed.channel.platform == platform)
+            .map(|listed| listed.channel.clone())
             .collect()
     }
 
-    pub fn set_live(&self, live_logins: &HashSet<String>) {
+    pub fn set_live(&self, channel: &Channel, live: bool) {
         let mut streamers = self.streamers.lock().unwrap();
-        for listed in streamers
+        if let Some(listed) = streamers
             .iter_mut()
             .flat_map(|streamer| &mut streamer.channels)
-            .filter(|listed| listed.channel.platform == Platform::Twitch)
+            .find(|listed| listed.channel.same_as(channel))
         {
-            listed.live = live_logins.contains(&listed.channel.key().1);
+            listed.live = live;
         }
     }
 
@@ -465,19 +464,25 @@ mod tests {
     }
 
     #[test]
-    fn live_is_checked_for_twitch_channels_only() {
+    fn live_status_is_kept_per_channel() {
         let store = Store::new(24);
         let anna = channel(Platform::Twitch, "Anna");
         let kick = channel(Platform::Kick, "anna_irl");
         store.streamer_live(vec![anna.clone(), kick.clone()]);
         store.streamer_live(twitch("bob"));
-        assert_eq!(store.twitch_logins(), ["bob", "Anna"]);
+        assert_eq!(
+            store.channels(Platform::Twitch),
+            [channel(Platform::Twitch, "bob"), anna.clone()]
+        );
+        assert_eq!(store.channels(Platform::Kick), std::slice::from_ref(&kick));
         assert_eq!(lives(&store), [false, false, false]);
-        store.set_live(&HashSet::from(["anna".to_string()]));
-        assert_eq!(lives(&store), [false, true, false]);
+        store.set_live(&channel(Platform::Twitch, "anna"), true);
+        store.set_live(&kick, true);
+        assert_eq!(lives(&store), [false, true, true]);
         store.streamer_live(vec![anna.clone(), channel(Platform::YouTube, "AnnaIRL")]);
         assert_eq!(lives(&store), [false, true, false]);
-        store.set_live(&HashSet::new());
+        store.set_live(&anna, false);
+        store.set_live(&channel(Platform::Twitch, "carl"), true);
         assert_eq!(lives(&store), [false, false, false]);
     }
 
@@ -499,7 +504,7 @@ mod tests {
                 display_name: Some("Anna_IRL".into()),
             },
         );
-        store.set_live(&HashSet::from(["anna".to_string()]));
+        store.set_live(&anna, true);
         let json = serde_json::to_value(store.streamers()).unwrap();
         assert_eq!(
             json,

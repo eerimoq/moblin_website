@@ -1,6 +1,7 @@
 mod api;
 mod app_attest;
 mod challenges;
+mod kick;
 mod live;
 mod live_status;
 mod profiles;
@@ -19,6 +20,7 @@ use reqwest::Client;
 use crate::api::Api;
 use crate::app_attest::{AppAttest, Environment};
 use crate::challenges::Challenges;
+use crate::kick::Kick;
 use crate::live::Live;
 use crate::live_status::LiveStatus;
 use crate::profiles::Profiles;
@@ -41,7 +43,7 @@ struct Cli {
     #[arg(long, env = "MAX_STREAMERS", default_value_t = 8)]
     max_streamers: usize,
     /// Pause at least this many seconds between two requests to the
-    /// platforms, when looking profiles up.
+    /// platforms, when looking profiles and live statuses up.
     #[arg(long, env = "LOOKUP_SPACING", default_value_t = 2)]
     lookup_spacing: u64,
     /// The client ID of a Twitch application, used together with its secret
@@ -108,17 +110,22 @@ async fn main() -> Result<()> {
             None
         }
     };
+    let kick = Arc::new(Kick::new(client.clone()));
     let profiles = Profiles::new(
         client,
         twitch.clone(),
+        kick.clone(),
         Duration::from_secs(cli.lookup_spacing),
         store.clone(),
     );
     tokio::spawn(async move { profiles.run().await });
-    if let Some(twitch) = twitch.clone() {
-        let live_status = LiveStatus::new(twitch, store.clone());
-        tokio::spawn(async move { live_status.run().await });
-    }
+    let live_status = LiveStatus::new(
+        twitch.clone(),
+        kick,
+        Duration::from_secs(cli.lookup_spacing),
+        store.clone(),
+    );
+    tokio::spawn(async move { live_status.run().await });
     let app_attest = if cli.allow_unattested {
         warn!("accepting live posts from anyone");
         None
