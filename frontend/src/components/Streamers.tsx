@@ -115,7 +115,7 @@ function Snapshot(props: { streamer: Streamer }) {
           src={streamerImageUrl(image())}
           alt={`${channelLabel(props.streamer.channels[0]!)}'s stream`}
           loading="lazy"
-          class="aspect-video w-full rounded-2xl bg-ghost object-cover"
+          class="aspect-video w-full rounded-2xl bg-ghost object-contain"
           onError={() => setBroken(true)}
         />
       )}
