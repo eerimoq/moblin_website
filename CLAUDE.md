@@ -49,8 +49,8 @@ Frontend build: `cd frontend && npm run build` (runs `tsc --noEmit` first, so ty
 
 One binary, `backend/src/main.rs`, wired together from:
 
-- `api.rs` — the axum router. Routes: `GET /streamers`, `POST /streamers/live/challenge`, `POST /streamers/live`, `GET /twitch/live`. CORS allows only `https://moblin.app` (hardcoded).
-- `store.rs` — in-memory list of streamers, newest first, capped at `--max-streamers`. A streamer is identified by sharing any channel (platform + case-insensitive name); going live again keeps the position, any already-looked-up profile and the live flag. Each listed channel carries a `Lookup` (pending with retry backoff, or done) that serializes flat into the channel JSON as `avatar`/`displayName`, plus `live` (only ever true for Twitch and Kick channels).
+- `api.rs` — the axum router. Routes: `GET /streamers`, `POST /streamers/live/challenge`, `POST /streamers/live`, `GET /streamers/images/{id}`, `GET /twitch/live`. CORS allows only `https://moblin.app` (hardcoded).
+- `store.rs` — in-memory list of streamers, newest first, capped at `--max-streamers`. A streamer is identified by sharing any channel (platform + case-insensitive name); going live again keeps the position, any already-looked-up profile and the live flag. Each listed channel carries a `Lookup` (pending with retry backoff, or done) that serializes flat into the channel JSON as `avatar`/`displayName`, plus `live` (only ever true for Twitch and Kick channels). A streamer also carries the `Image` from its latest live post, if any, listed by a UUID (see `image.rs`).
 - `profiles.rs` — a background task that pulls the next due lookup from the store and resolves display name and avatar per platform (Twitch via Helix, YouTube via `og:` meta tags with unavatar.io fallback, Kick via `kick.rs`, its public channels API), with `--lookup-spacing` between requests.
 - `app_attest.rs` — verifies Apple App Attest attestations and assertions so only the Moblin app can post live. Stateless by design: the app resends its attestation every time and the server re-verifies the chain each time, deliberately ignoring certificate validity dates. Tests use public sample vectors in `src/testdata/`.
 - `challenges.rs` — one-time 32-byte challenges, 120 s lifetime, that every live post must consume.
@@ -65,7 +65,7 @@ Everything optional degrades rather than fails: without Twitch credentials, Twit
   into a named constant just because it is a literal — only name it when the same value is used in more
   than one place.
 - Rust edition 2024 (let-chains are used). Clippy warnings are errors in CI.
-- The `/streamers/live` request shape (`channels`, `challenge`, `keyId`, `attestation`, `attestationChallenge`, header `moblin-assertion`) is a contract with the Moblin iOS app; changing it requires an app change too.
+- The `/streamers/live` request shape (`channels`, `image`, `challenge`, `keyId`, `attestation`, `attestationChallenge`, header `moblin-assertion`) is a contract with the Moblin iOS app; changing it requires an app change too.
 - Streamers appear in the list only if they opted in inside the Moblin app. Site copy must not imply that everyone who goes live is listed.
 
 ## Reporting

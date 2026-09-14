@@ -8,6 +8,8 @@ use tokio::sync::Notify;
 use tokio::sync::futures::Notified;
 use tokio::time::Instant;
 
+use crate::image::Image;
+
 const MAX_CHANNELS: usize = 5;
 const MAX_NAME_LENGTH: usize = 40;
 const RETRY_DELAY: Duration = Duration::from_secs(30);
@@ -126,6 +128,7 @@ pub struct ListedChannel {
 #[derive(Clone, Debug, PartialEq, Eq, Serialize)]
 pub struct Streamer {
     pub channels: Vec<ListedChannel>,
+    pub image: Option<Image>,
 }
 
 impl Streamer {
@@ -166,7 +169,7 @@ impl Store {
         self.streamers.lock().unwrap().clone()
     }
 
-    pub fn streamer_live(&self, channels: Vec<Channel>) {
+    pub fn streamer_live(&self, channels: Vec<Channel>, image: Option<Image>) {
         let mut streamers = self.streamers.lock().unwrap();
         let mut streamer = Streamer {
             channels: channels
@@ -178,6 +181,7 @@ impl Store {
                     stream: Stream::default(),
                 })
                 .collect(),
+            image,
         };
         let position = streamers.iter().position(|other| other.same_as(&streamer));
         let (same, others): (Vec<_>, Vec<_>) = streamers
@@ -204,6 +208,16 @@ impl Store {
 
     pub fn went_live(&self) -> Notified<'_> {
         self.went_live.notified()
+    }
+
+    pub fn image(&self, id: &str) -> Option<Image> {
+        self.streamers
+            .lock()
+            .unwrap()
+            .iter()
+            .filter_map(|streamer| streamer.image.as_ref())
+            .find(|image| image.id == id)
+            .cloned()
     }
 
     pub fn channels(&self, platform: Platform) -> Vec<Channel> {
@@ -284,6 +298,9 @@ impl Store {
 
 #[cfg(test)]
 mod tests {
+    use base64::Engine;
+    use base64::prelude::BASE64_STANDARD;
+
     use super::*;
 
     fn channel(platform: Platform, handle: &str) -> Channel {
@@ -346,6 +363,18 @@ mod tests {
         }
     }
 
+    fn image() -> Image {
+        Image::decode(&BASE64_STANDARD.encode(b"\xff\xd8\xff\xe0")).unwrap()
+    }
+
+    fn images(store: &Store) -> Vec<Option<String>> {
+        store
+            .streamers()
+            .into_iter()
+            .map(|streamer| streamer.image.map(|image| image.id))
+            .collect()
+    }
+
     fn profile(avatar: &str, display_name: &str) -> Profile {
         Profile {
             avatar: Some(avatar.to_string()),
@@ -356,22 +385,22 @@ mod tests {
     #[test]
     fn newcomers_first_and_one_entry_per_streamer() {
         let store = Store::new(24);
-        store.streamer_live(twitch("anna"));
-        store.streamer_live(twitch("bob"));
-        store.streamer_live(twitch("Anna"));
+        store.streamer_live(twitch("anna"), None);
+        store.streamer_live(twitch("bob"), None);
+        store.streamer_live(twitch("Anna"), None);
         assert_eq!(handles(&store), ["bob", "Anna"]);
-        store.streamer_live(twitch("carl"));
-        store.streamer_live(twitch("bob"));
+        store.streamer_live(twitch("carl"), None);
+        store.streamer_live(twitch("bob"), None);
         assert_eq!(handles(&store), ["carl", "bob", "Anna"]);
     }
 
     #[test]
     fn sharing_a_channel_means_same_streamer() {
         let store = Store::new(24);
-        store.streamer_live(twitch("anna"));
+        store.streamer_live(twitch("anna"), None);
         let mut channels = twitch("anna");
         channels.push(channel(Platform::Kick, "anna_irl"));
-        store.streamer_live(channels);
+        store.streamer_live(channels, None);
         let streamers = store.streamers();
         assert_eq!(handles(&store), ["anna"]);
         assert_eq!(streamers[0].channels.len(), 2);
@@ -381,7 +410,7 @@ mod tests {
     fn list_is_capped() {
         let store = Store::new(2);
         for handle in ["a", "b", "c"] {
-            store.streamer_live(twitch(handle));
+            store.streamer_live(twitch(handle), None);
         }
         assert_eq!(handles(&store), ["c", "b"]);
     }
@@ -409,7 +438,7 @@ mod tests {
         let store = Store::new(24);
         let anna = channel(Platform::Twitch, "anna");
         assert_eq!(store.next_lookup(), None);
-        store.streamer_live(vec![anna.clone()]);
+        store.streamer_live(vec![anna.clone()], None);
         let (channel, due) = store.next_lookup().unwrap();
         assert_eq!(channel, anna);
         assert!(due <= Instant::now());
@@ -419,7 +448,7 @@ mod tests {
             lookups(&store),
             [Lookup::Done(profile("https://a/1.png", "Anna"))]
         );
-        store.streamer_live(twitch("Anna"));
+        store.streamer_live(twitch("Anna"), None);
         assert_eq!(store.next_lookup(), None);
         assert_eq!(
             lookups(&store),
@@ -431,7 +460,7 @@ mod tests {
     fn no_profile_is_an_answer_too() {
         let store = Store::new(24);
         let bob = channel(Platform::Twitch, "bob");
-        store.streamer_live(vec![bob.clone()]);
+        store.streamer_live(vec![bob.clone()], None);
         assert_eq!(
             store.streamers()[0].channels[0].lookup.profile(),
             &NO_PROFILE
@@ -446,9 +475,9 @@ mod tests {
         let store = Store::new(24);
         let anna = channel(Platform::Twitch, "anna");
         let kick = channel(Platform::Kick, "anna_irl");
-        store.streamer_live(vec![anna.clone()]);
+        store.streamer_live(vec![anna.clone()], None);
         store.looked_up(&anna, profile("https://a/1.png", "Anna"));
-        store.streamer_live(vec![anna.clone(), kick.clone()]);
+        store.streamer_live(vec![anna.clone(), kick.clone()], None);
         assert_eq!(store.next_lookup().unwrap().0, kick);
         assert_eq!(
             lookups(&store)[0],
@@ -461,7 +490,7 @@ mod tests {
     fn failed_lookups_are_retried_ever_later() {
         let store = Store::new(24);
         let anna = channel(Platform::Twitch, "anna");
-        store.streamer_live(vec![anna.clone()]);
+        store.streamer_live(vec![anna.clone()], None);
         let mut previous = Duration::ZERO;
         for _ in 0..10 {
             let delay = store.lookup_failed(&anna).unwrap();
@@ -472,7 +501,7 @@ mod tests {
             previous = delay;
         }
         assert_eq!(previous, RETRY_MAX_DELAY);
-        store.streamer_live(twitch("Anna"));
+        store.streamer_live(twitch("Anna"), None);
         assert!(pending_in(&lookups(&store)[0]) >= RETRY_MAX_DELAY - Duration::from_secs(1));
     }
 
@@ -481,8 +510,8 @@ mod tests {
         let store = Store::new(1);
         let anna = channel(Platform::Twitch, "anna");
         let bob = channel(Platform::Twitch, "bob");
-        store.streamer_live(vec![anna.clone()]);
-        store.streamer_live(vec![bob.clone()]);
+        store.streamer_live(vec![anna.clone()], None);
+        store.streamer_live(vec![bob.clone()], None);
         assert_eq!(handles(&store), ["bob"]);
         store.looked_up(&anna, profile("https://a/1.png", "Anna"));
         assert_eq!(store.lookup_failed(&anna), None);
@@ -495,8 +524,8 @@ mod tests {
         let store = Store::new(24);
         let anna = channel(Platform::Twitch, "Anna");
         let kick = channel(Platform::Kick, "anna_irl");
-        store.streamer_live(vec![anna.clone(), kick.clone()]);
-        store.streamer_live(twitch("bob"));
+        store.streamer_live(vec![anna.clone(), kick.clone()], None);
+        store.streamer_live(twitch("bob"), None);
         assert_eq!(
             store.channels(Platform::Twitch),
             [channel(Platform::Twitch, "bob"), anna.clone()]
@@ -507,7 +536,10 @@ mod tests {
         store.set_live(&kick, Some(Stream::default()));
         assert_eq!(lives(&store), [false, true, true]);
         assert_eq!(categories(&store), [None, Some("IRL".into()), None]);
-        store.streamer_live(vec![anna.clone(), channel(Platform::YouTube, "AnnaIRL")]);
+        store.streamer_live(
+            vec![anna.clone(), channel(Platform::YouTube, "AnnaIRL")],
+            None,
+        );
         assert_eq!(lives(&store), [false, true, false]);
         assert_eq!(categories(&store), [None, Some("IRL".into()), None]);
         store.set_live(&anna, None);
@@ -516,15 +548,43 @@ mod tests {
     }
 
     #[test]
+    fn the_image_is_the_latest_posts() {
+        let store = Store::new(2);
+        let (first, second, third) = (image(), image(), image());
+        store.streamer_live(twitch("anna"), Some(first.clone()));
+        store.streamer_live(twitch("bob"), None);
+        assert_eq!(images(&store), [None, Some(first.id.clone())]);
+        assert_eq!(store.image(&first.id), Some(first.clone()));
+        assert_eq!(store.image(&second.id), None);
+        store.streamer_live(twitch("Anna"), Some(second.clone()));
+        assert_eq!(images(&store), [None, Some(second.id.clone())]);
+        assert_eq!(store.image(&first.id), None);
+        store.streamer_live(twitch("anna"), None);
+        assert_eq!(images(&store), [None, None]);
+        store.streamer_live(twitch("bob"), Some(third.clone()));
+        store.streamer_live(twitch("carl"), None);
+        assert_eq!(handles(&store), ["carl", "bob"]);
+        assert_eq!(store.image(&third.id), Some(third.clone()));
+        store.streamer_live(twitch("dave"), None);
+        assert_eq!(handles(&store), ["dave", "carl"]);
+        assert_eq!(store.image(&third.id), None);
+    }
+
+    #[test]
     fn serializes_the_profile_flat_with_nulls_for_the_unknown() {
         let store = Store::new(24);
         let anna = channel(Platform::Twitch, "anna");
         let kick = channel(Platform::Kick, "anna_irl");
-        store.streamer_live(vec![
-            anna.clone(),
-            kick.clone(),
-            channel(Platform::YouTube, "AnnaIRL"),
-        ]);
+        let image = image();
+        store.streamer_live(
+            vec![
+                anna.clone(),
+                kick.clone(),
+                channel(Platform::YouTube, "AnnaIRL"),
+            ],
+            Some(image.clone()),
+        );
+        store.streamer_live(twitch("bob"), None);
         store.looked_up(&anna, profile("https://a/1.png", "Anna"));
         store.looked_up(
             &kick,
@@ -543,11 +603,16 @@ mod tests {
         let json = serde_json::to_value(store.streamers()).unwrap();
         assert_eq!(
             json,
-            serde_json::json!([{"channels": [
-                {"platform": "twitch", "name": "anna", "avatar": "https://a/1.png", "displayName": "Anna", "live": true, "category": "Just Chatting", "title": "Walking around Stockholm"},
-                {"platform": "kick", "name": "anna_irl", "avatar": null, "displayName": "Anna_IRL", "live": false, "category": null, "title": null},
-                {"platform": "youtube", "name": "AnnaIRL", "avatar": null, "displayName": null, "live": false, "category": null, "title": null},
-            ]}])
+            serde_json::json!([
+                {"channels": [
+                    {"platform": "twitch", "name": "bob", "avatar": null, "displayName": null, "live": false, "category": null, "title": null},
+                ], "image": null},
+                {"channels": [
+                    {"platform": "twitch", "name": "anna", "avatar": "https://a/1.png", "displayName": "Anna", "live": true, "category": "Just Chatting", "title": "Walking around Stockholm"},
+                    {"platform": "kick", "name": "anna_irl", "avatar": null, "displayName": "Anna_IRL", "live": false, "category": null, "title": null},
+                    {"platform": "youtube", "name": "AnnaIRL", "avatar": null, "displayName": null, "live": false, "category": null, "title": null},
+                ], "image": image.id},
+            ])
         );
     }
 }
