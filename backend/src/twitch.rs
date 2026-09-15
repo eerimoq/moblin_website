@@ -68,6 +68,7 @@ impl Twitch {
             kind: String,
             game_name: Option<String>,
             title: Option<String>,
+            thumbnail_url: Option<String>,
         }
         let logins: Vec<&str> = logins
             .iter()
@@ -89,6 +90,9 @@ impl Twitch {
                             Stream {
                                 category: stream.game_name.filter(|name| !name.is_empty()),
                                 title: stream.title.filter(|title| !title.is_empty()),
+                                thumbnail: stream.thumbnail_url.filter(|url| !url.is_empty()).map(
+                                    |url| url.replace("{width}", "640").replace("{height}", "360"),
+                                ),
                             },
                         )
                     }),

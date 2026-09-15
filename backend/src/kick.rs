@@ -22,6 +22,12 @@ struct Livestream {
     session_title: Option<String>,
     #[serde(default)]
     categories: Vec<Category>,
+    thumbnail: Option<Thumbnail>,
+}
+
+#[derive(Deserialize)]
+struct Thumbnail {
+    url: Option<String>,
 }
 
 #[derive(Deserialize)]
@@ -63,6 +69,10 @@ impl Kick {
                     .next()
                     .map(|category| category.name),
                 title: livestream.session_title.filter(|title| !title.is_empty()),
+                thumbnail: livestream
+                    .thumbnail
+                    .and_then(|thumbnail| thumbnail.url)
+                    .filter(|url| !url.is_empty()),
             }))
     }
 

@@ -16,9 +16,10 @@ export default defineConfig({
       "/api": {
         target: "http://127.0.0.1:8080",
         rewrite: (path) => path.replace(/^\/api/, ""),
-        // Every other Twitch and Kick channel is shown as live, with varying
-        // categories and titles, whatever the backend says, to see how live
-        // channels look without real streams.
+        // Every other Twitch and Kick channel, and every one of a streamer
+        // without a snapshot, is shown as live, with varying categories and
+        // titles and a placeholder thumbnail, whatever the backend says, to see
+        // how live channels look without real streams.
         selfHandleResponse: true,
         configure: (proxy) => {
           proxy.on("proxyRes", (proxyRes, req, res) => {
@@ -29,11 +30,11 @@ export default defineConfig({
               if (req.url === "/streamers" && proxyRes.statusCode === 200) {
                 const { streamers } = JSON.parse(body.toString());
                 const counts = { twitch: 0, kick: 0 };
-                for (const { channels } of streamers) {
-                  for (const channel of channels) {
+                for (const streamer of streamers) {
+                  for (const channel of streamer.channels) {
                     if (channel.platform in counts) {
                       const count = counts[channel.platform as keyof typeof counts]++;
-                      channel.live = count % 2 === 0;
+                      channel.live = count % 2 === 0 || streamer.image === null;
                       channel.category = channel.live
                         ? ["Just Chatting", null, "Travel & Outdoors"][count % 3]
                         : null;
@@ -41,6 +42,9 @@ export default defineConfig({
                         channel.live && count % 4 === 0
                           ? `Walking around town with ${channel.name} 🚶`
                           : null;
+                      channel.thumbnail = channel.live
+                        ? `https://picsum.photos/seed/${channel.name}/640/360`
+                        : null;
                     }
                   }
                 }

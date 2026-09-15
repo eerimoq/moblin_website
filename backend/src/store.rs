@@ -112,6 +112,7 @@ impl Serialize for Lookup {
 pub struct Stream {
     pub category: Option<String>,
     pub title: Option<String>,
+    pub thumbnail: Option<String>,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize)]
@@ -344,6 +345,7 @@ mod tests {
         Stream {
             category: Some(category.to_string()),
             title: None,
+            thumbnail: None,
         }
     }
 
@@ -597,6 +599,7 @@ mod tests {
             &anna,
             Some(Stream {
                 title: Some("Walking around Stockholm".into()),
+                thumbnail: Some("https://a/live.jpg".into()),
                 ..stream("Just Chatting")
             }),
         );
@@ -605,12 +608,12 @@ mod tests {
             json,
             serde_json::json!([
                 {"channels": [
-                    {"platform": "twitch", "name": "bob", "avatar": null, "displayName": null, "live": false, "category": null, "title": null},
+                    {"platform": "twitch", "name": "bob", "avatar": null, "displayName": null, "live": false, "category": null, "title": null, "thumbnail": null},
                 ], "image": null},
                 {"channels": [
-                    {"platform": "twitch", "name": "anna", "avatar": "https://a/1.png", "displayName": "Anna", "live": true, "category": "Just Chatting", "title": "Walking around Stockholm"},
-                    {"platform": "kick", "name": "anna_irl", "avatar": null, "displayName": "Anna_IRL", "live": false, "category": null, "title": null},
-                    {"platform": "youtube", "name": "AnnaIRL", "avatar": null, "displayName": null, "live": false, "category": null, "title": null},
+                    {"platform": "twitch", "name": "anna", "avatar": "https://a/1.png", "displayName": "Anna", "live": true, "category": "Just Chatting", "title": "Walking around Stockholm", "thumbnail": "https://a/live.jpg"},
+                    {"platform": "kick", "name": "anna_irl", "avatar": null, "displayName": "Anna_IRL", "live": false, "category": null, "title": null, "thumbnail": null},
+                    {"platform": "youtube", "name": "AnnaIRL", "avatar": null, "displayName": null, "live": false, "category": null, "title": null, "thumbnail": null},
                 ], "image": image.id},
             ])
         );

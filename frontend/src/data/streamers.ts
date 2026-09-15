@@ -17,6 +17,7 @@ export type StreamerChannel = {
   category: string | null;
   /** The stream's title, while live and when the platform knows. */
   title: string | null;
+  thumbnail: string | null;
 };
 
 /** The name to show for the channel: its display name when known, its handle otherwise. */
@@ -40,8 +41,13 @@ export type Streamer = {
   image: string | null;
 };
 
-export const streamerImageUrl = (image: string) =>
+const streamerImageUrl = (image: string) =>
   `${backendUrl}/streamers/images/${encodeURIComponent(image)}`;
+
+export const snapshotUrl = ({ image, channels }: Streamer) =>
+  image !== null
+    ? streamerImageUrl(image)
+    : (channels.find((channel) => channel.live && channel.thumbnail)?.thumbnail ?? null);
 
 /** Newcomers first; a streamer already listed keeps its position. */
 async function fetchStreamers(): Promise<Streamer[]> {

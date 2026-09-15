@@ -2,7 +2,7 @@ import { createSignal, For, Match, Show, Switch } from "solid-js";
 import {
   channelLabel,
   channelUrl,
-  streamerImageUrl,
+  snapshotUrl,
   streamers,
   type Streamer,
   type StreamerChannel,
@@ -109,12 +109,13 @@ function ChannelRow(props: { channel: StreamerChannel }) {
 function Snapshot(props: { streamer: Streamer }) {
   const [broken, setBroken] = createSignal(false);
   return (
-    <Show when={!broken() && props.streamer.image}>
-      {(image) => (
+    <Show when={!broken() && snapshotUrl(props.streamer)}>
+      {(src) => (
         <img
-          src={streamerImageUrl(image())}
+          src={src()}
           alt={`${channelLabel(props.streamer.channels[0]!)}'s stream`}
           loading="lazy"
+          referrerpolicy="no-referrer"
           class="aspect-video w-full rounded-2xl bg-ghost object-contain"
           onError={() => setBroken(true)}
         />
