@@ -80,12 +80,15 @@ function ChannelRow(props: { channel: StreamerChannel }) {
         href={channelUrl(props.channel)}
         target="_blank"
         rel="noopener"
-        class="group flex items-center gap-3"
-        title={
-          props.channel.title ??
-          `${channelLabel(props.channel)} on ${platformName[props.channel.platform]}`
-        }
+        class="group relative flex items-center gap-3"
       >
+        <span
+          role="tooltip"
+          class="pointer-events-none absolute bottom-full left-0 z-10 mb-2 hidden max-w-xs rounded-xl border-[1.5px] border-line bg-card px-4 py-2 text-lg font-bold text-ink shadow-lg group-hover:block"
+        >
+          {props.channel.title ??
+            `${channelLabel(props.channel)} on ${platformName[props.channel.platform]}`}
+        </span>
         <span class="relative shrink-0">
           <Avatar channel={props.channel} />
           <BrandIcon
