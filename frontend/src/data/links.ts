@@ -30,9 +30,9 @@ export const links = {
 
 /** Section links, anchored to the home page so they work from every page. */
 export const navItems = [
+  { label: "Streamers", href: "/#streamers" },
   { label: "Get started", href: "/#get-started" },
   { label: "Features", href: "/#features" },
-  { label: "Streamers", href: "/#streamers" },
   { label: "Support", href: "/#support" },
   { label: "Ecosystem", href: "/#ecosystem" },
   { label: "Community", href: "/#community" },
