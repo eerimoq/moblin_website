@@ -15,9 +15,9 @@ export default function App() {
       <Nav />
       <main>
         <Hero />
-        <Streamers />
         <GetStarted />
         <Features />
+        <Streamers />
         <Support />
         <Reviews />
         <Ecosystem />
