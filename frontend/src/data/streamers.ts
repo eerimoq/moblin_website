@@ -38,16 +38,10 @@ export const channelUrl = ({ platform, name }: StreamerChannel) => {
 export type Streamer = {
   /** Every platform they stream to, at least one. */
   channels: StreamerChannel[];
-  image: string | null;
 };
 
-const streamerImageUrl = (image: string) =>
-  `${backendUrl}/streamers/images/${encodeURIComponent(image)}`;
-
-export const snapshotUrl = ({ image, channels }: Streamer) =>
-  image !== null
-    ? streamerImageUrl(image)
-    : (channels.find((channel) => channel.live && channel.thumbnail)?.thumbnail ?? null);
+export const snapshotUrl = ({ channels }: Streamer) =>
+  channels.find((channel) => channel.live && channel.thumbnail)?.thumbnail ?? null;
 
 /** Newcomers first; a streamer already listed keeps its position. */
 async function fetchStreamers(): Promise<Streamer[]> {

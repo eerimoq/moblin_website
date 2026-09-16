@@ -2,10 +2,8 @@ use std::sync::Arc;
 
 use anyhow::{Context, Result};
 use axum::body::Bytes;
-use axum::extract::{Path, State};
-use axum::http::header::{CACHE_CONTROL, CONTENT_TYPE};
+use axum::extract::State;
 use axum::http::{HeaderMap, HeaderValue, Method, StatusCode};
-use axum::response::IntoResponse;
 use axum::routing::{get, post};
 use axum::{Json, Router};
 use base64::Engine;
@@ -16,7 +14,6 @@ use tower_http::cors::{Any, CorsLayer};
 
 use crate::app_attest::AppAttest;
 use crate::challenges::Challenges;
-use crate::image::Image;
 use crate::live::Live;
 use crate::store::{Channel, Store, Streamer};
 
@@ -38,7 +35,6 @@ pub fn router(api: Arc<Api>) -> Router {
         .route("/streamers", get(handle_streamers))
         .route("/streamers/live/challenge", post(handle_challenge))
         .route("/streamers/live", post(handle_streamers_live))
-        .route("/streamers/images/{id}", get(handle_image))
         .route("/twitch/live", get(handle_twitch_live))
         .layer(cors)
         .with_state(api)
@@ -53,20 +49,6 @@ async fn handle_streamers(State(api): State<Arc<Api>>) -> Json<StreamersResponse
     Json(StreamersResponse {
         streamers: api.store.streamers(),
     })
-}
-
-async fn handle_image(
-    State(api): State<Arc<Api>>,
-    Path(id): Path<String>,
-) -> Result<impl IntoResponse, StatusCode> {
-    let image = api.store.image(&id).ok_or(StatusCode::NOT_FOUND)?;
-    Ok((
-        [
-            (CONTENT_TYPE, "image/jpeg"),
-            (CACHE_CONTROL, "public, max-age=31536000, immutable"),
-        ],
-        image.data,
-    ))
 }
 
 #[derive(Serialize)]
@@ -115,7 +97,6 @@ async fn handle_challenge(
 #[serde(rename_all = "camelCase")]
 struct LiveRequest {
     channels: Vec<Channel>,
-    image: Option<String>,
     challenge: Option<String>,
     key_id: Option<String>,
     attestation: Option<String>,
@@ -138,25 +119,15 @@ async fn handle_streamers_live(
     let channels = request.channels;
     Channel::validate_all(&channels)
         .map_err(|error| (StatusCode::BAD_REQUEST, error.to_string()))?;
-    let image = request
-        .image
-        .as_deref()
-        .map(Image::decode)
-        .transpose()
-        .map_err(|error| (StatusCode::BAD_REQUEST, format!("{error:#}")))?;
     info!(
-        "{} went live{}",
+        "{} went live",
         channels
             .iter()
             .map(Channel::to_string)
             .collect::<Vec<_>>()
-            .join(", "),
-        image
-            .as_ref()
-            .map(|image| format!(" with a {} byte image", image.data.len()))
-            .unwrap_or_default()
+            .join(", ")
     );
-    api.store.streamer_live(channels, image);
+    api.store.streamer_live(channels);
     Ok(StatusCode::NO_CONTENT)
 }
 

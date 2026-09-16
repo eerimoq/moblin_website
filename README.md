@@ -36,12 +36,6 @@ distributed Moblin app, and can be changed with `--app-id` and
 environment). `just backend-run` starts the backend with `--allow-unattested`
 so that `scripts/seed_backend.py` can fill it with made-up streamers.
 
-A live post may carry a picture of the stream, as a base64 JPEG of at most
-1 MiB in `image`. The backend keeps the latest one per streamer in
-memory, lists its id as `image` in `/streamers` and serves it from
-`/streamers/images/<id>`. Every post gets a new id, so the URL never changes
-meaning and is cached for good.
-
 Twitch display names and avatars come from the
 [Helix users endpoint](https://dev.twitch.tv/docs/api/reference/#get-users),
 authenticated with an app access token from the

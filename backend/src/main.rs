@@ -1,7 +1,6 @@
 mod api;
 mod app_attest;
 mod challenges;
-mod image;
 mod kick;
 mod live;
 mod live_status;
