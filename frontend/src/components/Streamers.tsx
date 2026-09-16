@@ -147,7 +147,7 @@ function PlaceholderCard() {
   );
 }
 
-const placeholderCount = 8;
+const placeholderCount = 6;
 
 export default function Streamers() {
   return (
@@ -166,7 +166,7 @@ export default function Streamers() {
         </div>
         <Switch>
           <Match when={streamers.loading}>
-            <ul class="grid gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4" aria-busy="true">
+            <ul class="grid gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3" aria-busy="true">
               <For each={Array.from({ length: placeholderCount })}>{() => <PlaceholderCard />}</For>
             </ul>
           </Match>
@@ -177,7 +177,7 @@ export default function Streamers() {
             <p class="text-lg text-muted">Nobody has gone live with Moblin lately. Be the first!</p>
           </Match>
           <Match when={streamers()}>
-            <ul class="grid gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4">
+            <ul class="grid gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
               <For each={streamers()}>{(streamer) => <StreamerCard streamer={streamer} />}</For>
             </ul>
           </Match>
