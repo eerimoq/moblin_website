@@ -92,14 +92,14 @@ impl AppAttest {
             auth_data.counter == 0,
             "the attestation counter is not zero"
         );
-        let aaguid = auth_data.aaguid.context("no aaguid")?;
+        let credential = auth_data.credential()?;
         ensure!(
-            aaguid == self.environment.aaguid(),
+            credential.aaguid == self.environment.aaguid(),
             "the attestation is for another environment: {}",
-            String::from_utf8_lossy(aaguid).trim_end_matches('\0')
+            String::from_utf8_lossy(credential.aaguid).trim_end_matches('\0')
         );
         ensure!(
-            auth_data.credential_id.context("no credential id")? == key_id,
+            credential.id == key_id,
             "the credential id is not the key id"
         );
         Ok(public_key)
@@ -180,35 +180,39 @@ fn certificate_nonce(certificate: &X509Certificate) -> Result<[u8; 32]> {
 struct AuthData<'a> {
     rp_id_hash: &'a [u8],
     counter: u32,
-    aaguid: Option<&'a [u8]>,
-    credential_id: Option<&'a [u8]>,
+    rest: &'a [u8],
+}
+
+struct Credential<'a> {
+    aaguid: &'a [u8],
+    id: &'a [u8],
 }
 
 impl<'a> AuthData<'a> {
     fn parse(data: &'a [u8]) -> Result<Self> {
         ensure!(data.len() >= 37, "authenticator data is too short");
-        let counter = u32::from_be_bytes(data[33..37].try_into().unwrap());
-        let mut auth_data = AuthData {
+        Ok(AuthData {
             rp_id_hash: &data[..32],
-            counter,
-            aaguid: None,
-            credential_id: None,
-        };
-        let credential = &data[37..];
-        if !credential.is_empty() {
-            ensure!(
-                credential.len() >= 18,
-                "attested credential data is too short"
-            );
-            let length = u16::from_be_bytes(credential[16..18].try_into().unwrap()) as usize;
-            ensure!(
-                credential.len() >= 18 + length,
-                "credential id is truncated"
-            );
-            auth_data.aaguid = Some(&credential[..16]);
-            auth_data.credential_id = Some(&credential[18..18 + length]);
-        }
-        Ok(auth_data)
+            counter: u32::from_be_bytes(data[33..37].try_into().unwrap()),
+            rest: &data[37..],
+        })
+    }
+
+    fn credential(&self) -> Result<Credential<'a>> {
+        let credential = self.rest;
+        ensure!(
+            credential.len() >= 18,
+            "attested credential data is too short"
+        );
+        let length = u16::from_be_bytes(credential[16..18].try_into().unwrap()) as usize;
+        ensure!(
+            credential.len() >= 18 + length,
+            "credential id is truncated"
+        );
+        Ok(Credential {
+            aaguid: &credential[..16],
+            id: &credential[18..18 + length],
+        })
     }
 }
 
@@ -235,6 +239,7 @@ mod tests {
     use super::*;
     use base64::Engine;
     use base64::prelude::BASE64_STANDARD;
+    use ring::signature::{ECDSA_P256_SHA256_ASN1_SIGNING, EcdsaKeyPair, KeyPair};
 
     const APP_ID: &str = "35MFYY2JY5.co.chiff.attestation-test";
     const KEY_ID: &str = "AcP/pnpoNVPIJYZOvmIvWzDvmxkFoQCE4Uu7Nk6WiAA=";
@@ -378,6 +383,43 @@ mod tests {
             .verify_assertion(&assertion(), ASSERTION_CLIENT_DATA, &hex(PUBLIC_KEY))
             .unwrap();
         assert_eq!(counter, 3);
+    }
+
+    #[test]
+    fn ignores_what_follows_the_assertion_counter() {
+        let rng = ring::rand::SystemRandom::new();
+        let pkcs8 = EcdsaKeyPair::generate_pkcs8(&ECDSA_P256_SHA256_ASN1_SIGNING, &rng).unwrap();
+        let key_pair =
+            EcdsaKeyPair::from_pkcs8(&ECDSA_P256_SHA256_ASN1_SIGNING, pkcs8.as_ref(), &rng)
+                .unwrap();
+        let mut auth_data = sha256(&[APP_ID.as_bytes()]).to_vec();
+        auth_data.extend_from_slice(&[0xc0, 0, 0, 0, 7]);
+        auth_data.extend_from_slice(b"\xa1\x00\x01extension data of any length");
+        let nonce = sha256(&[&auth_data, &sha256(&[ASSERTION_CLIENT_DATA])]);
+        let signature = key_pair.sign(&rng, &nonce).unwrap();
+        let mut assertion = Vec::new();
+        ciborium::into_writer(
+            &Value::Map(vec![
+                (
+                    Value::Text("signature".into()),
+                    Value::Bytes(signature.as_ref().to_vec()),
+                ),
+                (
+                    Value::Text("authenticatorData".into()),
+                    Value::Bytes(auth_data),
+                ),
+            ]),
+            &mut assertion,
+        )
+        .unwrap();
+        let counter = app_attest()
+            .verify_assertion(
+                &assertion,
+                ASSERTION_CLIENT_DATA,
+                key_pair.public_key().as_ref(),
+            )
+            .unwrap();
+        assert_eq!(counter, 7);
     }
 
     #[test]
