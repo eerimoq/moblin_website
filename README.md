@@ -33,8 +33,11 @@ challenge from `/streamers/live/challenge`.
 The App ID and App Attest environment the backend accepts default to the
 distributed Moblin app, and can be changed with `--app-id` and
 `--app-attest-environment` (apps installed by Xcode use the `development`
-environment). `just backend-run` starts the backend with `--allow-unattested`
-so that `scripts/seed_backend.py` can fill it with made-up streamers.
+environment). `just backend-run-attested` accepts the development environment
+and listens on all interfaces, so a phone on the same network can post live
+from a Moblin build installed by Xcode. `just backend-run` starts the backend with
+`--allow-unattested` so that `scripts/seed_backend.py` can fill it with
+made-up streamers.
 
 Twitch display names and avatars come from the
 [Helix users endpoint](https://dev.twitch.tv/docs/api/reference/#get-users),

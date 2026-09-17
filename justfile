@@ -40,6 +40,11 @@ backend-run *args:
 	just backend-seed
 	wait
 
+# Runs the backend on all interfaces, accepting attested live posts from Moblin builds
+# installed by Xcode, for testing with a phone on the same network.
+backend-run-attested *args:
+	cd backend && cargo run -q -- --listen 0.0.0.0:8080 --app-attest-environment development {{args}}
+
 # Tells the backend that a few made-up streamers went live.
 backend-seed:
 	python3 scripts/seed_backend.py
