@@ -31,7 +31,7 @@ export const channelUrl = ({ platform, name }: StreamerChannel) => {
     case "youtube":
       return `https://www.youtube.com/@${encodedName}`;
     case "kick":
-      return `https://kick.com/${encodedName}`;
+      return `https://kick.com/${encodeURIComponent(name.replaceAll("_", "-"))}`;
   }
 };
 

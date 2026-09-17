@@ -77,9 +77,10 @@ impl Kick {
     }
 
     async fn channel(&self, name: &str) -> Result<Option<Channel>> {
+        let slug = name.replace('_', "-");
         let res = self
             .client
-            .get(format!("https://kick.com/api/v2/channels/{name}"))
+            .get(format!("https://kick.com/api/v2/channels/{slug}"))
             .send()
             .await?;
         if res.status() == StatusCode::NOT_FOUND {
