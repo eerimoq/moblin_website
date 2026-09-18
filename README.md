@@ -52,10 +52,14 @@ streamers are listed without a display name and avatar.
 The same credentials let the backend tell who is live on Twitch, from the
 [Helix streams endpoint](https://dev.twitch.tv/docs/api/reference/#get-streams).
 Every channel in `/streamers` carries a `live` flag, refreshed every five
-minutes, and one minute after anyone posts that they went live. All listed
+minutes, and one minute after anyone posts that they went live. All tracked
 Twitch channels are checked in a single request; Kick channels one by one
 through `kick.com/api/v2/channels`, which needs no credentials. YouTube
-channels are never live. The "Erik is live on Twitch"
+channels are never live. `/streamers` lists live streamers first and the
+most recently posted first within each group, at most `--max-streamers` of
+them. The backend always remembers the most recent posters, so that a
+newcomer is around when the live check runs, and on top of those any older
+streamer who is still live, up to another `--max-streamers`. The "Erik is live on Twitch"
 button in the Support section asks `/twitch/live` instead, which answers
 `{"channel": "eerimoq", "live": true}`, asking Twitch at most once a minute
 no matter how many visitors ask. The channel can be changed with

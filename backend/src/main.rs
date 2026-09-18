@@ -39,7 +39,9 @@ struct Cli {
     /// Address to listen on.
     #[arg(long, env = "LISTEN", default_value = "127.0.0.1:8080")]
     listen: SocketAddr,
-    /// Never list more than this many streamers, most recently live first.
+    /// Never list more than this many streamers, live ones first. Older
+    /// streamers who are still live are remembered beyond that, so that
+    /// they are listed again when a newer one leaves.
     #[arg(long, env = "MAX_STREAMERS", default_value_t = 6)]
     max_streamers: usize,
     /// Pause at least this many seconds between two requests to the

@@ -43,7 +43,7 @@ export type Streamer = {
 export const snapshotUrl = ({ channels }: Streamer) =>
   channels.find((channel) => channel.live && channel.thumbnail)?.thumbnail ?? null;
 
-/** Newcomers first; a streamer already listed keeps its position. */
+/** Live streamers first, then the most recently live. */
 async function fetchStreamers(): Promise<Streamer[]> {
   const res = await fetch(`${backendUrl}/streamers`);
   if (!res.ok) throw new Error(`fetching streamers failed with status ${res.status}`);

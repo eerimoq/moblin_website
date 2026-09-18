@@ -144,6 +144,10 @@ impl Streamer {
             .iter()
             .find(|listed| listed.channel.same_as(channel))
     }
+
+    fn is_live(&self) -> bool {
+        self.channels.iter().any(|listed| listed.live)
+    }
 }
 
 pub struct Store {
@@ -164,7 +168,10 @@ impl Store {
     }
 
     pub fn streamers(&self) -> Vec<Streamer> {
-        self.streamers.lock().unwrap().clone()
+        let mut streamers = self.streamers.lock().unwrap().clone();
+        streamers.sort_by_key(|streamer| !streamer.is_live());
+        streamers.truncate(self.max_streamers);
+        streamers
     }
 
     pub fn streamer_live(&self, channels: Vec<Channel>) {
@@ -180,7 +187,6 @@ impl Store {
                 })
                 .collect(),
         };
-        let position = streamers.iter().position(|other| other.same_as(&streamer));
         let (same, others): (Vec<_>, Vec<_>) = streamers
             .drain(..)
             .partition(|other| other.same_as(&streamer));
@@ -192,13 +198,15 @@ impl Store {
                 listed.stream = known.stream.clone();
             }
         }
-        match position {
-            Some(index) => streamers.insert(index, streamer),
-            None => {
-                streamers.insert(0, streamer);
-                streamers.truncate(self.max_streamers);
-            }
-        }
+        streamers.insert(0, streamer);
+        let recent_streamers_count = self.max_streamers.min(streamers.len());
+        let old_streamers = streamers.split_off(recent_streamers_count);
+        streamers.extend(
+            old_streamers
+                .into_iter()
+                .filter(Streamer::is_live)
+                .take(self.max_streamers),
+        );
         self.lookup_pending.notify_one();
         self.went_live.notify_one();
     }
@@ -306,6 +314,14 @@ mod tests {
             .collect()
     }
 
+    fn tracked(store: &Store) -> Vec<String> {
+        store
+            .channels(Platform::Twitch)
+            .into_iter()
+            .map(|channel| channel.name)
+            .collect()
+    }
+
     fn lookups(store: &Store) -> Vec<Lookup> {
         store
             .streamers()
@@ -356,15 +372,15 @@ mod tests {
     }
 
     #[test]
-    fn newcomers_first_and_one_entry_per_streamer() {
+    fn newest_first_and_one_entry_per_streamer() {
         let store = Store::new(24);
         store.streamer_live(twitch("anna"));
         store.streamer_live(twitch("bob"));
         store.streamer_live(twitch("Anna"));
-        assert_eq!(handles(&store), ["bob", "Anna"]);
+        assert_eq!(handles(&store), ["Anna", "bob"]);
         store.streamer_live(twitch("carl"));
         store.streamer_live(twitch("bob"));
-        assert_eq!(handles(&store), ["carl", "bob", "Anna"]);
+        assert_eq!(handles(&store), ["bob", "carl", "Anna"]);
     }
 
     #[test]
@@ -386,6 +402,44 @@ mod tests {
             store.streamer_live(twitch(handle));
         }
         assert_eq!(handles(&store), ["c", "b"]);
+    }
+
+    #[test]
+    fn live_streamers_are_listed_first_and_kept() {
+        let store = Store::new(2);
+        let live =
+            |handle: &str| store.set_live(&channel(Platform::Twitch, handle), Some(stream("IRL")));
+        for handle in ["anna", "bob", "carl"] {
+            store.streamer_live(twitch(handle));
+        }
+        assert_eq!(handles(&store), ["carl", "bob"]);
+        live("bob");
+        assert_eq!(handles(&store), ["bob", "carl"]);
+        store.streamer_live(twitch("dan"));
+        assert_eq!(handles(&store), ["bob", "dan"]);
+        assert_eq!(tracked(&store), ["dan", "carl", "bob"]);
+        live("dan");
+        assert_eq!(handles(&store), ["dan", "bob"]);
+        store.streamer_live(twitch("erin"));
+        store.streamer_live(twitch("fred"));
+        assert_eq!(handles(&store), ["dan", "bob"]);
+        assert_eq!(tracked(&store), ["fred", "erin", "dan", "bob"]);
+        store.set_live(&channel(Platform::Twitch, "bob"), None);
+        assert_eq!(handles(&store), ["dan", "fred"]);
+        store.streamer_live(twitch("gus"));
+        assert_eq!(tracked(&store), ["gus", "fred", "dan"]);
+    }
+
+    #[test]
+    fn newcomers_are_kept_until_checked_and_older_live_streamers_are_capped() {
+        let store = Store::new(1);
+        for handle in ["anna", "bob", "carl", "dan", "erin"] {
+            store.streamer_live(twitch(handle));
+            assert_eq!(tracked(&store)[0], handle);
+            store.set_live(&channel(Platform::Twitch, handle), Some(stream("IRL")));
+        }
+        assert_eq!(handles(&store), ["erin"]);
+        assert_eq!(tracked(&store), ["erin", "dan"]);
     }
 
     #[test]
@@ -507,11 +561,11 @@ mod tests {
         assert_eq!(lives(&store), [false, false, false]);
         store.set_live(&channel(Platform::Twitch, "anna"), Some(stream("IRL")));
         store.set_live(&kick, Some(Stream::default()));
-        assert_eq!(lives(&store), [false, true, true]);
-        assert_eq!(categories(&store), [None, Some("IRL".into()), None]);
+        assert_eq!(lives(&store), [true, true, false]);
+        assert_eq!(categories(&store), [Some("IRL".into()), None, None]);
         store.streamer_live(vec![anna.clone(), channel(Platform::YouTube, "AnnaIRL")]);
-        assert_eq!(lives(&store), [false, true, false]);
-        assert_eq!(categories(&store), [None, Some("IRL".into()), None]);
+        assert_eq!(lives(&store), [true, false, false]);
+        assert_eq!(categories(&store), [Some("IRL".into()), None, None]);
         store.set_live(&anna, None);
         store.set_live(&channel(Platform::Twitch, "carl"), Some(stream("IRL")));
         assert_eq!(lives(&store), [false, false, false]);
@@ -549,12 +603,12 @@ mod tests {
             json,
             serde_json::json!([
                 {"channels": [
-                    {"platform": "twitch", "name": "bob", "avatar": null, "displayName": null, "live": false, "category": null, "title": null, "thumbnail": null},
-                ],},
-                {"channels": [
                     {"platform": "twitch", "name": "anna", "avatar": "https://a/1.png", "displayName": "Anna", "live": true, "category": "Just Chatting", "title": "Walking around Stockholm", "thumbnail": "https://a/live.jpg"},
                     {"platform": "kick", "name": "anna_irl", "avatar": null, "displayName": "Anna_IRL", "live": false, "category": null, "title": null, "thumbnail": null},
                     {"platform": "youtube", "name": "AnnaIRL", "avatar": null, "displayName": null, "live": false, "category": null, "title": null, "thumbnail": null},
+                ],},
+                {"channels": [
+                    {"platform": "twitch", "name": "bob", "avatar": null, "displayName": null, "live": false, "category": null, "title": null, "thumbnail": null},
                 ],},
             ])
         );
