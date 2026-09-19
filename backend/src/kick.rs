@@ -1,13 +1,13 @@
 use anyhow::{Context, Result};
 use reqwest::{Client, StatusCode};
 use serde::Deserialize;
+use serde::de::DeserializeOwned;
 
 use crate::store::{Profile, Stream};
 
 #[derive(Deserialize)]
 struct Channel {
     user: Option<User>,
-    livestream: Option<Livestream>,
 }
 
 #[derive(Deserialize)]
@@ -17,17 +17,20 @@ struct User {
 }
 
 #[derive(Deserialize)]
+struct LivestreamBody {
+    data: Option<Livestream>,
+}
+
+#[derive(Deserialize)]
 struct Livestream {
-    is_live: bool,
     session_title: Option<String>,
-    #[serde(default)]
-    categories: Vec<Category>,
+    category: Option<Category>,
     thumbnail: Option<Thumbnail>,
 }
 
 #[derive(Deserialize)]
 struct Thumbnail {
-    url: Option<String>,
+    src: Option<String>,
 }
 
 #[derive(Deserialize)]
@@ -46,7 +49,11 @@ impl Kick {
 
     pub async fn user(&self, name: &str) -> Result<Profile> {
         Ok(
-            match self.channel(name).await?.and_then(|channel| channel.user) {
+            match self
+                .get::<Channel>(&format!("https://kick.com/api/v2/channels/{}", slug(name)))
+                .await?
+                .and_then(|channel| channel.user)
+            {
                 Some(user) => Profile {
                     avatar: user.profile_pic,
                     display_name: user.username,
@@ -58,39 +65,36 @@ impl Kick {
 
     pub async fn live(&self, name: &str) -> Result<Option<Stream>> {
         Ok(self
-            .channel(name)
+            .get::<LivestreamBody>(&format!(
+                "https://kick.com/api/v2/channels/{}/livestream",
+                slug(name)
+            ))
             .await?
-            .and_then(|channel| channel.livestream)
-            .filter(|livestream| livestream.is_live)
+            .and_then(|body| body.data)
             .map(|livestream| Stream {
-                category: livestream
-                    .categories
-                    .into_iter()
-                    .next()
-                    .map(|category| category.name),
+                category: livestream.category.map(|category| category.name),
                 title: livestream.session_title.filter(|title| !title.is_empty()),
                 thumbnail: livestream
                     .thumbnail
-                    .and_then(|thumbnail| thumbnail.url)
+                    .and_then(|thumbnail| thumbnail.src)
                     .filter(|url| !url.is_empty()),
             }))
     }
 
-    async fn channel(&self, name: &str) -> Result<Option<Channel>> {
-        let slug = name.replace('_', "-");
-        let res = self
-            .client
-            .get(format!("https://kick.com/api/v2/channels/{slug}"))
-            .send()
-            .await?;
+    async fn get<T: DeserializeOwned>(&self, url: &str) -> Result<Option<T>> {
+        let res = self.client.get(url).send().await?;
         if res.status() == StatusCode::NOT_FOUND {
             return Ok(None);
         }
-        let channel = res
+        let body = res
             .error_for_status()?
             .json()
             .await
             .context("unexpected answer")?;
-        Ok(Some(channel))
+        Ok(Some(body))
     }
+}
+
+fn slug(name: &str) -> String {
+    name.replace('_', "-")
 }
