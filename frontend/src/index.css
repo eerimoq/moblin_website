@@ -78,7 +78,10 @@
     letter-spacing: -0.01em;
   }
   section {
-    scroll-margin-top: 80px;
+    scroll-margin-top: calc(4rem + 1px);
+    @media (width >= 64rem) {
+      scroll-margin-top: calc(4.5rem + 1px);
+    }
   }
 }
 
