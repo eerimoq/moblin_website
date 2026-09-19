@@ -6,7 +6,7 @@ const tilt = ["rotate-[10deg]", "-rotate-[8deg]", "rotate-[12deg]"];
 
 export default function GetStarted() {
   return (
-    <section id="get-started" class="pt-10 pb-24">
+    <section id="get-started" class="bg-band pt-10 pb-24">
       <div class="mx-auto flex max-w-[1120px] flex-col gap-10 px-5 sm:px-8">
         <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between md:gap-6">
           <div class="flex flex-col gap-2.5">

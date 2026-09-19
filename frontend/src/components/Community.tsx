@@ -5,16 +5,18 @@ import Mascot from "./Mascot";
 
 export default function Community() {
   return (
-    <section id="community" class="pt-10 pb-24">
-      <div class="mx-auto max-w-[1120px] px-5 sm:px-8">
-        <div class="relative grid items-center gap-10 overflow-hidden rounded-3xl border-[1.5px] border-grove-line bg-grove p-8 sm:p-12 md:grid-cols-2 lg:px-16 lg:py-14">
+    <section id="community" class="bg-band pt-10 pb-24">
+      <div class="mx-auto flex max-w-[1120px] flex-col gap-10 px-5 sm:px-8">
+        <div class="flex max-w-[640px] flex-col gap-2.5">
+          <span class="font-display text-[15px] font-semibold uppercase tracking-[0.08em] text-leaf">
+            Community
+          </span>
+          <h2 class="text-4xl font-bold sm:text-[46px]">
+            Stuck? Someone on Discord has been there.
+          </h2>
+        </div>
+        <div class="relative grid items-start gap-10 overflow-hidden rounded-3xl border-[1.5px] border-line bg-card p-8 sm:p-12 md:grid-cols-2 lg:px-16">
           <div class="flex flex-col gap-5">
-            <span class="font-display text-[15px] font-semibold uppercase tracking-[0.08em] text-leaf">
-              Community
-            </span>
-            <h2 class="text-[32px] font-bold sm:text-[44px] sm:leading-tight">
-              Stuck? Someone on Discord has been there.
-            </h2>
             <p class="max-w-[480px] text-lg text-ink-2">
               Thousands of IRL streamers share setups, fix problems and vote on what Moblin does
               next. The developer hangs out there too.

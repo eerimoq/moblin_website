@@ -10,23 +10,20 @@ import Mascot from "./Mascot";
 export default function Support() {
   const live = createTwitchLive();
   return (
-    <section class="pt-16 lg:pt-20">
-      <div class="mx-auto max-w-[1120px] px-5 sm:px-8">
-        <div
-          id="support"
-          class="relative flex scroll-mt-24 flex-col gap-5 overflow-hidden rounded-3xl border-[1.5px] border-line bg-card p-8 sm:p-12 md:flex-row md:items-center md:justify-between md:gap-10 lg:px-16"
-        >
+    <section id="support" class="pt-10 pb-24">
+      <div class="mx-auto flex max-w-[1120px] flex-col gap-10 px-5 sm:px-8">
+        <div class="flex max-w-[640px] flex-col gap-2.5">
+          <span class="font-display text-[15px] font-semibold uppercase tracking-[0.08em] text-leaf">
+            Support Moblin
+          </span>
+          <h2 class="text-4xl font-bold sm:text-[46px]">Like Moblin? Help keep it free.</h2>
+        </div>
+        <div class="relative flex flex-col gap-5 overflow-hidden rounded-3xl border-[1.5px] border-line bg-card p-8 sm:p-12 md:flex-row md:items-center md:justify-between md:gap-10 lg:px-16">
           <Mascot
             variant="heart"
             class="pointer-events-none absolute -right-8 -bottom-10 hidden w-[130px] -rotate-[8deg] opacity-30 lg:block"
           />
           <div class="flex max-w-[560px] flex-col gap-4">
-            <span class="font-display text-[15px] font-semibold uppercase tracking-[0.08em] text-leaf">
-              Support Moblin
-            </span>
-            <h2 class="text-[28px] font-bold sm:text-[36px] sm:leading-tight">
-              Like Moblin? Help keep it free.
-            </h2>
             <p class="text-lg text-ink-2">
               Made by Erik and the Moblin community. Sponsor the project, send a tip, or just drop
               by the stream and say hi.

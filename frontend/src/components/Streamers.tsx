@@ -154,7 +154,7 @@ const placeholderCount = 6;
 
 export default function Streamers() {
   return (
-    <section id="streamers" class="py-20 lg:py-24">
+    <section id="streamers" class="bg-band pt-10 pb-24">
       <div class="mx-auto flex max-w-[1120px] flex-col gap-10 px-5 sm:px-8">
         <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between md:gap-6">
           <div class="flex max-w-[640px] flex-col gap-2.5">
