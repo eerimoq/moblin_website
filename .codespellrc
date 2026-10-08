@@ -1,2 +1,3 @@
 [codespell]
 skip = .git,node_modules,dist,target,package-lock.json,*.lock,*.pem,*.base64
+ignore-words-list = soop

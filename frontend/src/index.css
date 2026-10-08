@@ -185,3 +185,25 @@
     opacity: 0;
   }
 }
+
+@utility docs-target {
+  scroll-margin-top: 6rem;
+  border-radius: 0.5rem;
+}
+
+@utility docs-flash {
+  animation: docs-flash 2s ease-out;
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+@keyframes docs-flash {
+  0%,
+  40% {
+    background-color: var(--color-amber-bg);
+  }
+  100% {
+    background-color: transparent;
+  }
+}
