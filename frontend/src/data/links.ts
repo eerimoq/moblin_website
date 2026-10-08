@@ -41,6 +41,7 @@ export const navItems = [
 /** Pages other than the home page, relative to the site root. */
 export const pages = {
   chatBot: "/chat-bot/",
+  docs: "/docs/",
 } as const;
 
 export const platforms = [

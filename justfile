@@ -58,3 +58,8 @@ backend-docker-build:
 
 backend-docker-run *args: backend-docker-build
 	docker run --rm -it --init -p 8080:8080 moblin-website-backend {{args}}
+
+# Regenerates the settings reference on the docs page from a Moblin checkout.
+docs-generate moblin="../moblin":
+	python3 scripts/generate_docs.py {{moblin}} frontend/src/data/docs/settings.json
+	cd frontend && oxfmt src/data/docs/settings.json
