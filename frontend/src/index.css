@@ -28,6 +28,16 @@
   --color-twitch-bright: #a970ff;
   --color-live: #eb0400;
 
+  --color-app-button: #404040;
+  --color-app-red: #ff3b30;
+  --color-app-blue: #0a84ff;
+  --color-app-green: #34c759;
+  --color-app-cell: #1c1c1e;
+  --color-app-alert: #2c2c2e;
+  --color-app-separator: #38383a;
+  --color-app-secondary: #8e8e93;
+  --color-app-segment: rgb(142 142 147 / 0.6);
+
   --font-display: "Fredoka", "Arial Rounded MT Bold", "Nunito Sans", sans-serif;
   --font-body: "Nunito Sans", "Helvetica Neue", Arial, sans-serif;
 }
@@ -205,5 +215,67 @@
   }
   100% {
     background-color: transparent;
+  }
+}
+
+@utility app-units {
+  --spacing: calc(100cqw / 220);
+}
+
+@utility app-text-* {
+  font-size: calc(var(--spacing) * --value(number) / 4);
+  line-height: 1.25;
+}
+
+@utility app-scanlines {
+  background:
+    repeating-linear-gradient(0deg, rgb(0 0 0 / 0.35) 0 2px, transparent 2px 4px),
+    radial-gradient(ellipse at center, transparent 55%, rgb(0 0 0 / 0.6) 100%);
+}
+
+@utility app-flash {
+  animation: app-flash 0.4s ease-out forwards;
+}
+
+@keyframes app-flash {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@utility app-transition-blur {
+  animation: app-transition-blur 0.5s ease-out;
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+@utility app-transition-zoom {
+  animation: app-transition-zoom 0.5s ease-out;
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+@keyframes app-transition-blur {
+  from {
+    filter: blur(24px);
+  }
+  to {
+    filter: blur(0);
+  }
+}
+
+@keyframes app-transition-zoom {
+  from {
+    filter: blur(24px);
+    transform: scale(1.3);
+  }
+  to {
+    filter: blur(0);
+    transform: scale(1);
   }
 }

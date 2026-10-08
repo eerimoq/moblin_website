@@ -1,4 +1,5 @@
 import Community from "./components/Community";
+import Emulator from "./components/emulator/Emulator";
 import Ecosystem from "./components/Ecosystem";
 import Features from "./components/Features";
 import Footer from "./components/Footer";
@@ -15,6 +16,7 @@ export default function App() {
       <Nav />
       <main>
         <Hero />
+        <Emulator />
         <GetStarted />
         <Features />
         <Streamers />
