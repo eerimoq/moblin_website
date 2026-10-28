@@ -1,6 +1,6 @@
 /** Streamers who recently went live with Moblin, served by the backend in `backend/`. */
 import { createResource, createRoot } from "solid-js";
-import { backendUrl } from "./backend";
+import { links } from "./links";
 
 export type StreamerPlatform = "twitch" | "youtube" | "kick";
 
@@ -47,7 +47,7 @@ export const snapshotUrl = ({ channels }: Streamer) =>
 
 /** Live streamers first, then the most recently live. */
 async function fetchStreamers(): Promise<Streamer[]> {
-  const res = await fetch(`${backendUrl}/streamers`);
+  const res = await fetch(`${links.api}/streamers`);
   if (!res.ok) throw new Error(`fetching streamers failed with status ${res.status}`);
   const body: { streamers: Streamer[] } = await res.json();
   return body.streamers;

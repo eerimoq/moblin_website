@@ -18,18 +18,12 @@ export default defineConfig({
       "/api": {
         target: "http://127.0.0.1:8070",
         rewrite: (path) => path.replace(/^\/api/, ""),
-        // Every other Twitch and Kick channel, and every one of a streamer
-        // without a snapshot, is shown as live, with varying categories and
-        // titles and a placeholder thumbnail, whatever the backend says, to see
-        // how live channels look without real streams.
+        // Every other Twitch and Kick channel is shown as live, with varying
+        // categories and titles and a placeholder thumbnail, whatever the
+        // backend says, to see how live channels look without real streams.
         selfHandleResponse: true,
         configure: (proxy) => {
           proxy.on("proxyRes", (proxyRes, req, res) => {
-            if (proxyRes.headers["content-type"]?.startsWith("text/event-stream")) {
-              res.writeHead(proxyRes.statusCode ?? 500, proxyRes.headers);
-              proxyRes.pipe(res);
-              return;
-            }
             const chunks: Buffer[] = [];
             proxyRes.on("data", (chunk) => chunks.push(chunk));
             proxyRes.on("end", () => {
@@ -41,7 +35,7 @@ export default defineConfig({
                   for (const channel of streamer.channels) {
                     if (channel.platform in counts) {
                       const count = counts[channel.platform as keyof typeof counts]++;
-                      channel.live = count % 2 === 0 || streamer.image === null;
+                      channel.live = count % 2 === 0;
                       channel.category = channel.live
                         ? ["Just Chatting", null, "Travel & Outdoors"][count % 3]
                         : null;

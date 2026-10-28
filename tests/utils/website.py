@@ -18,22 +18,14 @@ class BackendError(Exception):
 class Client:
     """Talks to the backend like the website's JavaScript does, from https://moblin.app."""
 
-    def __init__(self, url: str, session: str | None = None):
+    def __init__(self, url: str):
         self.url = url
-        self.session = session
 
-    def request(
-        self, method: str, path: str, json=None, headers: dict | None = None, stream: bool = False
-    ) -> requests.Response:
+    def request(self, method: str, path: str, json=None, headers: dict | None = None) -> requests.Response:
         headers = {"origin": FRONTEND_URL, **(headers or {})}
-        if self.session is not None:
-            headers["authorization"] = f"Bearer {self.session}"
         LOGGER.debug("%s %s %s", method, path, json)
-        response = requests.request(
-            method, f"{self.url}{path}", json=json, headers=headers, timeout=TIMEOUT, stream=stream
-        )
-        if not stream:
-            LOGGER.debug("%s %s -> %s %s", method, path, response.status_code, response.text)
+        response = requests.request(method, f"{self.url}{path}", json=json, headers=headers, timeout=TIMEOUT)
+        LOGGER.debug("%s %s -> %s %s", method, path, response.status_code, response.text)
         return response
 
     def call(self, method: str, path: str, json=None):

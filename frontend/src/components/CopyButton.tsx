@@ -20,7 +20,7 @@ function copyWithExecCommand(text: string): boolean {
   return ok;
 }
 
-export async function copyText(text: string): Promise<boolean> {
+async function copyText(text: string): Promise<boolean> {
   if (navigator.clipboard?.writeText) {
     try {
       await navigator.clipboard.writeText(text);

@@ -21,53 +21,16 @@
   --color-amber-line: #4a3d1c;
   --color-amber-ink: #f0e6c8;
   --color-amber: #f6d21b;
-  --color-danger-bg: #2c1614;
-  --color-danger-line: #6b2620;
-  --color-danger-ink: #ffd4cf;
-  --color-danger: #ff5c4a;
   --color-confetti-red: #e8401c;
   --color-confetti-blue: #3f8fe8;
   --color-confetti-purple: #a23fb0;
   --color-twitch: #9146ff;
   --color-twitch-bright: #a970ff;
   --color-kick: #53fc18;
-  --color-kick-bright: #7dff4d;
-  --color-stripe: #635bff;
-  --color-stripe-bright: #7a73ff;
   --color-live: #eb0400;
-  --color-wheel-1: #0a84ff;
-  --color-wheel-2: #ff453a;
-  --color-wheel-3: #ffd60a;
-  --color-wheel-4: #30d158;
-  --color-wheel-5: #ff375f;
-  --color-wheel-6: #64d2ff;
-  --color-phone-bezel: #0b0b0c;
-  --color-phone-frame: #3a3c40;
-  --color-phone-screen: #000000;
-  --color-phone-preview: #2c3238;
-  --color-phone-preview-dark: #0d0f11;
-  --color-phone-chip: rgb(0 0 0 / 0.4);
-  --color-phone-button: #3f3f3f;
-  --color-phone-selected: rgb(142 142 147 / 0.6);
-  --color-phone-border: #8e8e93;
-  --color-phone-row: #1c1c1e;
-  --color-phone-separator: #38383a;
-  --color-phone-tint: #0a84ff;
-  --color-phone-switch: #30d158;
-  --color-phone-live: #ff3b30;
-  --color-phone-warn: #ffd60a;
 
   --font-display: "Fredoka", "Arial Rounded MT Bold", "Nunito Sans", sans-serif;
   --font-body: "Nunito Sans", "Helvetica Neue", Arial, sans-serif;
-  --font-title: var(--font-display);
-}
-
-/* Chart series colors, outside @theme so they are kept without a utility using them. */
-:root {
-  --color-chart-1: #d95926;
-  --color-chart-2: #199e70;
-  --color-chart-3: #3987e5;
-  --color-chart-4: #c98500;
 }
 
 /* Light theme: same tokens, different values, chosen by the browser setting. */
@@ -86,10 +49,6 @@
     --color-moss-bright: #0c8a18;
     --color-leaf: #0a7a1c;
     --color-leaf-bright: #08601a;
-    --color-chart-1: #eb6834;
-    --color-chart-2: #1baf7a;
-    --color-chart-3: #2a78d6;
-    --color-chart-4: #eda100;
     --color-ghost: #ffffff;
     --color-ghost-hover: #f0efe8;
     --color-ghost-line: #d8d9cf;
@@ -97,104 +56,9 @@
     --color-amber-line: #ecd68a;
     --color-amber-ink: #5a4a10;
     --color-amber: #d9b800;
-    --color-danger-bg: #fde4e1;
-    --color-danger-line: #f0a39a;
-    --color-danger-ink: #7a1a12;
-    --color-danger: #c8291b;
   }
 }
 
-[data-accent="purple"] {
-  --color-moss: #8e4ef0;
-  --color-moss-bright: #9d66f5;
-  --color-leaf: #b18cff;
-  --color-leaf-bright: #cbb2ff;
-}
-[data-accent="blue"] {
-  --color-moss: #2f7fe0;
-  --color-moss-bright: #4a92ec;
-  --color-leaf: #6aaeff;
-  --color-leaf-bright: #9cc8ff;
-}
-[data-accent="pink"] {
-  --color-moss: #d63d8f;
-  --color-moss-bright: #e2569f;
-  --color-leaf: #ff7ab8;
-  --color-leaf-bright: #ffa6cf;
-}
-[data-accent="orange"] {
-  --color-moss: #d45f14;
-  --color-moss-bright: #e2722a;
-  --color-leaf: #ff9a52;
-  --color-leaf-bright: #ffbb85;
-}
-[data-accent="red"] {
-  --color-moss: #d9342b;
-  --color-moss-bright: #e64c43;
-  --color-leaf: #ff6b61;
-  --color-leaf-bright: #ff9a93;
-}
-[data-accent="custom"] {
-  --color-moss: var(--accent);
-  --color-moss-bright: color-mix(in oklab, var(--accent), white 12%);
-  --color-leaf: color-mix(in oklab, var(--accent), white 35%);
-  --color-leaf-bright: color-mix(in oklab, var(--accent), white 55%);
-}
-
-@media (prefers-color-scheme: light) {
-  [data-accent="custom"] {
-    --color-moss: var(--accent);
-    --color-moss-bright: color-mix(in oklab, var(--accent), black 12%);
-    --color-leaf: color-mix(in oklab, var(--accent), black 20%);
-    --color-leaf-bright: color-mix(in oklab, var(--accent), black 35%);
-  }
-  [data-accent="purple"] {
-    --color-moss: #7a3be0;
-    --color-moss-bright: #6a2fcc;
-    --color-leaf: #6a2fcc;
-    --color-leaf-bright: #561fb0;
-  }
-  [data-accent="blue"] {
-    --color-moss: #1f6fd0;
-    --color-moss-bright: #185fb8;
-    --color-leaf: #1a60b8;
-    --color-leaf-bright: #134c94;
-  }
-  [data-accent="pink"] {
-    --color-moss: #c42a7c;
-    --color-moss-bright: #ad216b;
-    --color-leaf: #b0236f;
-    --color-leaf-bright: #8c1a58;
-  }
-  [data-accent="orange"] {
-    --color-moss: #c25210;
-    --color-moss-bright: #a8460a;
-    --color-leaf: #a8470c;
-    --color-leaf-bright: #863808;
-  }
-  [data-accent="red"] {
-    --color-moss: #c8261e;
-    --color-moss-bright: #ad1f18;
-    --color-leaf: #b0221b;
-    --color-leaf-bright: #8c1a14;
-  }
-}
-
-[data-font="modern"] {
-  --font-title: "Poppins", "Helvetica Neue", Arial, sans-serif;
-}
-[data-font="serif"] {
-  --font-title: "Playfair Display", Georgia, serif;
-}
-[data-font="mono"] {
-  --font-title: "JetBrains Mono", Menlo, monospace;
-}
-[data-font="handwritten"] {
-  --font-title: "Caveat", "Bradley Hand", cursive;
-}
-[data-font="pixel"] {
-  --font-title: "Pixelify Sans", "Courier New", monospace;
-}
 @layer base {
   html {
     background-color: var(--color-page);
@@ -216,7 +80,7 @@
   h1,
   h2,
   h3 {
-    font-family: var(--font-title);
+    font-family: var(--font-display);
     letter-spacing: -0.01em;
   }
   section {
@@ -225,11 +89,6 @@
       scroll-margin-top: calc(4.5rem + 1px);
     }
   }
-}
-
-@utility cutout {
-  filter: drop-shadow(3px 0 0 var(--color-page)) drop-shadow(-3px 0 0 var(--color-page))
-    drop-shadow(0 3px 0 var(--color-page)) drop-shadow(0 -3px 0 var(--color-page));
 }
 
 @utility sticker {
@@ -281,38 +140,6 @@
   }
   to {
     transform: translateX(14px) rotate(200deg);
-  }
-}
-
-/* The player's lists: a thin scrollbar only while scrolling or hovered. */
-@utility scrollbar-fading {
-  scrollbar-width: thin;
-  scrollbar-color: transparent transparent;
-  transition: scrollbar-color 0.3s;
-  &:hover,
-  &[data-scrolling] {
-    scrollbar-color: var(--color-ghost-line) transparent;
-  }
-}
-
-/* The bars of the player's now playing disc. */
-@utility equalizer-bar {
-  height: 100%;
-  transform-origin: bottom;
-  animation: equalize 1s ease-in-out infinite;
-  @media (prefers-reduced-motion: reduce) {
-    animation: none;
-    transform: scaleY(0.6);
-  }
-}
-
-@keyframes equalize {
-  0%,
-  100% {
-    transform: scaleY(0.3);
-  }
-  50% {
-    transform: scaleY(1);
   }
 }
 
@@ -384,36 +211,5 @@
   }
   100% {
     background-color: transparent;
-  }
-}
-
-@utility cheer-pop {
-  animation: cheer-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-  @media (prefers-reduced-motion: reduce) {
-    animation: none;
-  }
-}
-
-@keyframes cheer-pop {
-  from {
-    opacity: 0;
-    transform: translateY(24px) scale(0.85);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-@utility cheer-fade {
-  animation: cheer-fade 0.3s ease-out both;
-  @media (prefers-reduced-motion: reduce) {
-    animation: none;
-  }
-}
-
-@keyframes cheer-fade {
-  from {
-    opacity: 0;
   }
 }

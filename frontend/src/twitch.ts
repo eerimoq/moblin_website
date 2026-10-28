@@ -1,5 +1,5 @@
 import { createSignal, onCleanup, onMount } from "solid-js";
-import { backendUrl } from "./data/backend";
+import { links } from "./data/links";
 import { poll } from "./poll";
 
 /**
@@ -12,7 +12,7 @@ export function createTwitchLive(refreshMs = 5 * 60 * 1000) {
 
   const check = async () => {
     try {
-      const res = await fetch(`${backendUrl}/twitch/live`, { cache: "no-store" });
+      const res = await fetch(`${links.api}/twitch/live`, { cache: "no-store" });
       if (!res.ok) throw new Error(`checking Twitch live status failed with status ${res.status}`);
       const body: { live: boolean } = await res.json();
       setLive(body.live === true);
