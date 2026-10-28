@@ -10,8 +10,6 @@ import {
 } from "../data/streamers";
 import BrandIcon from "./BrandIcon";
 import Icon from "./Icon";
-import { asset } from "../asset";
-import { moblinIconUrl } from "../data/backend";
 import { t } from "../i18n";
 
 const platformName: Record<StreamerPlatform, string> = {
@@ -144,11 +142,11 @@ function StreamerCard(props: { streamer: Streamer }) {
       <Show when={props.streamer.page}>
         {(page) => (
           <a
-            href={asset(`/${page().platform}/${encodeURIComponent(page().login)}`)}
+            href={page().url}
             class="mt-auto inline-flex items-center gap-2 self-start rounded-full border-[1.5px] border-line px-4 py-2 font-bold text-ink hover:border-leaf hover:text-leaf"
           >
             <Show when={page().icon} fallback={<Icon name="heart" class="size-4" />}>
-              {(icon) => <img src={moblinIconUrl(icon())} alt="" class="h-6 w-auto" />}
+              {(icon) => <img src={icon()} alt="" class="h-6 w-auto" />}
             </Show>
             {t("Tip page")}
           </a>

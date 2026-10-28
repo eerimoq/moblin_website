@@ -5,7 +5,6 @@ from systest import wait_until
 
 from .context import Context
 from .website import BackendError
-from .website import Dashboard
 
 
 class TestCase(systest.TestCase):
@@ -19,20 +18,9 @@ class TestCase(systest.TestCase):
         if self.context.config.twitch() is None:
             raise systest.TestCaseSkippedError("No [twitch] in the configuration.")
 
-    def skip_if_real_twitch_sign_in(self):
-        if self.context.config.twitch_sign_in() == "real":
-            raise systest.TestCaseSkippedError("Needs made-up Twitch users.")
-
-    def skip_if_no_moblin(self):
-        if self.context.moblin is None:
-            raise systest.TestCaseSkippedError("No Moblin device given with --device.")
-
     def skip_if_not_interactive(self):
         if not self.context.interactive:
             raise systest.TestCaseSkippedError("Not interactive.")
-
-    def sign_in(self, login: str = "streamer") -> Dashboard:
-        return self.context.sign_in(login)
 
     def assert_backend_error(self, status: int, call: Callable[..., object], text: str | None = None) -> str:
         try:

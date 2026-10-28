@@ -1,8 +1,8 @@
 import { asset } from "../asset";
+import Button from "../components/Button";
 import Footer from "../components/Footer";
 import Mascot from "../components/Mascot";
 import Nav from "../components/Nav";
-import { buttonClass } from "../components/PageParts";
 import { t } from "../i18n";
 
 export default function NotFound() {
@@ -18,9 +18,7 @@ export default function NotFound() {
           <p class="text-lg text-ink-2 text-pretty sm:text-[21px]">
             {t("There is nothing here. It may have moved.")}
           </p>
-          <a href={asset("/")} class={buttonClass}>
-            {t("Go to the home page")}
-          </a>
+          <Button href={asset("/")}>{t("Go to the home page")}</Button>
         </section>
       </main>
       <Footer />

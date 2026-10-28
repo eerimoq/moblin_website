@@ -7,7 +7,7 @@ import random
 import time
 import urllib.request
 
-URL = "http://localhost:8080/streamers/live"
+URL = "http://localhost:8070/streamers/live"
 
 STREAMERS = [
     [("twitch", "sofiacycles")],

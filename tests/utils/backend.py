@@ -12,11 +12,6 @@ from systest import wait_until
 
 from .config import FRONTEND_URL
 from .config import Config
-from .fake_kick import FakeKick
-from .fake_paypal import FakePayPal
-from .fake_stripe import FakeStripe
-from .fake_twitch import FakeTwitch
-from .fake_twitch import user_id_of as twitch_user_id_of
 from .utils import FILES_DIR
 from .utils import REPO_DIR
 
@@ -24,7 +19,6 @@ LOGGER = logging.getLogger(__name__)
 LOGGER_PROCESS = logging.getLogger(__name__ + ".process")
 BACKEND_DIR = REPO_DIR / "backend"
 BINARY = BACKEND_DIR / "target" / "release" / "moblin-website-backend"
-SESSION_SECRET = "moblin-website-system-tests"
 
 
 def build_backend():
@@ -41,32 +35,19 @@ class Backend:
         self._lines_lock = threading.Lock()
         self._lines: list[str] = []
         self._process: ManagedProcess | None = None
-        self.fake_twitch: FakeTwitch | None = None
-        self.fake_kick: FakeKick | None = None
-        self.fake_paypal = FakePayPal()
-        self.fake_stripe = FakeStripe()
 
     def __enter__(self):
-        self.fake_paypal.start()
-        self.fake_stripe.start()
         self.start()
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.stop()
-        self.fake_paypal.stop()
-        self.fake_stripe.stop()
 
     def start(self):
         with socket.socket() as sock:
             if sock.connect_ex(("127.0.0.1", self.port)) == 0:
                 raise Exception(f"Port {self.port} is in use, maybe by a backend left from an earlier run.")
         self.files_dir.mkdir(parents=True, exist_ok=True)
-        if self.config.twitch_sign_in() == "fake":
-            self.fake_twitch = FakeTwitch()
-            self.fake_twitch.start()
-            self.fake_kick = FakeKick()
-            self.fake_kick.start()
         self._process = ManagedProcess(
             [str(BINARY), *self._arguments()],
             LOGGER_PROCESS,
@@ -80,12 +61,6 @@ class Backend:
         if self._process is not None:
             self._process.stop()
             self._process = None
-        if self.fake_twitch is not None:
-            self.fake_twitch.stop()
-            self.fake_twitch = None
-        if self.fake_kick is not None:
-            self.fake_kick.stop()
-            self.fake_kick = None
 
     def restart(self):
         self.stop()
@@ -130,20 +105,12 @@ class Backend:
         arguments = [
             "--listen",
             f"0.0.0.0:{self.port}",
-            "--backend-url",
-            self.url,
             "--frontend-url",
             FRONTEND_URL,
-            "--session-secret",
-            SESSION_SECRET,
             "--database",
             str(self.files_dir / "database.sqlite"),
             "--lookup-spacing",
             "1",
-            "--admins",
-            twitch_user_id_of("admin"),
-            "--premium-accounts",
-            twitch_user_id_of("pagelook"),
         ]
         if self.config.allow_unattested():
             arguments.append("--allow-unattested")
@@ -151,10 +118,6 @@ class Backend:
             arguments += ["--app-attest-environment", self.config.app_attest_environment()]
             if (app_id := self.config.app_id()) is not None:
                 arguments += ["--app-id", app_id]
-        if self.fake_twitch is not None:
-            arguments += ["--twitch-sign-in-url", self.fake_twitch.url]
-        if self.fake_kick is not None:
-            arguments += ["--kick-sign-in-url", self.fake_kick.url]
         twitch = self.config.twitch()
         if twitch is not None:
             arguments += [
@@ -165,26 +128,6 @@ class Backend:
             ]
             if "live-channel" in twitch:
                 arguments += ["--twitch-live-channel", twitch["live-channel"]]
-        paypal = self.fake_paypal.config
-        stripe = self.fake_stripe.config
-        arguments += [
-            "--paypal-url",
-            self.fake_paypal.url,
-            "--paypal-client-id",
-            paypal["client-id"],
-            "--paypal-client-secret",
-            paypal["client-secret"],
-            "--paypal-partner-id",
-            paypal["partner-id"],
-            "--paypal-webhook-id",
-            paypal["webhook-id"],
-            "--stripe-url",
-            self.fake_stripe.url,
-            "--stripe-secret-key",
-            stripe["secret-key"],
-            "--stripe-publishable-key",
-            stripe["publishable-key"],
-        ]
         return arguments
 
     def _wait_until_ready(self):

@@ -4,44 +4,19 @@ import solid from "vite-plugin-solid";
 import tailwindcss from "@tailwindcss/vite";
 
 // On a custom domain (public/CNAME present) the site lives at the root.
-// Until then GitHub Pages serves it from https://eerimoq.github.io/moblin_cloud/.
-const base = existsSync("public/CNAME") ? "/" : "/moblin_cloud/";
+// Until then GitHub Pages serves it from https://eerimoq.github.io/moblin_website/.
+const base = existsSync("public/CNAME") ? "/" : "/moblin_website/";
 
 export default defineConfig({
   base,
-  plugins: [
-    solid(),
-    tailwindcss(),
-    {
-      name: "twitch-pages",
-      configureServer(server) {
-        server.middlewares.use((req, res, next) => {
-          const host = new URL(`http://${req.headers.host ?? "localhost"}`);
-          if (req.url?.startsWith("/api/auth/") && host.hostname !== "localhost") {
-            res.writeHead(302, { location: `http://localhost:${host.port}${req.url}` });
-            res.end();
-            return;
-          }
-          if (
-            req.url &&
-            new RegExp(
-              `^${base}((dashboard/twitch|twitch|kick)/[^/?.]+|device/[^/?]+(/[^/?]+)?)/?(\\?.*)?$`,
-            ).test(req.url)
-          ) {
-            req.url = `${base}404.html`;
-          }
-          next();
-        });
-      },
-    },
-  ],
+  plugins: [solid(), tailwindcss()],
   server: {
     host: true,
+    port: 5174,
     // Talk to a local backend (`just dev-backend`) during development.
     proxy: {
       "/api": {
-        target: "http://127.0.0.1:8080",
-        ws: true,
+        target: "http://127.0.0.1:8070",
         rewrite: (path) => path.replace(/^\/api/, ""),
         // Every other Twitch and Kick channel, and every one of a streamer
         // without a snapshot, is shown as live, with varying categories and
@@ -102,12 +77,6 @@ export default defineConfig({
         "chat-bot/index.html",
         "docs/index.html",
         "cards/index.html",
-        "page/index.html",
-        "dashboard/index.html",
-        "account/index.html",
-        "admin/index.html",
-        "terms/index.html",
-        "song-requests/index.html",
         "404.html",
       ],
     },

@@ -1,13 +1,13 @@
 # Moblin website
 
-Landing page for Moblin and its companion apps, plus the streamer pages where
-viewers tip and spin the wheel.
+Landing page for Moblin and its companion apps. Moblin Cloud, where viewers
+tip and spin the wheel, is in
+[moblin_cloud](https://github.com/eerimoq/moblin_cloud).
 
 - `frontend/` is the website (SolidJS, TypeScript and Tailwind), deployed to
   GitHub Pages on every push to `main`.
-- `backend/` is a Rust service deployed at `https://api.moblin.app`.
-- `deploy/` runs your own copy of both on one server, see
-  [deploy/README.md](deploy/README.md).
+- `backend/` is a Rust service deployed at `https://api.moblin.app`, which
+  lists the streamers who recently went live with Moblin.
 
 ## Prerequisites
 
@@ -22,10 +22,8 @@ cd frontend && npm install
 just dev
 ```
 
-and open http://localhost:5173. It runs the backend with made-up streamers, the
-frontend and a fake Moblin. Signing in goes through a fake Twitch and Kick that
-take any login: `admin` is an admin, `premium` a premium account and a login
-ending in 1, 2 or 3 a subscriber. Run `just` for the other recipes.
+and open http://localhost:5174. It runs the backend with made-up streamers and
+the frontend. Run `just` for the other recipes.
 
 ## Checks
 

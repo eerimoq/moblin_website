@@ -658,12 +658,12 @@ export const guides: Guide[] = [
   {
     id: "moblin-cloud",
     title: t("Moblin Cloud: your tip page"),
-    summary: t("Let viewers tip you from your own page on moblin.app."),
+    summary: t("Let viewers tip you from your own page on cloud.moblin.app."),
     blocks: [
       {
         type: "p",
         text: t(
-          "Moblin Cloud gives you a tip page on moblin.app. Viewers tip you there in the ways " +
+          "Moblin Cloud gives you a tip page on cloud.moblin.app. Viewers tip you there in the ways " +
             "you turn on, and Moblin shows it on stream. The money goes straight to your PayPal " +
             "or Stripe account.",
         ),
@@ -672,7 +672,7 @@ export const guides: Guide[] = [
       {
         type: "steps",
         items: [
-          t("Open moblin.app/dashboard and sign in with Twitch or Kick. Your page is ready."),
+          t("Open cloud.moblin.app/dashboard and sign in with Twitch or Kick. Your page is ready."),
           t(
             "In Payments, connect PayPal or Stripe. Stripe asks for your country, which cannot " +
               "be changed later.",

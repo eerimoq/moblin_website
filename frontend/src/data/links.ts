@@ -1,4 +1,3 @@
-import { asset } from "../asset";
 import { t } from "../i18n";
 
 declare global {
@@ -9,6 +8,7 @@ declare global {
 
 export const links = {
   api: window.config.backendUrl,
+  cloud: "https://cloud.moblin.app/dashboard/",
   appStore: "https://apps.apple.com/app/id6466745933",
   testFlight: "https://testflight.apple.com/join/PDpxEaGh",
   discord: "https://discord.gg/kh3KMng4JV",
@@ -53,15 +53,7 @@ export const pages = {
   chatBot: "/chat-bot/",
   docs: "/docs/",
   cards: "/cards/",
-  dashboard: "/dashboard/",
-  account: "/account/",
-  device: "/device/",
-  admin: "/admin/",
-  terms: "/terms/",
 } as const;
-
-export const deviceUrl = (page: string, device: string) =>
-  `${asset(pages.device)}${encodeURIComponent(page)}/${encodeURIComponent(device)}`;
 
 export const platforms = [
   { name: "Twitch", icon: "twitch" },

@@ -175,10 +175,6 @@ class StreamersMoblinGoesLive(StreamersTestCase):
     """List the streamer when Moblin goes live with listing on moblin.app turned on, attested with App Attest."""
 
     def run(self):
-        self.skip_if_no_moblin()
-        assert self.context.moblin is not None
-        if self.context.moblin.is_fake():
-            raise systest.TestCaseSkippedError("Needs a real Moblin device.")
         self.skip_if_not_interactive()
         if self.context.config.allow_unattested():
             raise systest.TestCaseSkippedError("The backend accepts unattested live posts.")
