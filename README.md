@@ -1,8 +1,6 @@
 # Moblin website
 
-Landing page for Moblin and its companion apps. Moblin Cloud, where viewers
-tip and spin the wheel, is in
-[moblin_cloud](https://github.com/eerimoq/moblin_cloud).
+Landing page for Moblin and its companion apps.
 
 - `frontend/` is the website (SolidJS, TypeScript and Tailwind), deployed to
   GitHub Pages on every push to `main`.
