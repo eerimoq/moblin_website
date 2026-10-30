@@ -672,7 +672,7 @@ export const guides: Guide[] = [
       {
         type: "steps",
         items: [
-          t("Open cloud.moblin.app/dashboard and sign in with Twitch or Kick. Your page is ready."),
+          t("Open cloud.moblin.app and sign in with Twitch or Kick. Your page is ready."),
           t(
             "In Payments, connect PayPal or Stripe. Stripe asks for your country, which cannot " +
               "be changed later.",

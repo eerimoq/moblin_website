@@ -237,7 +237,7 @@
   "Open Bot → Commands and pick a command to set who may use it: Moderators, Subscribers (with a Minimum subscriber tier) and Others, plus an optional Cooldown.": "Bot → Komutlar'ı açın ve bir komut seçerek kimin kullanabileceğini belirleyin: Moderatörler, Aboneler (Minimum abone seviyesi ile) ve Diğerleri, ayrıca isteğe bağlı Bekleme süresi.",
   "Open Settings → Deep link creator and fill in Streams, Quick buttons or Web browser.": "Ayarlar → Derin bağlantı oluşturucu'yu aç ve Yayınlar, Hızlı düğmeler veya Web tarayıcısı bölümünü doldur.",
   "Open a server, add a stream (each stream receives one publisher) and turn the server on. Disable the server to change its settings.": "Bir sunucu açın, bir yayın ekleyin (her yayın bir publisher alır) ve sunucuyu açın. Ayarlarını değiştirmek için sunucuyu devre dışı bırakın.",
-  "Open cloud.moblin.app/dashboard and sign in with Twitch or Kick. Your page is ready.": "cloud.moblin.app/dashboard'u aç ve Twitch veya Kick ile giriş yap. Sayfan hazır.",
+  "Open cloud.moblin.app and sign in with Twitch or Kick. Your page is ready.": "cloud.moblin.app'u aç ve Twitch veya Kick ile giriş yap. Sayfan hazır.",
   "Open menu": "Menüyü aç",
   "Open the create stream wizard (Settings → Streams → Create) and pick Kick.": "Yayın oluşturma sihirbazını aç (Ayarlar → Yayınlar → Oluştur) ve Kick'i seç.",
   "Open the create stream wizard (Settings → Streams → Create) and pick Twitch.": "Yayın oluşturma sihirbazını açın (Ayarlar → Yayınlar → Oluştur) ve Twitch'i seçin.",

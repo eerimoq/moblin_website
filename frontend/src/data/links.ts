@@ -8,7 +8,7 @@ declare global {
 
 export const links = {
   api: window.config.backendUrl,
-  cloud: "https://cloud.moblin.app/dashboard/",
+  cloud: "https://cloud.moblin.app/",
   appStore: "https://apps.apple.com/app/id6466745933",
   testFlight: "https://testflight.apple.com/join/PDpxEaGh",
   discord: "https://discord.gg/kh3KMng4JV",

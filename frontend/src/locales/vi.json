@@ -237,7 +237,7 @@
   "Open Bot → Commands and pick a command to set who may use it: Moderators, Subscribers (with a Minimum subscriber tier) and Others, plus an optional Cooldown.": "Mở Bot → Lệnh và chọn một lệnh để đặt ai được dùng: Người điều hành, Người đăng ký (kèm Cấp đăng ký tối thiểu) và Khác, cùng Thời gian chờ tùy chọn.",
   "Open Settings → Deep link creator and fill in Streams, Quick buttons or Web browser.": "Mở Cài đặt → Trình tạo deep link và điền Stream, Nút nhanh hoặc Trình duyệt web.",
   "Open a server, add a stream (each stream receives one publisher) and turn the server on. Disable the server to change its settings.": "Mở một máy chủ, thêm một stream (mỗi stream nhận một publisher) và bật máy chủ. Tắt máy chủ để đổi cài đặt của nó.",
-  "Open cloud.moblin.app/dashboard and sign in with Twitch or Kick. Your page is ready.": "Mở cloud.moblin.app/dashboard và đăng nhập bằng Twitch hoặc Kick. Trang của bạn đã sẵn sàng.",
+  "Open cloud.moblin.app and sign in with Twitch or Kick. Your page is ready.": "Mở cloud.moblin.app và đăng nhập bằng Twitch hoặc Kick. Trang của bạn đã sẵn sàng.",
   "Open menu": "Mở menu",
   "Open the create stream wizard (Settings → Streams → Create) and pick Kick.": "Mở trình hướng dẫn tạo stream (Cài đặt → Stream → Tạo) và chọn Kick.",
   "Open the create stream wizard (Settings → Streams → Create) and pick Twitch.": "Mở trình hướng dẫn tạo stream (Cài đặt → Stream → Tạo) và chọn Twitch.",

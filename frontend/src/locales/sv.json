@@ -237,7 +237,7 @@
   "Open Bot → Commands and pick a command to set who may use it: Moderators, Subscribers (with a Minimum subscriber tier) and Others, plus an optional Cooldown.": "Öppna Bot → Kommandon och välj ett kommando för att ställa in vem som får använda det: Moderatorer, Prenumeranter (med en Lägsta prenumerantnivå) och Andra, plus en valfri Cooldown.",
   "Open Settings → Deep link creator and fill in Streams, Quick buttons or Web browser.": "Öppna Inställningar → Deep link-skapare och fyll i Streams, Snabbknappar eller Webbläsare.",
   "Open a server, add a stream (each stream receives one publisher) and turn the server on. Disable the server to change its settings.": "Öppna en server, lägg till en ström (varje ström tar emot en publisher) och slå på servern. Inaktivera servern för att ändra dess inställningar.",
-  "Open cloud.moblin.app/dashboard and sign in with Twitch or Kick. Your page is ready.": "Öppna cloud.moblin.app/dashboard och logga in med Twitch eller Kick. Din sida är klar.",
+  "Open cloud.moblin.app and sign in with Twitch or Kick. Your page is ready.": "Öppna cloud.moblin.app och logga in med Twitch eller Kick. Din sida är klar.",
   "Open menu": "Öppna menyn",
   "Open the create stream wizard (Settings → Streams → Create) and pick Kick.": "Öppna guiden för att skapa stream (Inställningar → Streams → Skapa) och välj Kick.",
   "Open the create stream wizard (Settings → Streams → Create) and pick Twitch.": "Öppna guiden för att skapa stream (Inställningar → Streamar → Skapa) och välj Twitch.",

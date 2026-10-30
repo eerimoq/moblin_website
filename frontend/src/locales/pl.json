@@ -237,7 +237,7 @@
   "Open Bot → Commands and pick a command to set who may use it: Moderators, Subscribers (with a Minimum subscriber tier) and Others, plus an optional Cooldown.": "Otwórz Bot → Komendy i wybierz komendę, aby ustawić, kto może jej używać: Moderatorzy, Subskrybenci (z Minimalnym poziomem subskrybenta) i Inni, plus opcjonalny Cooldown.",
   "Open Settings → Deep link creator and fill in Streams, Quick buttons or Web browser.": "Otwórz Ustawienia → Kreator deep linków i wypełnij Streamy, Szybkie przyciski lub Przeglądarka.",
   "Open a server, add a stream (each stream receives one publisher) and turn the server on. Disable the server to change its settings.": "Otwórz serwer, dodaj stream (każdy stream przyjmuje jednego publishera) i włącz serwer. Wyłącz serwer, aby zmienić jego ustawienia.",
-  "Open cloud.moblin.app/dashboard and sign in with Twitch or Kick. Your page is ready.": "Otwórz cloud.moblin.app/dashboard i zaloguj się przez Twitch lub Kick. Twoja strona jest gotowa.",
+  "Open cloud.moblin.app and sign in with Twitch or Kick. Your page is ready.": "Otwórz cloud.moblin.app i zaloguj się przez Twitch lub Kick. Twoja strona jest gotowa.",
   "Open menu": "Otwórz menu",
   "Open the create stream wizard (Settings → Streams → Create) and pick Kick.": "Otwórz kreator tworzenia streamu (Ustawienia → Streamy → Utwórz) i wybierz Kick.",
   "Open the create stream wizard (Settings → Streams → Create) and pick Twitch.": "Otwórz kreator tworzenia streamu (Ustawienia → Streamy → Utwórz) i wybierz Twitch.",

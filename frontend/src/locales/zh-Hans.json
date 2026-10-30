@@ -237,7 +237,7 @@
   "Open Bot → Commands and pick a command to set who may use it: Moderators, Subscribers (with a Minimum subscriber tier) and Others, plus an optional Cooldown.": "打开 机器人 → 命令,选择一个命令来设置谁可以使用:管理员、订阅者(可设最低订阅等级)和其他人,另外还有可选的冷却时间。",
   "Open Settings → Deep link creator and fill in Streams, Quick buttons or Web browser.": "打开设置 → 深度链接创建器,填写直播流、快捷按钮或网页浏览器。",
   "Open a server, add a stream (each stream receives one publisher) and turn the server on. Disable the server to change its settings.": "打开一个服务器,添加一个流(每个流接收一个推流端),然后开启服务器。要更改服务器设置,请先将其停用。",
-  "Open cloud.moblin.app/dashboard and sign in with Twitch or Kick. Your page is ready.": "打开 cloud.moblin.app/dashboard,用 Twitch 或 Kick 登录。你的页面就准备好了。",
+  "Open cloud.moblin.app and sign in with Twitch or Kick. Your page is ready.": "打开 cloud.moblin.app,用 Twitch 或 Kick 登录。你的页面就准备好了。",
   "Open menu": "打开菜单",
   "Open the create stream wizard (Settings → Streams → Create) and pick Kick.": "打开创建直播流向导(设置 → 直播流 → 创建),然后选择 Kick。",
   "Open the create stream wizard (Settings → Streams → Create) and pick Twitch.": "打开创建直播向导（设置 → 直播 → 创建），然后选择 Twitch。",

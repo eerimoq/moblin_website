@@ -237,7 +237,7 @@
   "Open Bot → Commands and pick a command to set who may use it: Moderators, Subscribers (with a Minimum subscriber tier) and Others, plus an optional Cooldown.": "बॉट → कमांड खोलें और कोई कमांड चुनें, फिर तय करें कि उसे कौन इस्तेमाल कर सकता है: मॉडरेटर, सब्सक्राइबर (न्यूनतम सब्सक्राइबर टियर के साथ) और अन्य, साथ में वैकल्पिक कूलडाउन।",
   "Open Settings → Deep link creator and fill in Streams, Quick buttons or Web browser.": "सेटिंग्स → डीप लिंक क्रिएटर खोलें और स्ट्रीम, क्विक बटन या वेब ब्राउज़र भरें।",
   "Open a server, add a stream (each stream receives one publisher) and turn the server on. Disable the server to change its settings.": "एक सर्वर खोलें, एक स्ट्रीम जोड़ें (हर स्ट्रीम एक पब्लिशर से लेती है) और सर्वर चालू करें। सर्वर की सेटिंग बदलने के लिए उसे बंद करें।",
-  "Open cloud.moblin.app/dashboard and sign in with Twitch or Kick. Your page is ready.": "cloud.moblin.app/dashboard खोलें और Twitch या Kick से साइन इन करें। आपका पेज तैयार है।",
+  "Open cloud.moblin.app and sign in with Twitch or Kick. Your page is ready.": "cloud.moblin.app खोलें और Twitch या Kick से साइन इन करें। आपका पेज तैयार है।",
   "Open menu": "मेन्यू खोलें",
   "Open the create stream wizard (Settings → Streams → Create) and pick Kick.": "स्ट्रीम बनाने का विज़ार्ड खोलें (Settings → Streams → Create) और Kick चुनें।",
   "Open the create stream wizard (Settings → Streams → Create) and pick Twitch.": "स्ट्रीम बनाने का विज़ार्ड खोलें (सेटिंग्स → स्ट्रीम → बनाएँ) और Twitch चुनें।",

@@ -237,7 +237,7 @@
   "Open Bot → Commands and pick a command to set who may use it: Moderators, Subscribers (with a Minimum subscriber tier) and Others, plus an optional Cooldown.": "開啟 機器人 → 指令,選擇一個指令來設定誰可以使用:管理員、訂閱者(可設最低訂閱等級)和其他人,另外還有可選的冷卻時間。",
   "Open Settings → Deep link creator and fill in Streams, Quick buttons or Web browser.": "開啟設定 → 深層連結建立器,填寫串流、快捷按鈕或網頁瀏覽器。",
   "Open a server, add a stream (each stream receives one publisher) and turn the server on. Disable the server to change its settings.": "開啟一個伺服器,新增一個串流(每個串流接收一個推流端),然後開啟伺服器。要變更伺服器設定,請先停用它。",
-  "Open cloud.moblin.app/dashboard and sign in with Twitch or Kick. Your page is ready.": "開啟 cloud.moblin.app/dashboard,用 Twitch 或 Kick 登入。你的頁面就準備好了。",
+  "Open cloud.moblin.app and sign in with Twitch or Kick. Your page is ready.": "開啟 cloud.moblin.app,用 Twitch 或 Kick 登入。你的頁面就準備好了。",
   "Open menu": "開啟選單",
   "Open the create stream wizard (Settings → Streams → Create) and pick Kick.": "開啟建立串流精靈(設定 → 串流 → 建立),然後選擇 Kick。",
   "Open the create stream wizard (Settings → Streams → Create) and pick Twitch.": "開啟建立直播精靈（設定 → 直播 → 建立），然後選擇 Twitch。",

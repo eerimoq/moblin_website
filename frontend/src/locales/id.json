@@ -237,7 +237,7 @@
   "Open Bot → Commands and pick a command to set who may use it: Moderators, Subscribers (with a Minimum subscriber tier) and Others, plus an optional Cooldown.": "Buka Bot → Perintah dan pilih perintah untuk mengatur siapa yang boleh memakainya: Moderator, Pelanggan (dengan Tingkat pelanggan minimum) dan Lainnya, plus Cooldown opsional.",
   "Open Settings → Deep link creator and fill in Streams, Quick buttons or Web browser.": "Buka Pengaturan → Pembuat deep link dan isi Stream, Tombol cepat, atau Browser web.",
   "Open a server, add a stream (each stream receives one publisher) and turn the server on. Disable the server to change its settings.": "Buka server, tambahkan stream (setiap stream menerima satu publisher), lalu nyalakan server. Nonaktifkan server untuk mengubah pengaturannya.",
-  "Open cloud.moblin.app/dashboard and sign in with Twitch or Kick. Your page is ready.": "Buka cloud.moblin.app/dashboard dan masuk dengan Twitch atau Kick. Halaman Anda siap.",
+  "Open cloud.moblin.app and sign in with Twitch or Kick. Your page is ready.": "Buka cloud.moblin.app dan masuk dengan Twitch atau Kick. Halaman Anda siap.",
   "Open menu": "Buka menu",
   "Open the create stream wizard (Settings → Streams → Create) and pick Kick.": "Buka wizard pembuatan stream (Pengaturan → Stream → Buat) dan pilih Kick.",
   "Open the create stream wizard (Settings → Streams → Create) and pick Twitch.": "Buka wizard buat stream (Pengaturan → Stream → Buat) dan pilih Twitch.",
