@@ -1,6 +1,6 @@
 {
-  "commit": "edcdbd8a283972edc429356fbf76d84aa7f8b098",
-  "date": "2026-10-23",
+  "commit": "52d4f1250daae9c96d1be7da554de43113e77a5e",
+  "date": "2026-11-07",
   "pages": [
     {
       "id": "settings",
@@ -1157,9 +1157,8 @@
           "footer": null,
           "items": [
             {
-              "type": "page",
-              "label": "Recording path",
-              "page": "recording-path"
+              "type": "setting",
+              "label": "Recording path"
             }
           ]
         },
@@ -1202,24 +1201,6 @@
             {
               "type": "setting",
               "label": "Bitrate"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "recording-path",
-      "title": "Recording path",
-      "path": ["Settings", "Streams", "Stream", "Recording", "Recording path"],
-      "parent": "recording",
-      "sections": [
-        {
-          "header": "Folder",
-          "footer": null,
-          "items": [
-            {
-              "type": "picker",
-              "label": "Video source"
             }
           ]
         }
@@ -4809,17 +4790,17 @@
           "items": [
             {
               "type": "page",
-              "label": "Tips",
-              "page": "tips"
+              "label": "Message",
+              "page": "message"
             }
           ]
         }
       ]
     },
     {
-      "id": "tips",
-      "title": "Tips",
-      "path": ["Settings", "Scenes", "Widget", "Alerts", "Moblin Cloud", "Tips"],
+      "id": "message",
+      "title": "Message",
+      "path": ["Settings", "Scenes", "Widget", "Alerts", "Moblin Cloud", "Message"],
       "parent": "moblin-cloud",
       "sections": [
         {
@@ -5635,13 +5616,8 @@
         },
         {
           "header": "Model",
-          "footer": "Most VRM 0.0 files and zipped Live2D Cubism models are supported.",
-          "items": [
-            {
-              "type": "picker",
-              "label": "Video source"
-            }
-          ]
+          "footer": "Most VRM 0.x and 1.0 files and zipped Live2D Cubism models are supported.\n\nVRM models require iOS 18 or later.",
+          "items": []
         },
         {
           "header": "Camera",
@@ -5705,12 +5681,7 @@
         {
           "header": "Model",
           "footer": "A .save-file from PNGTuberPlus.",
-          "items": [
-            {
-              "type": "picker",
-              "label": "Video source"
-            }
-          ]
+          "items": []
         },
         {
           "header": "Sensitivity",
@@ -8595,6 +8566,16 @@
         },
         {
           "header": null,
+          "footer": "Rotate the user interface to portrait when the device is held in portrait.",
+          "items": [
+            {
+              "type": "toggle",
+              "label": "Auto rotate to portrait"
+            }
+          ]
+        },
+        {
+          "header": null,
           "footer": "Useful when using an external camera and a portrait phone holder.\n\nTo stream in portrait, enable Settings → Streams → … → Portrait.",
           "items": [
             {
@@ -9095,6 +9076,11 @@
               "type": "setting",
               "label": "Delays",
               "description": "A positive delay makes the audio later, a negative delay earlier.\n\nUse to synchronize audio and video."
+            },
+            {
+              "type": "setting",
+              "label": "Gains",
+              "description": "Added to the output gain when the mic is selected."
             }
           ]
         },
@@ -9296,7 +9282,7 @@
             {
               "type": "page",
               "label": "Message",
-              "page": "message"
+              "page": "action-message"
             },
             {
               "type": "picker",
@@ -9359,7 +9345,7 @@
             {
               "type": "page",
               "label": "Value",
-              "page": "message"
+              "page": "action-message"
             },
             {
               "type": "picker",
@@ -9368,7 +9354,7 @@
             {
               "type": "page",
               "label": "Other value",
-              "page": "message"
+              "page": "action-message"
             },
             {
               "type": "picker",
@@ -9388,7 +9374,7 @@
       ]
     },
     {
-      "id": "message",
+      "id": "action-message",
       "title": "Message",
       "path": ["Settings", "Macros", "Macro", "Action", "Message"],
       "parent": "action",
@@ -11205,7 +11191,15 @@
           "items": [
             {
               "type": "note",
-              "label": "Let viewers interact with your stream from your page at https://moblin.app. Sign in at https://moblin.app/dashboard to get your Moblin Cloud key."
+              "label": "Let viewers interact with your stream from your page at https://cloud.moblin.app"
+            },
+            {
+              "type": "note",
+              "label": "1. Sign in at https://cloud.moblin.app and set up your page.\n2. Scan the QR code in the dashboard's Moblin section, or paste your Moblin Cloud key below.\n3. Pick the alerts widget that shows messages and the wheel of luck widget that viewers spin."
+            },
+            {
+              "type": "note",
+              "label": "Guide: https://moblin.app/docs/#guides/moblin-cloud"
             }
           ]
         },
@@ -11225,21 +11219,31 @@
         },
         {
           "header": null,
-          "footer": "Alerts widget that shows tips.",
+          "footer": "Alerts widget that shows messages on stream. Messages always show in chat. Create one in Settings → Scenes and add it to the scenes you stream with.",
           "items": [
             {
               "type": "picker",
-              "label": "Tips"
+              "label": "Message"
             }
           ]
         },
         {
           "header": null,
-          "footer": "Wheel of luck widget viewers can spin.",
+          "footer": "Wheel of luck widget that viewers spin. Viewers can only spin while one is picked. Create one in Settings → Scenes and add it to the scenes you stream with.",
           "items": [
             {
               "type": "picker",
               "label": "Wheel of luck"
+            }
+          ]
+        },
+        {
+          "header": null,
+          "footer": "Moblin Cloud API server. Default is ….",
+          "items": [
+            {
+              "type": "setting",
+              "label": "URL"
             }
           ]
         }

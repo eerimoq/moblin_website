@@ -16,6 +16,7 @@ class Token:
 IDENT_START = re.compile(r"[A-Za-z_@#$]")
 IDENT_CHAR = re.compile(r"[A-Za-z0-9_]")
 PLACEHOLDER = "…"
+MAX_VIEW_DEPTH = 20
 
 
 def read_interpolation(source, i):
@@ -728,7 +729,7 @@ class Extractor:
             setting["label"] = title or setting["label"]
             add_item(section, setting)
             return j
-        if view in context["stack"] or len(context["stack"]) > 12 or "Wizard" in view:
+        if view in context["stack"] or len(context["stack"]) > MAX_VIEW_DEPTH or "Wizard" in view:
             return j
         title = title or self.fallback_title(view, page)
         scope = self.argument_scope(arguments, context)
@@ -841,7 +842,7 @@ class Extractor:
         if setting is not None:
             add_item(section, setting)
             return j, section
-        if view in context["stack"] or len(context["stack"]) > 12 or "Wizard" in view:
+        if view in context["stack"] or len(context["stack"]) > MAX_VIEW_DEPTH or "Wizard" in view:
             return j, section
         scope = self.argument_scope(arguments, context)
         strings = {name: clean(literal(value)) for name, value in arguments if name and clean(literal(value))}

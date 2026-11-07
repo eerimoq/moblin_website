@@ -136,8 +136,10 @@ export const guides: Guide[] = [
           t("Bitrate: pick one of your bitrate presets, also while live."),
           t(
             "Scene widgets: turn widgets in the current scene on and off and control timers, " +
-              "scoreboards, wheel of luck, bingo cards and Pomodoro timers.",
+              "scoreboards, wheel of luck, bingo cards and Pomodoro timers. Tap a widget to open " +
+              "its settings.",
           ),
+          t("Scene editor: move and resize the widgets of your scenes on top of the video."),
           t(
             "Stealth mode: shows a custom image instead of the app. Lock screen and Grid are also " +
               "available.",
@@ -436,6 +438,14 @@ export const guides: Guide[] = [
             "scene selector on the right side of the screen.",
         ),
       },
+      { type: "h", text: t("Create a scene") },
+      {
+        type: "p",
+        text: t(
+          "Go to Settings → Scenes and tap Create under Scenes. The wizard asks for a name, a " +
+            "video source and the widgets to add to the scene.",
+        ),
+      },
       { type: "h", text: t("Create a widget and add it to a scene") },
       {
         type: "steps",
@@ -444,10 +454,39 @@ export const guides: Guide[] = [
           t(
             "Pick a Type, give it a Name, configure it and choose the scenes to add the widget to.",
           ),
-          t("To add an existing widget, open a scene and tap Add under Widgets."),
           t(
-            "Open the widget from the scene to set its alignment, position and size. Save layout " +
-              "and Load layout reuse a position in other scenes.",
+            "To add a widget to a scene from the scene itself, open the scene and tap Create or " +
+              "Add under Widgets.",
+          ),
+          t(
+            "Open the widget from the scene to set its alignment, position and size and change " +
+              "its settings. Save layout and Load layout reuse a position in other scenes.",
+          ),
+        ],
+      },
+      { type: "h", text: t("Scene editor") },
+      {
+        type: "p",
+        text: t(
+          "The Scene editor quick button shows the video with an outline around each widget in " +
+            "the scene, so you can see the result while you change it. Turn it on in Settings → " +
+            "Display → Quick buttons.",
+        ),
+      },
+      {
+        type: "list",
+        items: [
+          t(
+            "Tap a widget to select it, drag it to move it and drag its handle to resize it. It " +
+              "snaps to the edges and center of the video and to other widgets.",
+          ),
+          t(
+            "With a widget selected, the buttons show or hide it, change its alignment, move it " +
+              "up or down a layer, open its settings and remove it from the scene or delete it.",
+          ),
+          t(
+            "With no widget selected, the buttons switch to or create a scene, add or create a " +
+              "widget, open the scene's settings and delete the scene.",
           ),
         ],
       },
@@ -697,8 +736,8 @@ export const guides: Guide[] = [
               "key, and turn on Enabled.",
           ),
           t(
-            "Moblin shows Moblin Cloud connected, and the device shows up as connected in the " +
-              "dashboard. Up to 5 devices can use the same key.",
+            "The device shows up as connected in the dashboard. Up to 5 devices can use the same " +
+              "key.",
           ),
         ],
       },
@@ -807,7 +846,14 @@ export const guides: Guide[] = [
         ],
       },
     ],
-    related: ["settings-moblin-cloud", "alerts", "moblin-cloud", "tips", "wheel-of-luck", "widget"],
+    related: [
+      "settings-moblin-cloud",
+      "alerts",
+      "moblin-cloud",
+      "message",
+      "wheel-of-luck",
+      "widget",
+    ],
   },
   {
     id: "chat-bot",
@@ -924,10 +970,16 @@ export const guides: Guide[] = [
             "snapshot to Discord when you go live.",
         ),
       },
+      {
+        type: "p",
+        text: t(
+          "While live, snapshots are uploaded to Discord only when the stream bitrate is very " +
+            "good, at no more than 1 Mbps. Otherwise they are queued and uploaded later.",
+        ),
+      },
     ],
     related: [
       "recording",
-      "recording-path",
       "replay",
       "snapshot",
       "widget-snapshot",
@@ -999,8 +1051,8 @@ export const guides: Guide[] = [
               "the assistant enabled on port 2345. Copy one of its URLs.",
           ),
           t(
-            "On the streamer device, go to Streamer, turn on Enabled and enter the copied URL as " +
-              "Assistant URL.",
+            "On the streamer device, go to Streamer, turn on Enabled, tap Assistant and enter the " +
+              "copied URL.",
           ),
           t(
             "On the assistant device, select the streamer as Current streamer and use the Remote " +
