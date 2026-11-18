@@ -11,7 +11,7 @@ import { t } from "../i18n";
 export default function Support() {
   const live = createTwitchLive();
   return (
-    <section id="support" class="pt-10 pb-24">
+    <section id="support" class="bg-band pt-10 pb-24">
       <div class="mx-auto flex max-w-[1120px] flex-col gap-10 px-5 sm:px-8">
         <div class="flex max-w-[640px] flex-col gap-2.5">
           <span class="font-display text-[15px] font-semibold uppercase tracking-[0.08em] text-leaf">

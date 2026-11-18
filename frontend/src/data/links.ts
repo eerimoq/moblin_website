@@ -18,23 +18,7 @@ export const links = {
   sponsor: "https://github.com/sponsors/eerimoq",
   paypal: "https://paypal.me/MoblinIRL?country.x=SE&locale.x=en_US",
   twitch: "https://www.twitch.tv/eerimoq",
-  mobcam: {
-    github: "https://github.com/eerimoq/mobcam",
-    releases: "https://github.com/eerimoq/mobcam/releases",
-    obsPluginGuide: "https://github.com/eerimoq/mobcam/tree/main/crates/obs-plugin",
-  },
-  moblink: {
-    github: "https://github.com/eerimoq/moblink",
-    playStore: "https://play.google.com/store/apps/details?id=com.eerimoq.moblink",
-  },
-  obsRelay: {
-    site: "https://moblin.mys-lang.org/obs-remote-control-relay/",
-    github: "https://github.com/eerimoq/obs-remote-control-relay",
-  },
-  moblinRelay: {
-    site: "https://moblin.mys-lang.org/moblin-remote-control-relay/",
-    github: "https://github.com/eerimoq/moblin-remote-control-relay",
-  },
+  youtube: "https://www.youtube.com/@erimo144",
 } as const;
 
 /** Section links, anchored to the home page so they work from every page. */
@@ -42,9 +26,8 @@ export const navItems = [
   { label: t("Get started"), href: "/#get-started" },
   { label: t("Features"), href: "/#features" },
   { label: t("Streamers"), href: "/#streamers" },
+  { label: t("Videos"), href: "/#videos" },
   { label: t("Support"), href: "/#support" },
-  { label: t("Ecosystem"), href: "/#ecosystem" },
-  { label: t("Community"), href: "/#community" },
 ] as const;
 
 /** Pages other than the home page, relative to the site root. */

@@ -7,12 +7,9 @@ export type IconName =
   | "watch"
   | "remote"
   | "plug"
-  | "star"
   | "tap"
   | "discord"
   | "github"
-  | "obs-relay"
-  | "assistant-relay"
   | "warning"
   | "heart"
   | "twitch"
@@ -101,19 +98,6 @@ export default function Icon(props: Props) {
         <Match when={props.name === "github"}>
           <path d="M9 19c-4 1.5-4-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.2 4.2 0 0 0-.1-3.2s-1-.3-3.4 1.3a11.7 11.7 0 0 0-6.2 0C6.5 2.8 5.5 3.1 5.5 3.1a4.2 4.2 0 0 0-.1 3.2A4.6 4.6 0 0 0 4 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21" />
         </Match>
-        <Match when={props.name === "obs-relay"}>
-          <rect x="2" y="6" width="9" height="12" rx="2" />
-          <rect x="13" y="6" width="9" height="12" rx="2" />
-          <path d="M11 12h2" />
-          <circle cx="6.5" cy="12" r="1.5" />
-          <path d="M17.5 10v4M15.5 12h4" />
-        </Match>
-        <Match when={props.name === "assistant-relay"}>
-          <circle cx="8" cy="8" r="3" />
-          <path d="M2 20c0-3.3 2.7-6 6-6s6 2.7 6 6" />
-          <path d="M16 4l2 2-2 2M20 6h-4" />
-          <rect x="15" y="12" width="7" height="9" rx="1.5" />
-        </Match>
         <Match when={props.name === "warning"}>
           <path d="M12 3l10 18H2L12 3Z" />
           <path d="M12 10v5M12 18h.01" />
@@ -154,13 +138,6 @@ export default function Icon(props: Props) {
           <circle cx="12" cy="7.5" r="2" fill="currentColor" stroke="none" />
           <circle cx="8" cy="14.5" r="2" fill="currentColor" stroke="none" />
           <circle cx="16" cy="14.5" r="2" fill="currentColor" stroke="none" />
-        </Match>
-        <Match when={props.name === "star"}>
-          <path
-            fill="currentColor"
-            stroke="none"
-            d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3l-5.9 3.3 1.3-6.6-4.9-4.6 6.6-.8L12 2.5Z"
-          />
         </Match>
         <Match when={props.name === "tap"}>
           <path d="M10 9.5V4a2 2 0 0 0-4 0v10" />

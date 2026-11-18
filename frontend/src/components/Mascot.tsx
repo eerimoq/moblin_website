@@ -1,13 +1,6 @@
 import { asset } from "../asset";
 
-export type MascotVariant =
-  | "default"
-  | "party"
-  | "happy"
-  | "thumbs-up"
-  | "looking"
-  | "heart"
-  | "discord";
+export type MascotVariant = "default" | "party" | "happy" | "thumbs-up" | "looking" | "heart";
 
 type Props = {
   variant: MascotVariant;
