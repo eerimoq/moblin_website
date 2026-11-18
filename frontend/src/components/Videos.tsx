@@ -1,4 +1,4 @@
-import { createSignal, For, Show } from "solid-js";
+import { createSignal, For } from "solid-js";
 import { links } from "../data/links";
 import { videos, type Video } from "../data/videos";
 import BrandIcon from "./BrandIcon";
@@ -7,62 +7,42 @@ import Icon from "./Icon";
 import { t } from "../i18n";
 
 function VideoCard(props: { video: Video }) {
-  const [playing, setPlaying] = createSignal(false);
-  const [thumbnail, setThumbnail] = createSignal(
-    `https://i.ytimg.com/vi/${props.video.id}/${props.video.kind === "short" ? "oar2" : "hqdefault"}.jpg`,
-  );
   const short = props.video.kind === "short";
-  const watchUrl = short
-    ? `https://www.youtube.com/shorts/${props.video.id}`
-    : `https://www.youtube.com/watch?v=${props.video.id}`;
+  const [thumbnail, setThumbnail] = createSignal(
+    `https://i.ytimg.com/vi/${props.video.id}/${short ? "oar2" : "hqdefault"}.jpg`,
+  );
   return (
     <li
-      class={`flex shrink-0 snap-start flex-col gap-3 ${short ? "w-[220px] sm:w-[248px]" : "w-[min(784px,calc(100vw-40px))]"}`}
+      class={`shrink-0 snap-start ${short ? "w-[220px] sm:w-[248px]" : "w-[min(784px,calc(100vw-40px))]"}`}
     >
-      <div
-        class={`relative overflow-hidden rounded-2xl border-[1.5px] border-line bg-well ${short ? "aspect-[9/16]" : "aspect-video"}`}
-      >
-        <Show
-          when={playing()}
-          fallback={
-            <button
-              type="button"
-              class="group absolute inset-0 flex items-center justify-center"
-              aria-label={t("Play {title}", { title: props.video.title })}
-              onClick={() => setPlaying(true)}
-            >
-              <img
-                src={thumbnail()}
-                alt=""
-                class="absolute inset-0 size-full object-cover"
-                loading="lazy"
-                onError={() =>
-                  setThumbnail(`https://i.ytimg.com/vi/${props.video.id}/hqdefault.jpg`)
-                }
-              />
-              <BrandIcon
-                name="youtube"
-                class="relative size-16 shadow-lg transition-transform group-hover:scale-110"
-              />
-            </button>
-          }
-        >
-          <iframe
-            src={`https://www.youtube-nocookie.com/embed/${props.video.id}?autoplay=1&playsinline=1&rel=0`}
-            title={props.video.title}
-            class="absolute inset-0 size-full"
-            allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
-            allowfullscreen
-          />
-        </Show>
-      </div>
       <a
-        href={watchUrl}
+        href={
+          short
+            ? `https://www.youtube.com/shorts/${props.video.id}`
+            : `https://www.youtube.com/watch?v=${props.video.id}`
+        }
         target="_blank"
         rel="noopener"
-        class="text-[15px] font-semibold text-ink-2 hover:text-ink"
+        class="group flex flex-col gap-3"
       >
-        {props.video.title}
+        <div
+          class={`relative flex items-center justify-center overflow-hidden rounded-2xl border-[1.5px] border-line bg-well ${short ? "aspect-[9/16]" : "aspect-video"}`}
+        >
+          <img
+            src={thumbnail()}
+            alt=""
+            class="absolute inset-0 size-full object-cover"
+            loading="lazy"
+            onError={() => setThumbnail(`https://i.ytimg.com/vi/${props.video.id}/hqdefault.jpg`)}
+          />
+          <BrandIcon
+            name="youtube"
+            class="relative size-16 shadow-lg transition-transform group-hover:scale-110"
+          />
+        </div>
+        <span class="text-[15px] font-semibold text-ink-2 group-hover:text-ink">
+          {props.video.title}
+        </span>
       </a>
     </li>
   );
