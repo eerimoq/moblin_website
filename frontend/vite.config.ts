@@ -71,6 +71,7 @@ export default defineConfig({
         "chat-bot/index.html",
         "docs/index.html",
         "cards/index.html",
+        "privacy/index.html",
         "404.html",
       ],
     },

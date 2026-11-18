@@ -14,7 +14,7 @@ export const links = {
   discord: "https://discord.gg/kh3KMng4JV",
   github: "https://github.com/eerimoq/moblin",
   chatBotHelp: "https://github.com/eerimoq/moblin/blob/main/docs/chat-bot-help.md",
-  privacyPolicy: "https://eerimoq.github.io/moblin/privacy-policy/en.html",
+  appPrivacyPolicy: "https://eerimoq.github.io/moblin/privacy-policy/en.html",
   sponsor: "https://github.com/sponsors/eerimoq",
   paypal: "https://paypal.me/MoblinIRL?country.x=SE&locale.x=en_US",
   twitch: "https://www.twitch.tv/eerimoq",
@@ -35,6 +35,7 @@ export const pages = {
   chatBot: "/chat-bot/",
   docs: "/docs/",
   cards: "/cards/",
+  privacy: "/privacy/",
 } as const;
 
 export const platforms = [

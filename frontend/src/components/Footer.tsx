@@ -11,7 +11,7 @@ const footerLinks: { label: string; href: string; icon?: IconName }[] = [
   { label: t("Trading cards"), href: asset(pages.cards) },
   { label: "GitHub", href: links.github, icon: "github" },
   { label: "Discord", href: links.discord, icon: "discord" },
-  { label: t("Privacy policy"), href: links.privacyPolicy },
+  { label: t("Privacy policy"), href: asset(pages.privacy) },
 ];
 
 const isExternal = (href: string) => /^https?:/.test(href);
