@@ -39,7 +39,7 @@ function VideoCard(props: { video: Video }) {
             class="relative size-16 shadow-lg transition-transform group-hover:scale-110"
           />
         </div>
-        <span class="text-[15px] font-semibold text-ink-2 group-hover:text-ink">
+        <span class="text-center text-[15px] font-semibold text-ink-2 group-hover:text-ink">
           {props.video.title}
         </span>
       </a>
