@@ -7,6 +7,11 @@ export type Video = {
 
 export const videos: Video[] = [
   {
+    id: "MHUT8al6Wg8",
+    kind: "short",
+    title: "Moblin: Chat snapshots to Discord!",
+  },
+  {
     id: "r-60-f4prss",
     kind: "short",
     title: "Moblin: Twitch raid",
