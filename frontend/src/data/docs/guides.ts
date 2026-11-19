@@ -5,7 +5,8 @@ export type GuideBlock =
   | { type: "h"; text: string }
   | { type: "steps"; items: string[] }
   | { type: "list"; items: string[] }
-  | { type: "tip"; text: string };
+  | { type: "tip"; text: string }
+  | { type: "video"; id: string };
 
 export type Guide = {
   id: string;
@@ -23,37 +24,37 @@ export const guides: Guide[] = [
     blocks: [
       {
         type: "p",
-        text: t(
-          "In Moblin a stream is a saved destination with its own video, audio and platform " +
-            "settings. You can have several streams and switch between them. The easiest way to " +
-            "create one is the create stream wizard.",
-        ),
+        text: t("A stream is a saved destination with its own video, audio and platform settings."),
       },
       { type: "h", text: t("Create a stream") },
       {
         type: "steps",
         items: [
           t("Tap the gear icon in the control bar to open Settings."),
+          t("Go to Settings → Streams and tap Create."),
           t(
-            "Go to Settings → Streams and tap Create. If no stream is configured yet, the stream " +
-              "button in the control bar shows Setup, which opens the same wizard.",
+            "Pick the platform: Twitch, Kick, YouTube, SOOP or OBS, Mobcam to use the phone " +
+              "as a USB camera, or Custom for any other server.",
           ),
           t(
-            "Under Platform to stream to, pick Twitch, Kick, YouTube, SOOP or OBS. Pick Mobcam to " +
-              "use the phone as a USB camera, or Custom for any other server (SRT(LA), RTMP(S), " +
-              "RIST or WHIP).",
+            "Fill in the platform page and tap Next. Logging in is optional but simplifies " +
+              "the setup.",
           ),
-          t(
-            "Fill in the platform page (logging in is optional but simplifies the setup) and tap " +
-              "Next.",
-          ),
-          t(
-            "Choose a network setup. Moblin → OBS → platform gives good stability in most network " +
-              "conditions. Moblin → BELABOX cloud → OBS → platform uses bonding and is a paid " +
-              "third-party service. Moblin → platform streams directly, which is often unstable on " +
-              "a bad connection. Moblin → My server(s) → platform is the most flexible setup.",
-          ),
+          t("Choose a network setup (see below)."),
           t("On the General page, name the stream and tap Create."),
+        ],
+      },
+      { type: "h", text: t("Network setups") },
+      {
+        type: "list",
+        items: [
+          t("Moblin → OBS → platform: good stability in most network conditions."),
+          t(
+            "Moblin → BELABOX cloud → OBS → platform: bonding, through a paid third-party " +
+              "service.",
+          ),
+          t("Moblin → platform: direct, often unstable on a bad connection."),
+          t("Moblin → My server(s) → platform: the most flexible setup."),
         ],
       },
       { type: "h", text: t("Select a stream and go live") },
@@ -61,24 +62,22 @@ export const guides: Guide[] = [
         type: "steps",
         items: [
           t(
-            "A newly created stream is selected automatically. To select another one, turn on the " +
-              "toggle next to it in Settings → Streams.",
+            "A new stream is selected automatically. To select another, turn on its toggle in" +
+              " Settings → Streams.",
           ),
           t("Close Settings, tap Go Live in the control bar and confirm. Tap End to stop."),
-          t("Long press the stream button to change its color."),
         ],
       },
+      { type: "h", text: t("Good to know") },
       {
         type: "list",
         items: [
           t("Resolution, FPS and codec are in Settings → Streams → <your stream> → Video."),
-          t(
-            "The stream URL is in Settings → Streams → <your stream> → URL. It shows examples for " +
-              "RTMP, SRT(LA), WHIP and Mobcam URLs.",
-          ),
+          t("The stream URL is in Settings → Streams → <your stream> → URL."),
           t("Swipe left on a stream in the list to duplicate or delete it."),
           t(
-            "The Switch stream quick button switches to another stream and automatically goes live.",
+            "The Switch stream quick button switches to another stream and goes live " +
+              "automatically.",
           ),
         ],
       },
@@ -90,7 +89,7 @@ export const guides: Guide[] = [
         ),
       },
     ],
-    related: ["streams", "stream", "video", "settings"],
+    related: ["streams", "stream", "stream-video", "settings"],
   },
   {
     id: "quick-buttons",
@@ -100,24 +99,20 @@ export const guides: Guide[] = [
       {
         type: "p",
         text: t(
-          "The control bar holds the stream button, the gear icon for Settings and the quick " +
-            "buttons. Quick buttons toggle features or open panels, for example Mute, Torch, " +
-            "Record, Snapshot, Chat, Bitrate, Scene widgets, Stream and OBS. Buttons can be spread " +
-            "over up to five pages; tap the page dots to switch page.",
+          "Quick buttons toggle features or open panels. They sit in the control bar on up " +
+            "to five pages. Tap the page dots to switch page.",
         ),
       },
+      { type: "h", text: t("Choose your buttons") },
       {
         type: "steps",
         items: [
           t("Go to Settings → Display → Quick buttons."),
-          t(
-            "Turn buttons on or off in the Page 1 to Page 5 lists. Use Filter to find a button by " +
-              "name.",
-          ),
+          t("Turn buttons on or off in the page lists. Use Filter to find a button by name."),
           t("Tap a button to set its page and background color."),
           t(
-            "Under Appearance, choose Big buttons and Show name. Scroll and Two columns appear " +
-              "when Show all settings is on.",
+            "Under Appearance, choose Big buttons and Show name. Scroll and Two columns " +
+              "appear when Show all settings is on.",
           ),
         ],
       },
@@ -125,62 +120,109 @@ export const guides: Guide[] = [
         type: "tip",
         text: t("Long press any quick button in the control bar to open its settings directly."),
       },
+      { type: "h", text: t("Find a button quickly") },
+      {
+        type: "p",
+        text: t(
+          "Double tap the control bar outside the buttons, or on iOS 18 and later drag the " +
+            "quick buttons past their end, and type a few letters. Each word matches the " +
+            "start of a word in the button name, so “s w” finds Scene widgets.",
+        ),
+      },
       { type: "h", text: t("Useful buttons") },
       {
         type: "list",
         items: [
           t(
-            "Stream: set title and category on Twitch and Kick, manage YouTube streams and send " +
-              "the go live notification.",
+            "Stream: set title and category on Twitch and Kick, manage YouTube streams and, " +
+              "with Show all settings on and a go live notification configured, send it.",
           ),
           t("Bitrate: pick one of your bitrate presets, also while live."),
           t(
+            "Moderation: moderate your Twitch and Kick chat, and raid another channel when " +
+              "you end the stream.",
+          ),
+          t("Sound board: play sounds from the alerts sound library."),
+          t(
             "Scene widgets: turn widgets in the current scene on and off and control timers, " +
-              "scoreboards, wheel of luck, bingo cards and Pomodoro timers. Tap a widget to open " +
-              "its settings.",
+              "scoreboards, wheel of luck, bingo cards and Pomodoro timers.",
           ),
           t("Scene editor: move and resize the widgets of your scenes on top of the video."),
-          t(
-            "Stealth mode: shows a custom image instead of the app. Lock screen and Grid are also " +
-              "available.",
-          ),
-          t(
-            "Local overlays: shows or hides on-screen status information that never appears on " +
-              "stream.",
-          ),
-          t(
-            "Effects such as Movie, 4:3, Gray scale, Sepia, Pixellate, Blur faces, Blur background " +
-              "and Beauty.",
-          ),
+          t("Stealth mode: shows a black screen, or an image you select, instead of the app."),
+          t("Local overlays: shows or hides the on-screen status information."),
+          t("Effects such as Movie, Gray scale, Pixellate, Blur faces and Beauty."),
+        ],
+      },
+      { type: "h", text: t("Zoom and scene controls") },
+      { type: "video", id: "5v07BwaDe0s" },
+      {
+        type: "p",
+        text: t(
+          "The zoom preset and scene buttons are shown on top of the video, never on " +
+            "stream. Settings → Display → Zoom and scene controls sets their layout in " +
+            "landscape:",
+        ),
+      },
+      {
+        type: "list",
+        items: [
+          t("Stacked: zoom buttons above the scene buttons."),
+          t("One row: zoom buttons to the left and scene buttons to the right."),
+          t("Vertical zoom: zoom buttons in a column, scene buttons in a row."),
+          t("Vertical scenes: scene buttons in a column, zoom buttons in a row."),
+          t("Vertical: both in columns."),
         ],
       },
       {
         type: "p",
         text: t(
-          "Settings → Display also controls the control bar Background, Big buttons, Vertical " +
-            "buttons and, with Show all settings on, Local overlays and Low bitrate warning.",
+          "Big buttons on the same page makes them larger. With Show all settings on, " +
+            "Buttons and Slider under Zoom show or hide the zoom preset buttons and the zoom " +
+            "slider.",
         ),
       },
+      { type: "h", text: t("Status and other display settings") },
+      {
+        type: "list",
+        items: [
+          t(
+            "Settings → Display → Status chooses the status information shown on top of the " +
+              "video. Most of it needs Show all settings.",
+          ),
+          t(
+            "Settings → Display also has the control bar Background and, with Show all " +
+              "settings on, Low bitrate warning.",
+          ),
+        ],
+      },
     ],
-    related: ["quick-buttons", "button", "stream-button", "display", "local-overlays"],
+    related: [
+      "quick-buttons",
+      "button",
+      "stream-button",
+      "display",
+      "zoom-and-scene-controls",
+      "status",
+    ],
   },
   {
     id: "twitch",
     title: t("Streaming to Twitch"),
     summary: t("Set up a Twitch stream with chat, viewer count, alerts, title and category."),
     blocks: [
+      { type: "h", text: t("Create the stream") },
       {
         type: "steps",
         items: [
           t("Open the create stream wizard (Settings → Streams → Create) and pick Twitch."),
           t(
-            "Tap Login (optional, but simplifies the setup). Logging in fills in your channel " +
-              "name, channel id and stream key.",
+            "Tap Login. It is optional, but fills in your channel name, channel id and stream" +
+              " key.",
           ),
           t("Without login, enter your Channel name, and optionally the Channel id."),
           t(
-            "Pick a network setup. For Moblin → Twitch, the Nearby ingest endpoint and Stream key " +
-              "are needed; both are prefilled when logged in.",
+            "Pick a network setup. Moblin → Twitch needs the Nearby ingest endpoint and " +
+              "Stream key, both prefilled when logged in.",
           ),
           t("Name the stream on the General page and tap Create."),
         ],
@@ -191,60 +233,74 @@ export const guides: Guide[] = [
         items: [
           t("Chat only needs the channel name."),
           t("Viewer count needs login and the channel id."),
-          t("Follow, subscription, raid and other alerts need login."),
-          t("Setting the stream title and category needs login."),
+          t("Alerts, and setting the title and category, need login."),
         ],
       },
+      { type: "h", text: t("Twitch settings") },
       {
         type: "p",
         text: t(
-          "Log in later in Settings → Streams → <your stream> → Twitch. There you can also set " +
-            "Title and Category, and under Alerts choose which events are shown in Chat and as " +
-            "Toasts (follows, subscriptions, gift subscriptions, resubscriptions, rewards, raids, " +
-            "bits and watch streaks).",
+          "Log in later and set Title and Category in Settings → Streams → <your stream> → " +
+            "Twitch. Under Alerts, choose which events (follows, subscriptions, rewards, " +
+            "raids, bits, watch streaks) are shown in Chat and as Toasts.",
         ),
       },
       {
         type: "tip",
         text: t(
-          "While live, the Stream quick button lets you change title and category without " +
-            "opening Settings, and the Stream marker quick button creates a stream marker.",
+          "While live, the Stream quick button changes title and category without opening " +
+            "Settings, and the Stream marker quick button creates a stream marker.",
         ),
       },
+      { type: "h", text: t("Raid a channel") },
+      { type: "video", id: "r-60-f4prss" },
+      {
+        type: "steps",
+        items: [
+          t("Tap the Moderation quick button and go to Twitch → Raid channel."),
+          t(
+            "Search for a channel, or pick one under Raided before, Raided you or Followed " +
+              "channels.",
+          ),
+          t("Tap Raid on the channel."),
+        ],
+      },
     ],
-    related: ["twitch", "category", "chat", "emotes", "streams"],
+    related: ["twitch", "category", "twitch-chat", "emotes", "streams"],
   },
   {
     id: "kick",
     title: t("Streaming to Kick"),
     summary: t("Set up a Kick stream with chat, viewer count, events, title and category."),
     blocks: [
+      { type: "h", text: t("Create the stream") },
       {
         type: "steps",
         items: [
           t("Open the create stream wizard (Settings → Streams → Create) and pick Kick."),
           t("Tap Login (optional, but simplifies the setup), or enter your Channel name."),
           t(
-            "Pick a network setup. For Moblin → Kick, copy the Stream URL and Stream key from " +
-              "https://kick.com/dashboard/settings/stream (requires login).",
+            "Pick a network setup. For Moblin → Kick, copy the Stream URL and Stream key from" +
+              " https://kick.com/dashboard/settings/stream (requires login).",
           ),
           t("Name the stream on the General page and tap Create."),
         ],
       },
+      { type: "h", text: t("Kick settings") },
       {
-        type: "p",
-        text: t(
-          "Chat and viewer count only need the channel name. When you are logged in, Settings → " +
-            "Streams → <your stream> → Kick also lets you set the Title and Category.",
-        ),
-      },
-      {
-        type: "p",
-        text: t(
-          "Under Alerts, choose which events are shown in Chat and as Toasts: subscriptions, " +
-            "gift subscriptions, rewards, hosts, kicks (with a minimum) and, in chat, bans and " +
-            "timeouts.",
-        ),
+        type: "list",
+        items: [
+          t("Chat and viewer count only need the channel name."),
+          t(
+            "When logged in, Settings → Streams → <your stream> → Kick lets you set Title and" +
+              " Category.",
+          ),
+          t(
+            "Under Alerts, choose which events are shown in Chat and as Toasts: " +
+              "subscriptions, gift subscriptions, rewards, hosts, kicks (with a minimum) and, " +
+              "in chat, bans and timeouts.",
+          ),
+        ],
       },
     ],
     related: ["kick", "kick-category", "kick-chat", "emotes"],
@@ -254,43 +310,48 @@ export const guides: Guide[] = [
     title: t("Streaming to YouTube"),
     summary: t("Set up a YouTube stream, get chat working and manage scheduled streams."),
     blocks: [
+      { type: "h", text: t("Create the stream") },
       {
         type: "steps",
         items: [
           t("Open the create stream wizard (Settings → Streams → Create) and pick YouTube."),
           t(
-            "Tap Login (optional, but simplifies the setup). When logged in, Moblin fetches your " +
-              "channel handle, stream URL and stream key.",
+            "Tap Login. It is optional, but fetches your channel handle, stream URL and " +
+              "stream key.",
           ),
           t(
-            "Without login, enter your Channel handle (only needed for chat), and for Moblin → " +
-              "YouTube copy the Stream URL and Stream key from youtube.com.",
+            "Without login, enter your Channel handle (only needed for chat), and for Moblin " +
+              "→ YouTube copy the Stream URL and Stream key from youtube.com.",
           ),
           t("Name the stream on the General page and tap Create."),
         ],
       },
       { type: "h", text: t("Chat and viewers") },
       {
-        type: "p",
-        text: t(
-          "YouTube chat is tied to the Video ID of each live stream. When you go live, Moblin " +
-            "tries for up to a minute to fetch it, using your login or channel handle. You must " +
-            "be live on YouTube for this to work. You can also tap Fetch Video IDs or enter Video " +
-            "IDs manually in Settings → Streams → <your stream> → YouTube. The viewer count needs " +
-            "login.",
-        ),
+        type: "list",
+        items: [
+          t(
+            "Chat is tied to the Video ID of each live stream. When you go live, Moblin tries" +
+              " for up to a minute to fetch it. You must be live on YouTube for this to work.",
+          ),
+          t(
+            "You can also tap Fetch Video IDs or enter Video IDs manually in Settings → " +
+              "Streams → <your stream> → YouTube.",
+          ),
+          t("The viewer count needs login."),
+        ],
       },
       { type: "h", text: t("Manage streams") },
       {
         type: "p",
         text: t(
-          "When logged in, Manage streams in the YouTube settings lets you schedule a stream " +
-            "(Title, Visibility Public, Private or Unlisted, and Auto-stop) before going live, end " +
-            "live streams and delete upcoming ones.",
+          "When logged in, Manage streams in the YouTube settings lets you schedule a " +
+            "stream before going live (Title, Visibility and Auto-stop), end live streams and" +
+            " delete upcoming ones.",
         ),
       },
     ],
-    related: ["youtube", "settings-chat", "streaming-platforms"],
+    related: ["youtube", "chat", "streaming-platforms"],
   },
   {
     id: "obs-and-own-server",
@@ -300,9 +361,9 @@ export const guides: Guide[] = [
       {
         type: "p",
         text: t(
-          "Streaming to OBS on a computer, which then streams to the platform, gives better " +
-            "stability than streaming directly. OBS can also show a BRB scene when your connection " +
-            "drops.",
+          "Streaming to OBS on a computer, which then streams to the platform, is more " +
+            "stable than streaming directly. OBS can also show a BRB scene when your " +
+            "connection drops.",
         ),
       },
       { type: "h", text: t("Set up with the wizard") },
@@ -310,39 +371,46 @@ export const guides: Guide[] = [
         type: "steps",
         items: [
           t(
-            "Settings → Streams → Create → OBS (or pick a platform and the Moblin → OBS → platform " +
-              "network setup).",
+            "Settings → Streams → Create → OBS (or pick a platform and the Moblin → OBS → " +
+              "platform network setup).",
           ),
           t(
-            "Enter the IP address or domain name of the OBS computer (your public IP address if " +
-              "streaming over the internet) and a Port. Configure port forwarding in your router.",
+            "Enter the IP address or domain name of the OBS computer (your public IP address " +
+              "if streaming over the internet) and a Port. Configure port forwarding in your " +
+              "router.",
           ),
           t("In OBS, create a Media Source configured as shown in the wizard, with your port."),
           t(
-            "Optionally enable OBS remote control (next step), then name the stream and tap " +
+            "Optionally enable OBS remote control (see below), then name the stream and tap " +
               "Create. Moblin creates an srt:// stream using H.265/HEVC.",
           ),
         ],
       },
       { type: "h", text: t("OBS remote control and BRB scene") },
       {
-        type: "p",
-        text: t(
-          "OBS remote control uses the OBS WebSocket server. Copy the URL and password from OBS " +
-            "Tools → WebSocket Server Settings → Show Connect Info, and enter your Main scene, BRB " +
-            "scene and the Source name that receives the stream from Moblin. With Streaming " +
-            "directly to OBS on, Moblin periodically switches to the BRB scene if the stream is " +
-            "likely broken and back to the main scene once everything works again.",
-        ),
+        type: "steps",
+        items: [
+          t(
+            "In OBS, open Tools → WebSocket Server Settings → Show Connect Info and copy the " +
+              "URL and password.",
+          ),
+          t(
+            "Enter them in Settings → Streams → <your stream> → OBS remote control, together " +
+              "with your Main scene, BRB scene and the Source name that receives the stream " +
+              "from Moblin.",
+          ),
+          t(
+            "Turn on Streaming directly to OBS. Moblin then switches to the BRB scene when " +
+              "the stream is likely broken, and back to the main scene once it works again.",
+          ),
+        ],
       },
       {
         type: "list",
         items: [
-          t("Settings are in Settings → Streams → <your stream> → OBS remote control."),
           t(
-            "The OBS quick button shows the current scene, lets you switch scenes, start and stop " +
-              "OBS streaming and recording, mute audio inputs, adjust audio sync and Fix the " +
-              "source if audio or video has issues.",
+            "The OBS quick button switches scenes, starts and stops OBS streaming and " +
+              "recording, mutes audio inputs, adjusts audio sync and can Fix the source.",
           ),
           t(
             "With Show all settings on, OBS streaming and recording can start and stop " +
@@ -352,13 +420,18 @@ export const guides: Guide[] = [
       },
       { type: "h", text: t("Your own server") },
       {
-        type: "p",
-        text: t(
-          "Pick Custom in the wizard (SRT(LA), RTMP(S), RIST or WHIP), or the My server(s) " +
-            "network setup (SRT(LA) or RTMP(S)), to stream to an SRT server, SRTLA receiver or " +
-            "BELABOX cloud. With Show all settings on, Settings → Streams → <your stream> → " +
-            "SRT(LA) has Latency (3000 ms by default), adaptive bitrate and connection priorities.",
-        ),
+        type: "list",
+        items: [
+          t(
+            "Pick Custom in the wizard (SRT(LA), RTMP(S), RIST or WHIP), or the My server(s) " +
+              "network setup (SRT(LA) or RTMP(S)), to stream to an SRT server, SRTLA receiver " +
+              "or BELABOX cloud.",
+          ),
+          t(
+            "With Show all settings on, Settings → Streams → <your stream> → SRT(LA) has " +
+              "Latency (3000 ms by default), adaptive bitrate and connection priorities.",
+          ),
+        ],
       },
     ],
     related: ["obs-remote-control", "srt-la", "adaptive-bitrate", "stream", "rist"],
@@ -371,30 +444,34 @@ export const guides: Guide[] = [
       {
         type: "p",
         text: t(
-          "With an srtla:// URL (or RIST with bonding), Moblin sends the stream over one " +
-            "cellular, one WiFi and multiple Ethernet connections at the same time. The receiving " +
-            "server, for example an SRTLA server or BELABOX cloud, puts the stream back together.",
+          "With an srtla:// URL (or RIST with bonding), Moblin sends the stream over " +
+            "cellular, WiFi and Ethernet at the same time. The receiving server, for example " +
+            "BELABOX cloud, puts it back together.",
         ),
       },
       { type: "h", text: t("Adaptive bitrate") },
       {
         type: "p",
         text: t(
-          "Adaptive bitrate is on by default and lowers the bitrate when the network cannot keep " +
-            "up. With Show all settings on, choose the algorithm in Settings → Streams → <your " +
-            "stream> → SRT(LA) → Adaptive bitrate. BELABOX (the default) and Fast IRL are the " +
-            "safest options.",
+          "On by default, it lowers the bitrate when the network cannot keep up. With Show " +
+            "all settings on, choose the algorithm in Settings → Streams → <your stream> → " +
+            "SRT(LA) → Adaptive bitrate. BELABOX (the default) and Fast IRL are the safest.",
         ),
       },
       { type: "h", text: t("Connection priorities") },
       {
-        type: "p",
-        text: t(
-          "Only SRTLA supports connection priorities. A connection with high priority is used " +
-            "more than one with low priority if it is stable, and disabled connections are not " +
-            "used. Set them in Settings → Streams → <your stream> → SRT(LA) → Connection " +
-            "priorities or with the Connection priorities quick button.",
-        ),
+        type: "list",
+        items: [
+          t("Only SRTLA supports connection priorities."),
+          t(
+            "A stable connection with high priority is used more than one with low priority. " +
+              "Disabled connections are not used.",
+          ),
+          t(
+            "Set them in Settings → Streams → <your stream> → SRT(LA) → Connection " +
+              "priorities, or with the Connection priorities quick button.",
+          ),
+        ],
       },
       { type: "h", text: t("Moblink: phones as extra connections") },
       {
@@ -402,15 +479,15 @@ export const guides: Guide[] = [
         items: [
           t(
             "On the streaming device, go to Settings → Moblink, set a Password and turn on " +
-              "Streamer.",
+              "Enabled under Streamer.",
           ),
           t(
-            "On each extra phone, install Moblink on Android or use Moblin on another iPhone, " +
-              "enter the same password and enable Relay. The relay device must have cellular data " +
-              "enabled.",
+            "On each extra phone, install Moblink on Android or use Moblin on another iPhone," +
+              " enter the same password and turn on Enabled under Relay. The relay device must " +
+              "have cellular data enabled.",
           ),
           t(
-            "The relay discovers streamers on your local network. Turn on Manual to enter one of " +
+            "The relay finds streamers on your local network. Turn on Manual to enter one of " +
               "the streamer's URLs as Streamer URL instead.",
           ),
         ],
@@ -418,12 +495,12 @@ export const guides: Guide[] = [
       {
         type: "tip",
         text: t(
-          "Turn on the Bonding and Bonding RTTs local overlays (Settings → Display → Local " +
-            "overlays, with Show all settings on) to see how each connection performs.",
+          "Turn on the Bonding and Bonding RTTs local overlays (Settings → Display → " +
+            "Status, with Show all settings on) to see how each connection performs.",
         ),
       },
     ],
-    related: ["srt-la", "adaptive-bitrate", "rist", "moblink", "local-overlays"],
+    related: ["srt-la", "adaptive-bitrate", "rist", "moblink", "status"],
   },
   {
     id: "scenes-and-widgets",
@@ -433,17 +510,17 @@ export const guides: Guide[] = [
       {
         type: "p",
         text: t(
-          "A scene has a video source (a camera, screen capture, ingest or media player) and a " +
-            "list of widgets. A widget can be used in zero or more scenes. Switch scenes with the " +
-            "scene selector on the right side of the screen.",
+          "A scene has a video source (a camera, screen capture, ingest or media player) " +
+            "and a list of widgets. A widget can be used in zero or more scenes. Switch " +
+            "scenes with the scene buttons on top of the video.",
         ),
       },
       { type: "h", text: t("Create a scene") },
       {
         type: "p",
         text: t(
-          "Go to Settings → Scenes and tap Create under Scenes. The wizard asks for a name, a " +
-            "video source and the widgets to add to the scene.",
+          "Go to Settings → Scenes and tap Create under Scenes. The wizard asks for a name," +
+            " a video source and the widgets to add.",
         ),
       },
       { type: "h", text: t("Create a widget and add it to a scene") },
@@ -451,16 +528,14 @@ export const guides: Guide[] = [
         type: "steps",
         items: [
           t("Go to Settings → Scenes and tap Create under Widgets."),
+          t("Pick a Type, give it a Name, configure it and choose the scenes to add it to."),
           t(
-            "Pick a Type, give it a Name, configure it and choose the scenes to add the widget to.",
+            "To add a widget from the scene itself, open the scene and tap Create or Add " +
+              "under Widgets.",
           ),
           t(
-            "To add a widget to a scene from the scene itself, open the scene and tap Create or " +
-              "Add under Widgets.",
-          ),
-          t(
-            "Open the widget from the scene to set its alignment, position and size and change " +
-              "its settings. Save layout and Load layout reuse a position in other scenes.",
+            "Open the widget from the scene to set its alignment, position and size. Save " +
+              "layout and Load layout reuse a position in other scenes.",
           ),
         ],
       },
@@ -468,25 +543,24 @@ export const guides: Guide[] = [
       {
         type: "p",
         text: t(
-          "The Scene editor quick button shows the video with an outline around each widget in " +
-            "the scene, so you can see the result while you change it. Turn it on in Settings → " +
-            "Display → Quick buttons.",
+          "The Scene editor quick button outlines each widget on top of the video, so you " +
+            "see the result while you change it.",
         ),
       },
       {
         type: "list",
         items: [
           t(
-            "Tap a widget to select it, drag it to move it and drag its handle to resize it. It " +
-              "snaps to the edges and center of the video and to other widgets.",
+            "Tap a widget to select it, drag it to move it and drag its handle to resize it. " +
+              "It snaps to the edges and center of the video and to other widgets.",
           ),
           t(
-            "With a widget selected, the buttons show or hide it, change its alignment, move it " +
-              "up or down a layer, open its settings and remove it from the scene or delete it.",
+            "With a widget selected, the buttons show or hide it, change its alignment and " +
+              "layer, open its settings and remove it.",
           ),
           t(
-            "With no widget selected, the buttons switch to or create a scene, add or create a " +
-              "widget, open the scene's settings and delete the scene.",
+            "With no widget selected, the buttons switch, create and delete scenes and add " +
+              "widgets.",
           ),
         ],
       },
@@ -501,8 +575,8 @@ export const guides: Guide[] = [
           t("Alerts, Chat and Chat emote combo for viewer interaction."),
           t("Scene: shows another scene's widgets."),
           t(
-            "VTuber and PNGTuber, Scoreboard, Wheel of luck, Bingo card, Pomodoro timer, Snapshot " +
-              "and Crop.",
+            "VTuber and PNGTuber, Scoreboard, Wheel of luck, Bingo card, Pomodoro timer, " +
+              "Snapshot and Crop.",
           ),
         ],
       },
@@ -510,17 +584,16 @@ export const guides: Guide[] = [
       {
         type: "p",
         text: t(
-          "Image, browser, video source, map and QR code widgets have an Effects section, with " +
-            "for example Shape (corner radius, border, crop), Remove background, Dewarp 360, " +
-            "Anamorphic lens, LUT, Opacity and Mask.",
+          "Image, browser, video source, map and QR code widgets have an Effects section, " +
+            "with for example Shape, Remove background, Dewarp 360, LUT, Opacity and Mask.",
         ),
       },
       {
         type: "tip",
         text: t(
-          "With Show all settings on, Settings → Scenes also has Scene switching transitions, " +
-            "Auto scene switchers and Disconnect protection, which switches to a fallback scene " +
-            "when the video source disconnects.",
+          "With Show all settings on, Settings → Scenes also has Scene switching, Auto " +
+            "scene switchers and Disconnect protection, which shows a fallback scene when the" +
+            " video source disconnects.",
         ),
       },
     ],
@@ -544,37 +617,55 @@ export const guides: Guide[] = [
       {
         type: "p",
         text: t(
-          "A text widget's text can contain variables in curly braces that Moblin replaces with " +
-            "live values. Edit the text in Settings → Scenes → <your text widget> → Text, where " +
-            "Suggestions gives ready-made texts and Variables lists everything available. Tap a " +
-            "variable to add it.",
+          "A text widget's text can contain variables in curly braces that Moblin replaces " +
+            "with live values.",
         ),
       },
+      { type: "h", text: t("Add variables") },
+      {
+        type: "steps",
+        items: [
+          t("Open Settings → Scenes → <your text widget> → Text."),
+          t("Pick a ready-made text under Suggestions, or open a category under Variables."),
+          t("Tap a variable to add it to the text."),
+        ],
+      },
+      { type: "h", text: t("Examples") },
       {
         type: "list",
         items: [
           t("Time: {time}, {shortTime}, {date}, {timer}, {stopwatch}, {lapTimes}."),
           t(
-            "Location: {country}, {countryFlag}, {city}, {speed}, {altitude}, {distance}, {slope}.",
+            "Location: {country}, {countryFlag}, {city}, {speed}, {altitude}, {distance}, " +
+              "{slope}.",
           ),
           t("Weather: {conditions}, {temperature}, {feelsLikeTemperature}, {wind}."),
           t("Workout: {heartRate}, {stepCount}, {cyclingPower}."),
           t("Streaming: {latestFollower}, {latestSubscriber}."),
           t("Debug: {bitrate}, {bitrateAndTotal}, {bonding}, {resolution}, {fps}."),
-          t(
-            "General: {muted}, {checkbox}, {rating}, {gForce}, and {subtitles} for speech to text.",
-          ),
+          t("General: {muted}, {checkbox}, {rating} and {gForce}."),
+          t("Language: {subtitles} for speech to text."),
         ],
       },
       {
         type: "tip",
         text: t(
-          "Location and weather variables only update when Location is enabled. Control timers, " +
-            "stopwatches, checkboxes and ratings while live with the Scene widgets quick button.",
+          "Location and weather variables only update when Location is enabled. Control " +
+            "timers, stopwatches, checkboxes and ratings while live with the Scene widgets " +
+            "quick button.",
         ),
       },
     ],
-    related: ["text", "text-text", "general", "time", "location", "weather", "workout", "debug"],
+    related: [
+      "text",
+      "text-text",
+      "general",
+      "time",
+      "text-text-location",
+      "weather",
+      "workout",
+      "text-text-debug",
+    ],
   },
   {
     id: "chat",
@@ -583,51 +674,86 @@ export const guides: Guide[] = [
     blocks: [
       {
         type: "p",
-        text: t(
-          "Moblin shows chat from the platforms configured on the selected stream. Turn chat on " +
-            "or off in Settings → Chat → Enabled. Use the Chat quick button to read and send " +
-            "messages, and Scrollable chat to scroll the on-screen chat.",
-        ),
+        text: t("Moblin shows chat from the platforms configured on the selected stream."),
       },
+      { type: "h", text: t("Read and send messages") },
+      {
+        type: "list",
+        items: [
+          t("Turn chat on or off in Settings → Chat → Enabled."),
+          t(
+            "The Chat quick button reads and sends messages. Messages you send go to all " +
+              "platforms you are logged in to (Twitch and Kick).",
+          ),
+          t("The Scrollable chat quick button lets you scroll the on-screen chat."),
+          t("To show chat on stream, add a Chat widget to a scene."),
+        ],
+      },
+      { type: "h", text: t("Appearance and layout") },
       {
         type: "list",
         items: [
           t(
-            "Settings → Chat → Appearance: font, timestamps, badges, animated emotes, colors, " +
-              "background and border.",
+            "Settings → Chat → Appearance: font size, background and border. Timestamps, " +
+              "badges, animated emotes and text colors need Show all settings.",
           ),
-          t("Settings → Chat → Layout: new messages at top and mirrored chat."),
+          t(
+            "Settings → Chat → Layout: height, width and bottom position and, with Show all " +
+              "settings on, New messages at top and Mirrored.",
+          ),
+        ],
+      },
+      { type: "h", text: t("Emotes") },
+      {
+        type: "list",
+        items: [
           t(
             "BTTV, FFZ and 7TV emotes are turned on per stream in Settings → Streams → <your " +
               "stream> → Emotes. Streams created with the wizard start with them off.",
           ),
-          t("To show chat on stream, add a Chat widget to a scene."),
+          t(
+            "Reload emotes in Settings → Chat fetches them again, for example after the " +
+              "channel added new ones.",
+          ),
         ],
       },
       { type: "h", text: t("Text to speech") },
       {
-        type: "p",
-        text: t(
-          "Turn on Settings → Chat → Text to speech to have messages read aloud. Choose voices " +
-            "(or TTS.Monster with an API token), pause between messages, default language or " +
-            "Detect language per message, and options such as Say username, Subscribers only, " +
-            "Filter, Filter mentions and Bluetooth speaker only. The Skip current TTS and Pause " +
-            "TTS quick buttons control it while live.",
-        ),
+        type: "steps",
+        items: [
+          t("Turn on Settings → Chat → Text to speech to have messages read aloud."),
+          t("Choose voices, or TTS.Monster with an API token."),
+          t(
+            "Set the pause between messages and a default language, or Detect language per " +
+              "message.",
+          ),
+        ],
+      },
+      {
+        type: "list",
+        items: [
+          t("Options include Say username, Subscribers only and Bluetooth speaker only."),
+          t("The Skip current TTS and Pause TTS quick buttons control it while live."),
+        ],
       },
       { type: "h", text: t("Filters and nicknames") },
       {
-        type: "p",
-        text: t(
-          "With Show all settings on, Settings → Chat → Filters matches messages by username and " +
-            "message start, and decides whether they are shown in chat or the activity feed, read " +
-            "by text to speech, handled by the chat bot, counted in polls or printed. The first " +
-            "matching filter is used. Nicknames replace usernames in chat.",
-        ),
+        type: "list",
+        items: [
+          t(
+            "With Show all settings on, Settings → Chat → Filters matches messages by " +
+              "username and message start. The first matching filter is used.",
+          ),
+          t(
+            "A filter decides whether a message is shown, read aloud, handled by the chat " +
+              "bot, counted in polls or printed.",
+          ),
+          t("Nicknames replace usernames in chat."),
+        ],
       },
     ],
     related: [
-      "settings-chat",
+      "chat",
       "appearance",
       "layout",
       "text-to-speech",
@@ -641,33 +767,37 @@ export const guides: Guide[] = [
   {
     id: "alerts",
     title: t("Alerts"),
-    summary: t("Show follow, subscription, raid and other alerts on stream with sound and speech."),
+    summary: t(
+      "Show follow, subscription, raid and other alerts on stream with sound and " + "speech.",
+    ),
     blocks: [
+      { type: "h", text: t("Set up an alert") },
       {
         type: "steps",
         items: [
           t(
-            "For Twitch alerts, log in to Twitch in Settings → Streams → <your stream> → Twitch. " +
-              "Kick events only need the channel name.",
+            "For Twitch alerts, log in to Twitch in Settings → Streams → <your stream> → " +
+              "Twitch. Kick events only need the channel name.",
           ),
           t("Create a widget of type Alerts in Settings → Scenes and add it to your scenes."),
           t(
-            "Open the widget and pick an alert, for example Twitch → Follows or Kick → Gift " +
+            "Open the widget, pick an alert, for example Twitch → Follows or Kick → Gift " +
               "subscriptions, and turn it on.",
           ),
           t(
-            "Choose the media (GIF and sound, or Video), the position (Scene or Face), text colors " +
-              "and font.",
+            "Choose the media (GIF and sound, or Video), the position (Scene or Face), text " +
+              "colors and font.",
           ),
           t("Optionally turn on Text to speech for the alert and pick voices."),
         ],
       },
+      { type: "h", text: t("Alert types") },
       {
         type: "list",
         items: [
           t(
-            "Twitch: follows, subscriptions, raids and cheers. For cheers, the first item that " +
-              "matches the cheered bits is played.",
+            "Twitch: follows, subscriptions, raids and cheers. For cheers, the first item " +
+              "that matches the cheered bits is played.",
           ),
           t("Kick: subscriptions, gift subscriptions, hosts, rewards and kicks."),
           t("Chat bot: trigger an alert with the chat message !moblin alert <name>."),
@@ -677,15 +807,16 @@ export const guides: Guide[] = [
       {
         type: "tip",
         text: t(
-          "Add your own GIFs and sounds under My images and My sounds. Download enhanced and " +
-            "premium voices in iOS Settings → Accessibility → Live Speech → Preferred Voices.",
+          "Add your own GIFs and sounds under My images and My sounds. Download enhanced " +
+            "and premium voices in iOS Settings → Accessibility → Live Speech → Preferred " +
+            "Voices.",
         ),
       },
     ],
     related: [
       "alerts",
       "alerts-twitch",
-      "follows",
+      "alert",
       "cheers",
       "alerts-kick",
       "speech-to-text",
@@ -702,9 +833,9 @@ export const guides: Guide[] = [
       {
         type: "p",
         text: t(
-          "Moblin Cloud gives you a tip page on cloud.moblin.app. Viewers tip you there in the ways " +
-            "you turn on, and Moblin shows it on stream. The money goes straight to your PayPal " +
-            "or Stripe account.",
+          "Moblin Cloud gives you a tip page on cloud.moblin.app. Viewers tip you there in " +
+            "the ways you turn on, and Moblin shows it on stream. The money goes straight to " +
+            "your PayPal or Stripe account.",
         ),
       },
       { type: "h", text: t("Sign in and connect payments") },
@@ -713,12 +844,12 @@ export const guides: Guide[] = [
         items: [
           t("Open cloud.moblin.app and sign in with Twitch or Kick. Your page is ready."),
           t(
-            "In Payments, connect PayPal or Stripe. Stripe asks for your country, which cannot " +
-              "be changed later.",
+            "In Payments, connect PayPal or Stripe. Stripe asks for your country, which " +
+              "cannot be changed later.",
           ),
           t(
-            "Each way to tip has its own section in the dashboard. Turn on the ones you want and " +
-              "set their amounts.",
+            "Each way to tip has its own section in the dashboard. Turn on the ones you want " +
+              "and set their amounts.",
           ),
         ],
       },
@@ -727,17 +858,18 @@ export const guides: Guide[] = [
         type: "steps",
         items: [
           t(
-            "In the dashboard's Moblin section, tap Show QR code and scan it with the camera of " +
-              "the device running Moblin, or open the deep link on it. This turns on Moblin " +
+            "In the dashboard's Moblin section, tap Show QR code and scan it with the camera " +
+              "of the device running Moblin, or open the deep link on it. This turns on Moblin " +
               "Cloud with your key.",
           ),
           t(
-            "Or copy the key and paste it in Moblin under Settings → Moblin Cloud → Moblin Cloud " +
-              "key, and turn on Enabled.",
+            "Or copy the key, paste it in Settings → Moblin Cloud → Moblin Cloud key and turn" +
+              " on Enabled. Settings → Moblin Cloud needs Show all settings, and is not " +
+              "available on Mac.",
           ),
           t(
-            "The device shows up as connected in the dashboard. Up to 5 devices can use the same " +
-              "key.",
+            "The device shows up as connected in the dashboard. Up to 5 devices can use the " +
+              "same key.",
           ),
         ],
       },
@@ -745,20 +877,19 @@ export const guides: Guide[] = [
       {
         type: "p",
         text: t(
-          "Messages always show up in Moblin's chat. To also show them as an alert on stream, " +
-            "Moblin needs an alerts widget.",
+          "Messages always show up in Moblin's chat. To also show them as an alert on " + "stream:",
         ),
       },
       {
         type: "steps",
         items: [
           t(
-            "Create a widget of type Alerts in Settings → Scenes and add it to the scenes you " +
-              "stream with. An alerts widget you already use for Twitch or Kick works too.",
+            "Create a widget of type Alerts in Settings → Scenes and add it to the scenes you" +
+              " stream with. An alerts widget you already use for Twitch or Kick works too.",
           ),
           t(
-            "Optionally open the widget and change the message alert's media, position, colors and " +
-              "text to speech under Moblin Cloud → Message.",
+            "Optionally open the widget and change the message alert's media, position, " +
+              "colors and text to speech under Moblin Cloud → Message.",
           ),
           t("In Settings → Moblin Cloud, pick the widget under Message."),
         ],
@@ -773,8 +904,8 @@ export const guides: Guide[] = [
           ),
           t("In Settings → Moblin Cloud, pick the widget under Wheel of luck."),
           t(
-            "Your tip page now draws your wheel with its options, and follows your changes to " +
-              "them.",
+            "Your tip page now draws your wheel with its options, and follows your changes to" +
+              " them.",
           ),
         ],
       },
@@ -782,8 +913,8 @@ export const guides: Guide[] = [
         type: "tip",
         text: t(
           "Viewers can only tip to spin the wheel while Moblin is connected with a wheel " +
-            "picked. Other tips work all the time: those sent while Moblin is offline show up " +
-            "when it connects.",
+            "picked. Other tips work all the time: those sent while Moblin is offline show up" +
+            " when it connects.",
         ),
       },
       { type: "h", text: t("Test it and share your page") },
@@ -791,12 +922,12 @@ export const guides: Guide[] = [
         type: "steps",
         items: [
           t(
-            "Each section of the dashboard has a free test, which shows up in Moblin like a " +
-              "real tip.",
+            "Each dashboard section has a free test, which shows up in Moblin like a real " +
+              "tip.",
           ),
           t(
-            "Copy your page's address from Tip page and put it in your chat, panels or bio, or " +
-              "show it on stream with a QR code widget.",
+            "Copy your page's address from Tip page and put it in your chat, panels or bio, " +
+              "or show it on stream with a QR code widget.",
           ),
         ],
       },
@@ -809,8 +940,8 @@ export const guides: Guide[] = [
               "dashboard sections that offer it.",
           ),
           t(
-            "Moderators: add your moderators in the dashboard. They can change your page and " +
-              "how viewers tip you and send tests, but not your payment accounts or currency.",
+            "Assistants: add assistants in the dashboard. They can see your dashboard, send " +
+              "tests and use the remote control, and you can turn on more for each of them.",
           ),
           t(
             "Spins go to the first connected device with a wheel picked. Other tips go to " +
@@ -827,33 +958,26 @@ export const guides: Guide[] = [
         type: "list",
         items: [
           t(
-            "Messages only show up in chat? Pick an alerts widget under Settings → Moblin Cloud → " +
-              "Message, add it to the current scene and check that Moblin Cloud → Message is on in " +
-              "the widget.",
+            "Messages only show up in chat? Pick an alerts widget under Settings → Moblin " +
+              "Cloud → Message, add it to the current scene and check that Moblin Cloud → " +
+              "Message is on in the widget.",
           ),
           t(
-            "The page says the wheel is not available right now? Moblin is not connected, or no " +
-              "wheel is picked under Settings → Moblin Cloud → Wheel of luck.",
+            "The page says the wheel is not available right now? Moblin is not connected, or " +
+              "no wheel is picked under Settings → Moblin Cloud → Wheel of luck.",
           ),
           t(
             "A tip is sent but nothing shows? Add the widget to the scene you are in. The " +
               "dashboard's received lists show which devices got each one.",
           ),
           t(
-            "Moblin says Failed to identify? Five devices are already connected with the key. " +
-              "Disconnect one, or update Moblin if it is old.",
+            "Moblin says Failed to identify? Five devices are already connected with the key." +
+              " Disconnect one, or update Moblin if it is old.",
           ),
         ],
       },
     ],
-    related: [
-      "settings-moblin-cloud",
-      "alerts",
-      "moblin-cloud",
-      "message",
-      "wheel-of-luck",
-      "widget",
-    ],
+    related: ["moblin-cloud", "alerts", "alerts-moblin-cloud", "wheel-of-luck", "widget"],
   },
   {
     id: "chat-bot",
@@ -863,49 +987,57 @@ export const guides: Guide[] = [
       {
         type: "p",
         text: t(
-          "The chat bot reacts to chat messages starting with !moblin, for example to switch " +
-            "scene, take a snapshot, trigger an alert or turn text to speech on and off. The full " +
-            "command list is on the Chat bot commands page.",
+          "The chat bot reacts to chat messages starting with !moblin, for example to " +
+            "switch scene, take a snapshot or trigger an alert. The full command list is on " +
+            "the Chat bot commands page.",
         ),
       },
+      { type: "h", text: t("Turn it on") },
       {
         type: "steps",
         items: [
           t("Turn on Settings → Chat → Bot."),
           t(
-            "Open Bot → Commands and pick a command to set who may use it: Moderators, Subscribers " +
-              "(with a Minimum subscriber tier) and Others, plus an optional Cooldown.",
+            "Open Bot → Commands and pick a command to set who may use it: Moderators, " +
+              "Subscribers (with a Minimum subscriber tier) and Others, plus an optional " +
+              "Cooldown.",
           ),
           t(
-            "Turn on Send chat responses to reply in chat, for example when a user is not allowed " +
-              "to run a command.",
+            "Turn on Send chat responses to reply in chat, for example when a user is not " +
+              "allowed to run a command.",
           ),
         ],
       },
+      { type: "h", text: t("Who can run commands") },
       {
-        type: "p",
-        text: t(
-          "You can always use all commands. Moderators are allowed by default, while " +
-            "subscribers and others are not. Cooldowns do not apply to you and your moderators.",
-        ),
+        type: "list",
+        items: [
+          t("You can always use all commands."),
+          t(
+            "Moderators are allowed by default, except for the scene, stream and macro " +
+              "commands. Subscribers and others are not.",
+          ),
+          t("Cooldowns do not apply to you and your moderators."),
+        ],
       },
+      { type: "h", text: t("More commands") },
       {
         type: "list",
         items: [
           t("Custom commands: !moblin custom <name> sends a configured text to chat."),
           t("Aliases: replace a short command with a longer one."),
           t(
-            "!moblin ai ask <question> needs an OpenAI compatible service (base URL, API key and " +
-              "model).",
+            "!moblin ai ask <question> needs an OpenAI compatible service (base URL, API key " +
+              "and model).",
           ),
         ],
       },
       {
         type: "tip",
         text: t(
-          "With Show all settings on, set Estimated viewer delay in Settings → Streams → <your " +
-            "stream>. It makes snapshots taken by the chat bot match what viewers saw, without " +
-            "delaying the stream.",
+          "With Show all settings on, set Estimated viewer delay in Settings → Streams → " +
+            "<your stream>. It makes snapshots taken by the chat bot match what viewers saw, " +
+            "without delaying the stream.",
         ),
       },
     ],
@@ -918,64 +1050,77 @@ export const guides: Guide[] = [
     blocks: [
       { type: "h", text: t("Recording") },
       {
-        type: "p",
-        text: t(
-          "Tap the Record quick button to record to an MP4 file, live or not. Find recordings in " +
-            "Settings → Recordings. With Show all settings on, Settings → Streams → <your stream> " +
-            "→ Recording lets you override resolution, codec and bitrate, pick a Recording path " +
-            "folder, record without widgets (Clean recordings) and start and stop recording " +
-            "automatically with the stream.",
-        ),
+        type: "list",
+        items: [
+          t("Tap the Record quick button to record to an MP4 file, live or not."),
+          t("Find recordings in Settings → Recordings."),
+          t(
+            "With Show all settings on, Settings → Streams → <your stream> → Recording " +
+              "overrides resolution, codec and bitrate, picks the folder, records without " +
+              "widgets and starts and stops recording with the stream.",
+          ),
+        ],
       },
       {
         type: "tip",
         text: t(
-          "Recordings are saved as variable frame rate fragmented MP4 to survive crashes. " +
-            "Settings → Recordings shows ffmpeg commands to convert them to standard MP4.",
+          "Recordings are fragmented MP4 to survive crashes. Settings → Recordings shows " +
+            "ffmpeg commands to convert them to standard MP4.",
         ),
       },
       { type: "h", text: t("Replays") },
       {
-        type: "p",
-        text: t(
-          "Turn on Settings → Streams → <your stream> → Replay → Enabled. The Replay quick " +
-            "button lets you save and play replays, and Instant replay saves the last moments and " +
-            "plays them right away. Post trigger delay sets how many seconds are recorded after " +
-            "the button is pressed.",
-        ),
-      },
-      { type: "h", text: t("Snapshots") },
-      {
-        type: "p",
-        text: t(
-          "The Snapshot quick button takes a snapshot, and a Snapshot widget shows it on stream. " +
-            "Photo shoot takes clean pictures periodically.",
-        ),
-      },
-      {
         type: "steps",
         items: [
-          t("Create a webhook in your Discord server's settings and copy its URL."),
+          t("Turn on Settings → Streams → <your stream> → Replay → Enabled."),
           t(
-            "With Show all settings on, paste it as Webhook URL in Settings → Streams → <your " +
-              "stream> → Snapshot. Use Chat bot webhook URL for snapshots taken with the chat bot.",
+            "Use the Replay quick button to save and play replays, or Instant replay to save " +
+              "the last moments and play them right away.",
           ),
-          t("Turn on Only when live to upload only while streaming."),
         ],
       },
       {
         type: "p",
         text: t(
-          "Go live notification (also with Show all settings on) can post a message and a " +
-            "snapshot to Discord when you go live.",
+          "With Show all settings on, Post trigger delay sets how many seconds are recorded" +
+            " after the button is pressed.",
         ),
       },
+      { type: "h", text: t("Snapshots") },
       {
-        type: "p",
-        text: t(
-          "While live, snapshots are uploaded to Discord only when the stream bitrate is very " +
-            "good, at no more than 1 Mbps. Otherwise they are queued and uploaded later.",
-        ),
+        type: "list",
+        items: [
+          t("The Snapshot quick button takes a snapshot."),
+          t("A Snapshot widget shows it on stream."),
+          t("Photo shoot takes clean pictures periodically."),
+        ],
+      },
+      { type: "h", text: t("Snapshots to Discord") },
+      { type: "video", id: "MHUT8al6Wg8" },
+      {
+        type: "steps",
+        items: [
+          t("Create a webhook in your Discord server's settings and copy its URL."),
+          t(
+            "With Show all settings on, paste it as Webhook URL in Settings → Streams → <your" +
+              " stream> → Snapshot. Use Chat bot webhook URL for snapshots taken with the chat " +
+              "bot.",
+          ),
+          t("Turn on Only when live to upload only while streaming."),
+        ],
+      },
+      {
+        type: "list",
+        items: [
+          t(
+            "While live, uploads are rate limited so they do not disturb the stream. Up to 20" +
+              " snapshots are queued.",
+          ),
+          t(
+            "Go live notification (also with Show all settings on) can post a message and a " +
+              "snapshot to Discord when you go live.",
+          ),
+        ],
       },
     ],
     related: [
@@ -992,40 +1137,42 @@ export const guides: Guide[] = [
     title: t("Location, maps and RealtimeIRL"),
     summary: t("Share where you are with a map widget, location text and RealtimeIRL."),
     blocks: [
+      { type: "h", text: t("Show your location") },
       {
         type: "steps",
         items: [
           t(
-            "Turn on Settings → Location → Enabled and allow Moblin to access your location in " +
-              "iOS Settings.",
+            "Turn on Settings → Location → Enabled and allow Moblin to access your location " +
+              "in iOS Settings.",
           ),
           t(
-            "Add a Map widget to a scene. Turn off North up to rotate the map with your direction " +
-              "of movement.",
+            "Add a Map widget to a scene. Turn off North up to rotate the map with your " +
+              "direction of movement.",
           ),
           t("Add location variables such as {city}, {speed} or {distance} to a text widget."),
         ],
       },
+      { type: "h", text: t("Good to know") },
       {
         type: "list",
         items: [
           t(
-            "Reset when going live resets distances, average speed and slope. Split resets the " +
-              "split distance.",
+            "Reset when going live resets distances, average speed and slope. Split resets " +
+              "the split distance.",
           ),
           t(
-            "Privacy regions: your location is not shared with any service while you are inside " +
-              "one.",
+            "Privacy regions: your location is not shared with any service while you are " +
+              "inside one.",
           ),
           t(
-            "RealtimeIRL sends your location to https://rtirl.com. With Show all settings on, " +
-              "enter your Push key in Settings → Streams → <your stream> → RealtimeIRL.",
+            "RealtimeIRL sends your location to https://rtirl.com. With Show all settings on," +
+              " enter your Push key in Settings → Streams → <your stream> → RealtimeIRL.",
           ),
           t("Viewers can zoom out the map widget temporarily with !moblin map zoom out."),
         ],
       },
     ],
-    related: ["map-location", "map", "location", "realtimeirl"],
+    related: ["location", "map", "text-text-location", "realtimeirl"],
   },
   {
     id: "remote-control",
@@ -1035,10 +1182,9 @@ export const guides: Guide[] = [
       {
         type: "p",
         text: t(
-          "An assistant (another device running Moblin, or a website) can monitor and control " +
-            "the streamer device: change scene, mic, bitrate and zoom, update scoreboards, play " +
-            "replays and see a video preview. Turn on Show all settings to see Settings → Remote " +
-            "control.",
+          "An assistant (another device running Moblin, or a website) can monitor and " +
+            "control the streamer device: scene, mic, bitrate, zoom, scoreboards, replays and" +
+            " a video preview. Settings → Remote control needs Show all settings.",
         ),
       },
       { type: "h", text: t("Streamer and assistant") },
@@ -1047,51 +1193,50 @@ export const guides: Guide[] = [
         items: [
           t("Set the same Password in Settings → Remote control on both devices."),
           t(
-            "On the assistant device, go to Assistant and tap Create. The new streamer entry has " +
-              "the assistant enabled on port 2345. Copy one of its URLs.",
+            "On the assistant device, go to Assistant and tap Create. The new streamer entry " +
+              "has the assistant enabled on port 2345. Copy one of its URLs.",
           ),
           t(
-            "On the streamer device, go to Streamer, turn on Enabled, tap Assistant and enter the " +
-              "copied URL.",
+            "On the streamer device, go to Streamer, turn on Enabled, tap Assistant and enter" +
+              " the copied URL.",
           ),
           t(
-            "On the assistant device, select the streamer as Current streamer and use the Remote " +
-              "quick button to control it.",
+            "On the assistant device, select the streamer as Current streamer and use the " +
+              "Remote quick button to control it.",
           ),
         ],
       },
       {
-        type: "p",
-        text: t(
-          "If the assistant is behind CGNAT or similar, enable Relay on the streamer entry and " +
-            "use the relay URL. As an alternative to an assistant device, the Assistant page links " +
-            "to websites that work as assistants.",
-        ),
+        type: "list",
+        items: [
+          t(
+            "If the assistant is behind CGNAT or similar, enable Relay on the streamer entry " +
+              "and use the relay URL.",
+          ),
+          t(
+            "Instead of an assistant device, the Assistant page links to websites that work " +
+              "as assistants.",
+          ),
+        ],
       },
       { type: "h", text: t("Web remote control") },
       {
         type: "p",
         text: t(
-          "Settings → Remote control → Web → Enabled lets any browser on your network monitor " +
-            "and control the device (port 80 by default). There is no authentication or " +
-            "encryption, so be careful.",
+          "Settings → Remote control → Web → Enabled lets any browser on your network " +
+            "monitor and control the device (port 80 by default). There is no authentication " +
+            "or encryption, so be careful.",
         ),
       },
       {
         type: "tip",
         text: t(
-          "Settings → Scenes → Remote scene (with Show all settings on) shows the widgets of a " +
-            "scene on the device the assistant is connected to.",
+          "Settings → Scenes → Remote scene (with Show all settings on) shows the widgets " +
+            "of a scene on the device the assistant is connected to.",
         ),
       },
     ],
-    related: [
-      "settings-remote-control",
-      "settings-remote-control-streamer",
-      "settings-remote-control-assistant",
-      "web",
-      "scenes",
-    ],
+    related: ["remote-control", "streamer", "assistant", "web", "scenes"],
   },
   {
     id: "ingests",
@@ -1101,64 +1246,78 @@ export const guides: Guide[] = [
       {
         type: "p",
         text: t(
-          "Ingests let Moblin receive video from other devices over the network and use it as a " +
-            "camera. Turn on Show all settings at the bottom of Settings to see Settings → " +
-            "Ingests.",
+          "Ingests let Moblin receive video from other devices over the network and use it " +
+            "as a camera. Settings → Ingests needs Show all settings.",
         ),
+      },
+      { type: "h", text: t("Servers and clients") },
+      {
+        type: "list",
+        items: [
+          t(
+            "Servers that devices send to: RTMP server (port 1935 by default), SRT(LA) server" +
+              " (SRT 4000, SRTLA 5000), RIST server (6500) and WHIP server (8310).",
+          ),
+          t("Clients that pull from a server: SRT client, RTSP client and WHEP client."),
+        ],
+      },
+      { type: "h", text: t("Receive a stream") },
+      {
+        type: "steps",
+        items: [
+          t(
+            "Open a server, add a stream (each stream receives one publisher) and turn the " +
+              "server on. Disable the server to change its settings.",
+          ),
+          t(
+            "Enter one of the stream's publish URLs in the sending device, usually the WiFi " +
+              "or Personal Hotspot URL.",
+          ),
+          t(
+            "In Settings → Scenes → <your scene> → Video source, pick the stream by name. It " +
+              "can also be shown with a Video source widget.",
+          ),
+        ],
       },
       {
         type: "list",
         items: [
           t(
-            "Servers that devices send to: RTMP server (port 1935 by default), SRT(LA) server " +
-              "(SRT 4000, SRTLA 5000), RIST server (6500) and WHIP server (8310).",
+            "Increase a stream's Latency if the video stutters. It is 2000 ms by default for " +
+              "RTMP, RIST and RTSP, and 100 ms for WHIP and WHEP.",
           ),
-          t("Clients that pull from a server: SRT client, RTSP client and WHEP client."),
+          t("Talkback plays audio from an ingest in your speakers."),
         ],
       },
+      { type: "h", text: t("DJI cameras") },
       {
         type: "steps",
         items: [
           t(
-            "Open a server, add a stream (each stream receives one publisher) and turn the server " +
-              "on. Disable the server to change its settings.",
+            "Open Settings → DJI devices, which controls DJI cameras over Bluetooth, and " +
+              "select the device.",
           ),
+          t("Enter the WiFi network it should use."),
           t(
-            "Enter one of the stream's publish URLs in the sending device, usually the WiFi or " +
-              "Personal Hotspot URL.",
+            "Under RTMP, choose Server to stream into Moblin's RTMP server, or Custom for any" +
+              " RTMP destination.",
           ),
-          t(
-            "In Settings → Scenes → <your scene> → Video source, pick the stream by name. It can " +
-              "also be shown with a Video source widget.",
-          ),
+          t("Tap Start live stream, or use the DJI devices quick button."),
         ],
-      },
-      {
-        type: "p",
-        text: t(
-          "Increase a stream's Latency if the video stutters (2000 ms by default, 100 ms for " +
-            "WHIP). Talkback plays audio from an ingest in your speakers.",
-        ),
-      },
-      { type: "h", text: t("DJI cameras") },
-      {
-        type: "p",
-        text: t(
-          "Settings → DJI devices controls DJI cameras over Bluetooth. Select the device, enter " +
-            "the WiFi network it should use, and choose RTMP Server to stream into Moblin's RTMP " +
-            "server or Custom for any RTMP destination. Then tap Start live stream, or use the DJI " +
-            "devices quick button.",
-        ),
       },
       { type: "h", text: t("GoPro cameras") },
       {
-        type: "p",
-        text: t(
-          "Settings → GoPro pairs HERO9 Black or newer over Bluetooth, with the same WiFi and " +
-            "RTMP Server or Custom choices, plus resolution, maximum bitrate and lens. QR codes " +
-            "creates launch live stream, WiFi credentials and RTMP URL QR codes that the GoPro " +
-            "quick button shows.",
-        ),
+        type: "list",
+        items: [
+          t(
+            "Settings → GoPro pairs HERO9 Black or newer over Bluetooth, with the same WiFi " +
+              "and RTMP Server or Custom choices, plus resolution, maximum bitrate and lens.",
+          ),
+          t(
+            "QR codes creates launch live stream, WiFi credentials and RTMP URL QR codes that" +
+              " the GoPro quick button shows.",
+          ),
+        ],
       },
     ],
     related: [
@@ -1196,11 +1355,14 @@ export const guides: Guide[] = [
         ],
       },
       {
-        type: "p",
-        text: t(
-          "Mobcam streams use a mobcam:// URL and the wizard sets H.265/HEVC video. Turn on Auto " +
-            "go live on the stream to automatically go live when the app enters the foreground.",
-        ),
+        type: "list",
+        items: [
+          t("Mobcam streams use a mobcam:// URL, and the wizard sets H.265/HEVC video."),
+          t(
+            "Turn on Auto go live on the stream to go live automatically when the app enters " +
+              "the foreground.",
+          ),
+        ],
       },
     ],
     related: ["stream", "streams"],
@@ -1210,15 +1372,22 @@ export const guides: Guide[] = [
     title: t("Apple Watch"),
     summary: t("See status and chat and control your stream from the Apple Watch app."),
     blocks: [
+      { type: "h", text: t("What the watch app does") },
       {
-        type: "p",
-        text: t(
-          "The Moblin Apple Watch app shows a stream preview, audio level, bitrate, number of " +
-            "viewers, the iPhone's thermal state and chat. From the watch you can zoom, switch " +
-            "scene, go live, record, mute, skip the current TTS message, use instant replay, " +
-            "create stream markers, start workouts and update padel and generic scoreboards.",
-        ),
+        type: "list",
+        items: [
+          t(
+            "Shows a stream preview, audio level, bitrate, number of viewers, the iPhone's " +
+              "thermal state and chat.",
+          ),
+          t(
+            "Lets you zoom, switch scene, go live, record, mute, skip the current TTS " +
+              "message, use instant replay, create stream markers, start workouts and update " +
+              "scoreboards.",
+          ),
+        ],
       },
+      { type: "h", text: t("Settings") },
       {
         type: "list",
         items: [
@@ -1226,13 +1395,13 @@ export const guides: Guide[] = [
           t("Chat: timestamps, badges and notifications on new messages."),
           t("Display: choose local overlays such as thermal state, audio level and bitrate."),
           t(
-            "Remote control assistant makes the watch act as a remote control assistant, but then " +
-              "chat, skip current TTS and a few other features are not supported.",
+            "Remote control assistant makes the watch act as a remote control assistant, but " +
+              "then chat, skip current TTS and a few other features are not supported.",
           ),
         ],
       },
     ],
-    related: ["apple-watch", "apple-watch-chat", "apple-watch-display"],
+    related: ["apple-watch", "apple-watch-chat", "apple-watch-display", "local-overlays"],
   },
   {
     id: "deep-links-and-settings",
@@ -1242,17 +1411,21 @@ export const guides: Guide[] = [
       {
         type: "p",
         text: t(
-          "A moblin:// deep link contains a URL encoded JSON blob that imports settings, for " +
-            "example a new stream with its URL, video, SRT(LA), Twitch, Kick and OBS settings, " +
-            "quick buttons or the web browser home page. Opening one asks for confirmation. " +
-            "Settings cannot be imported while live or recording.",
+          "A moblin:// deep link imports settings, for example a new stream with its URL, " +
+            "video, SRT(LA), Twitch, Kick and OBS settings, quick buttons or the web browser " +
+            "home page. Opening one asks for confirmation. Settings cannot be imported while " +
+            "live or recording.",
         ),
       },
+      { type: "h", text: t("Create a deep link") },
       {
         type: "steps",
         items: [
           t("Turn on Show all settings at the bottom of Settings."),
-          t("Open Settings → Deep link creator and fill in Streams, Quick buttons or Web browser."),
+          t(
+            "Open Settings → Deep link creator and fill in Streams, Quick buttons or Web " +
+              "browser.",
+          ),
           t(
             "A QR code and a Copy to clipboard button appear once something differs from the " +
               "defaults.",
@@ -1261,13 +1434,18 @@ export const guides: Guide[] = [
       },
       { type: "h", text: t("Import and export settings") },
       {
-        type: "p",
-        text: t(
-          "Settings → Import and export settings (with Show all settings on) exports all " +
-            "settings and imports them from a file or the clipboard. Do not share exported " +
-            "settings, as they may contain stream keys. Exporting from one device and importing " +
-            "on another is not recommended; deep links work on any device.",
-        ),
+        type: "list",
+        items: [
+          t(
+            "Settings → Import and export settings (with Show all settings on) exports all " +
+              "settings and imports them from a file or the clipboard.",
+          ),
+          t("Do not share exported settings, as they may contain stream keys."),
+          t(
+            "Exporting from one device and importing on another is not recommended. Deep " +
+              "links work on any device.",
+          ),
+        ],
       },
     ],
     related: [
@@ -1282,48 +1460,63 @@ export const guides: Guide[] = [
     title: t("Troubleshooting"),
     summary: t("Fixes for hidden settings, greyed out options and unstable streams."),
     blocks: [
+      { type: "h", text: t("Settings") },
       {
         type: "list",
         items: [
           t(
-            "Cannot find a setting? Turn on Show all settings at the bottom of Settings. It shows " +
-              "for example Ingests, Remote control, Audio, Macros, DJI devices, GoPro, Apple " +
-              "Watch, Debug, and per stream Recording, Snapshot and the SRT(LA) page.",
+            "Cannot find a setting? Use the search field at the top of Settings to find " +
+              "common settings by name or keyword.",
+          ),
+          t(
+            "Still cannot find it? Turn on Show all settings at the bottom of Settings. It " +
+              "shows for example Ingests, Remote control, Moblin Cloud, Macros, DJI devices, " +
+              "GoPro and Apple Watch, and per stream Recording, Snapshot and SRT(LA).",
           ),
           t(
             "A setting is greyed out? Settings that would stop the stream are disabled while " +
               "live. End the stream first.",
           ),
           t(
-            "Bitrate is under Settings → Streams → <your stream> → Video when Show all settings is " +
-              "on. While live, use the Bitrate quick button.",
+            "Bitrate is under Settings → Streams → <your stream> → Video when Show all " +
+              "settings is on. While live, use the Bitrate quick button.",
+          ),
+        ],
+      },
+      { type: "h", text: t("Stream problems") },
+      {
+        type: "list",
+        items: [
+          t(
+            "An RTMP stream does not connect? The error toast shows the likely cause, such as" +
+              " a server that cannot be reached or a stream key that is likely wrong.",
           ),
           t(
-            "Unstable stream? Use SRT(LA) with adaptive bitrate instead of streaming directly with " +
-              "RTMP, or stream through OBS or a bonding server.",
+            "Unstable stream? Use SRT(LA) with adaptive bitrate instead of streaming directly" +
+              " with RTMP, or stream through OBS or a bonding server.",
           ),
           t(
-            "Low SRT latency: the Moblin SRT implementation does not perform well below 1000 ms. " +
-              "Select the Official implementation in the SRT(LA) settings.",
+            "Low SRT latency: the Moblin SRT implementation does not perform well below 1000 " +
+              "ms. Select the Official implementation in the SRT(LA) settings.",
           ),
           t(
-            "Streaming over an Android hotspot fails? Try turning off Big packets in the SRT(LA) " +
-              "settings.",
+            "Streaming over an Android hotspot fails? Try turning off Big packets in the " +
+              "SRT(LA) settings.",
           ),
           t(
-            "Video or audio issues in OBS? Use Fix in the OBS quick button, or !moblin obs fix in " +
-              "chat.",
+            "Video or audio issues in OBS? Use Fix in the OBS quick button, or !moblin obs " +
+              "fix in chat.",
           ),
         ],
       },
       {
         type: "tip",
         text: t(
-          "Need more help? Settings → Help and support links to the Moblin Discord server and " +
-            "GitHub.",
+          "Need more help? Settings → Help and support links to the Moblin Discord server " +
+            "and GitHub.",
         ),
       },
     ],
-    related: ["settings", "srt-la", "video", "obs-remote-control", "settings-debug"],
+    related: ["settings", "srt-la", "stream-video", "obs-remote-control", "debug"],
   },
 ];

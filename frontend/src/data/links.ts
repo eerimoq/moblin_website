@@ -28,6 +28,7 @@ export const navItems = [
   { label: t("Streamers"), href: "/#streamers" },
   { label: t("Videos"), href: "/#videos" },
   { label: t("Support"), href: "/#support" },
+  { label: t("Docs"), href: "/docs/" },
 ] as const;
 
 /** Pages other than the home page, relative to the site root. */

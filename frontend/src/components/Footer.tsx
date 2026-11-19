@@ -5,7 +5,6 @@ import { language, languages, setLanguage, t } from "../i18n";
 import Icon, { type IconName } from "./Icon";
 
 const footerLinks: { label: string; href: string; icon?: IconName }[] = [
-  { label: t("Docs"), href: asset(pages.docs) },
   { label: t("Chat bot"), href: asset(pages.chatBot) },
   { label: "Moblin Cloud", href: links.cloud },
   { label: t("Trading cards"), href: asset(pages.cards) },

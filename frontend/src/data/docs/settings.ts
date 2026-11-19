@@ -1,11 +1,12 @@
 import data from "./settings.json";
 
 export type SettingItem = {
-  type: "page" | "setting" | "toggle" | "picker" | "note";
+  type: "page" | "setting" | "toggle" | "picker" | "variable" | "note";
   label: string;
   page?: string;
   options?: string[];
   default?: string;
+  range?: string;
   description?: string;
 };
 

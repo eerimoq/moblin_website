@@ -138,8 +138,8 @@ export default function Privacy() {
                 link from Moblin Cloud. They are requested without a referrer.
               </li>
               <li>
-                The video previews in the Videos section, from YouTube (Google Ireland Limited,
-                Gordon House, Barrow Street, Dublin 4, Ireland). See the{" "}
+                The video previews in the Videos section and the documentation, from YouTube (Google
+                Ireland Limited, Gordon House, Barrow Street, Dublin 4, Ireland). See the{" "}
                 <Link href="https://policies.google.com/privacy">Google Privacy Policy</Link>.
               </li>
             </ul>

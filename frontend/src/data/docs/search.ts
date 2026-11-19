@@ -58,6 +58,9 @@ function buildIndex(): SearchEntry[] {
         heading = block.text;
         return;
       }
+      if (block.type === "video") {
+        return;
+      }
       const text = "items" in block ? block.items.join(" ") : block.text;
       entries.push(
         entry(

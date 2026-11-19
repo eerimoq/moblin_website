@@ -1,5 +1,6 @@
 import argparse
 import functools
+import heapq
 import json
 import re
 import subprocess
@@ -49,8 +50,9 @@ def read_multiline_string(source, i):
         if c == "\\":
             nxt = source[i + 1]
             if nxt == "(":
-                i = read_interpolation(source, i + 2)
-                parts.append(PLACEHOLDER)
+                end = read_interpolation(source, i + 2)
+                parts.append(f"\x01{source[i + 2 : end - 1].strip()}\x02")
+                i = end
                 continue
             if nxt == "\n":
                 parts.append("\x00")
@@ -80,8 +82,9 @@ def read_string(source, i):
         if c == "\\":
             nxt = source[i + 1]
             if nxt == "(":
-                i = read_interpolation(source, i + 2)
-                parts.append(PLACEHOLDER)
+                end = read_interpolation(source, i + 2)
+                parts.append(f"\x01{source[i + 2 : end - 1].strip()}\x02")
+                i = end
                 continue
             parts.append(unescape(nxt))
             i += 2
@@ -135,6 +138,10 @@ def tokenize(source):
             end = source.index('"#', i + 2)
             tokens.append(Token("string", source[i + 2 : end]))
             i = end + 2
+        elif c == "`" and "`" in source[i + 1 : i + 40]:
+            end = source.index("`", i + 1)
+            tokens.append(Token("ident", source[i + 1 : end]))
+            i = end + 1
         elif IDENT_START.match(c):
             j = i + 1
             while j < n and IDENT_CHAR.match(source[j]):
@@ -164,7 +171,12 @@ CONTROLS = {
     "MultiLineTextFieldNavigationView",
     "ColorPicker",
     "DatePicker",
+    "SliderView",
 }
+
+SHEETS = {"sheet", "popover", "alert", "confirmationDialog", "fullScreenCover"}
+
+INLINE_ONLY = {"TextEditNavigationView", "MultiLineTextFieldNavigationView", "InlinePickerView"}
 
 OPEN = {"(": ")", "{": "}", "[": "]"}
 
@@ -229,6 +241,13 @@ def literal(tokens):
     ):
         return tokens[4].value
     if (
+        len(tokens) == 4
+        and is_ident(tokens, 0, "String")
+        and is_punct(tokens, 1, "(")
+        and tokens[2].kind == "string"
+    ):
+        return tokens[2].value
+    if (
         len(tokens) >= 3
         and tokens[0].kind == "ident"
         and tokens[0].value in ("LocalizedStringKey", "Text")
@@ -243,9 +262,13 @@ def strings_in(tokens):
     return [token.value for token in tokens if token.kind == "string"]
 
 
+INTERPOLATION = re.compile("\x01([^\x02]*)\x02")
+
+
 def clean(text):
     if text is None:
         return None
+    text = INTERPOLATION.sub(lambda m: "" if m.group(1).startswith("Image(") else PLACEHOLDER, text)
     text = re.sub(r"[ \t]+", " ", text).strip()
     text = re.sub(r"\[([^\]]+)\]\([^)]+\)", r"\1", text)
     if not text or text == PLACEHOLDER:
@@ -260,12 +283,38 @@ class Struct:
     name: str
     tokens: list
     properties: dict
+    file: int = 0
 
 
-def parse_declarations(tokens):
-    structs = {}
-    classes: dict = {}
-    enums: dict = {}
+def parse_arrays(tokens, arrays):
+    for i in range(len(tokens) - 4):
+        if not is_ident(tokens, i, "let") or not is_ident(tokens, i + 1):
+            continue
+        j = i + 2
+        if is_punct(tokens, j, ":"):
+            while j < len(tokens) and not is_punct(tokens, j, "=") and j < i + 8:
+                j += 1
+        if not is_punct(tokens, j, "=") or not is_punct(tokens, j + 1, "["):
+            continue
+        end = matching(tokens, j + 1)
+        values = literal_list(tokens[j + 2 : end])
+        if values:
+            arrays.setdefault(tokens[i + 1].value, values)
+
+
+def literal_list(tokens):
+    values = []
+    for _, value in split_arguments(tokens):
+        if len(value) == 1 and value[0].kind in ("number", "string"):
+            values.append(value[0].value.replace("_", "") if value[0].kind == "number" else value[0].value)
+        elif len(value) == 2 and is_punct(value, 0, "-") and value[1].kind == "number":
+            values.append("-" + value[1].value)
+        else:
+            return None
+    return values
+
+
+def parse_declarations(tokens, file, structs, file_structs, classes, enums, inits):
     i = 0
     while i < len(tokens):
         token = tokens[i]
@@ -287,19 +336,65 @@ def parse_declarations(tokens):
             header = tokens[i + 2 : j]
             if token.value == "struct":
                 if any(is_ident([t], 0, "View") for t in header):
-                    structs[name] = Struct(name, body, parse_properties(body))
+                    struct = Struct(name, body, parse_properties(body, {}), file)
+                    structs.setdefault(name, struct)
+                    file_structs.setdefault(file, {})[name] = struct
             elif token.value == "class":
-                classes.setdefault(name, {}).update(parse_properties(body))
+                class_inits: dict = {}
+                classes.setdefault(name, {}).update(parse_properties(body, class_inits))
+                for prop, overrides in class_inits.items():
+                    inits[(name, prop)] = overrides
             if token.value in ("enum", "extension"):
                 enum = enums.setdefault(name, {"cases": [], "raw": {}, "strings": {}})
                 parse_enum(body, enum, token.value == "enum")
             i = j + 1
             continue
         i += 1
-    return structs, classes, enums
 
 
-def parse_properties(body):
+def parse_default(value):
+    result = None
+    if not value:
+        return None
+    if value[0].kind in ("number", "string"):
+        if len(value) < 2 or not is_punct(value, 1, "."):
+            result = (value[0].kind, value[0].value)
+    elif is_ident(value, 0, "true") or is_ident(value, 0, "false"):
+        result = ("bool", value[0].value)
+    elif is_punct(value, 0, "-") and len(value) > 1 and value[1].kind == "number":
+        result = ("number", "-" + value[1].value)
+    elif is_punct(value, 0, ".") and is_ident(value, 1) and not is_punct(value, 2, "("):
+        result = ("case", value[1].value)
+    else:
+        k = 0
+        if is_punct(value, 0, ".") and is_ident(value, 1, "init"):
+            k = 2
+        elif is_ident(value, 0, "String"):
+            k = 1
+        if k and is_punct(value, k, "(") and is_ident(value, k + 1, "localized") and len(value) > k + 3:
+            if value[k + 3].kind == "string":
+                result = ("string", value[k + 3].value)
+    return result
+
+
+def parse_init(body, j):
+    if is_punct(body, j, ".") and is_ident(body, j + 1, "init"):
+        j += 2
+    elif is_ident(body, j) and body[j].value[:1].isupper():
+        j += 1
+    else:
+        return None
+    if not is_punct(body, j, "("):
+        return None
+    overrides = {}
+    for name, value in split_arguments(body[j + 1 : matching(body, j)]):
+        default = parse_default(value)
+        if name and default:
+            overrides[name] = default
+    return overrides or None
+
+
+def parse_properties(body, inits):
     properties = {}
     depth = 0
     i = 0
@@ -322,18 +417,13 @@ def parse_properties(body):
                         j += 2
                     if is_punct(body, j, "?"):
                         j += 1
+                        if not is_punct(body, j, "="):
+                            default = ("nil", "nil")
                 if is_punct(body, j, "="):
-                    value = body[j + 1 : j + 4]
-                    if value and value[0].kind in ("number", "string"):
-                        if len(value) < 2 or not is_punct(value, 1, "."):
-                            default = (value[0].kind, value[0].value)
-                    elif is_ident(value, 0, "true") or is_ident(value, 0, "false"):
-                        default = ("bool", value[0].value)
-                    elif is_punct(value, 0, ".") and is_ident(value, 1):
-                        if len(value) < 3 or not is_punct(value, 2, "("):
-                            default = ("case", value[1].value)
-                    elif is_punct(value, 0, "-") and len(value) > 1 and value[1].kind == "number":
-                        default = ("number", "-" + value[1].value)
+                    default = parse_default(body[j + 1 : j + 9])
+                    overrides = parse_init(body, j + 1)
+                    if overrides:
+                        inits[name] = overrides
                 properties[name] = (type_name, default)
         i += 1
     return properties
@@ -408,8 +498,11 @@ def parse_to_string(body, enum):
 
 
 class Extractor:
-    def __init__(self, structs, classes, enums):
+    def __init__(self, structs, file_structs, classes, enums, inits, arrays):
         self.structs = structs
+        self.file_structs = file_structs
+        self.inits = inits
+        self.arrays = arrays
         self.classes = classes
         self.enums = enums
         self.pages = []
@@ -449,11 +542,28 @@ class Extractor:
         page["sections"] = [s for s in page["sections"] if s["items"] or s["header"] or s["footer"]]
         return page
 
-    def walk(self, view, scope, page, section, stack, strings=None):
-        struct = self.structs[view]
+    def struct(self, name, file):
+        return self.file_structs.get(file, {}).get(name) or self.structs.get(name)
+
+    def walk(self, view, scope, page, section, stack, strings=None, file=None, content=None, outer=None):
+        struct = self.struct(view, file)
         local = {name: type_name for name, (type_name, _) in struct.properties.items() if type_name}
         local.update(scope)
-        context = {"page": page, "stack": stack, "scope": local, "strings": strings or {}}
+        defaults = {
+            name: clean(default[1])
+            for name, (_, default) in struct.properties.items()
+            if default and default[0] == "string" and clean(default[1])
+        }
+        defaults.update(strings or {})
+        context = {
+            "page": page,
+            "stack": stack,
+            "scope": local,
+            "strings": defaults,
+            "file": struct.file,
+            "content": content,
+            "outer": outer,
+        }
         body_start = None
         for i in range(len(struct.tokens) - 1):
             if is_ident(struct.tokens, i, "body") and is_punct(struct.tokens, i + 1, ":"):
@@ -494,12 +604,40 @@ class Extractor:
 
     def process(self, tokens, section, context):
         i = 0
+        pending = ""
+        pending_end = 0
         while i < len(tokens):
             token = tokens[i]
             if token.kind != "ident":
                 i += 1
                 continue
             name = token.value
+            if name == "if":
+                j = i + 1
+                while j < len(tokens) and not is_punct(tokens, j, "{"):
+                    if tokens[j].kind == "punct" and tokens[j].value in "([":
+                        j = matching(tokens, j)
+                    j += 1
+                if is_ident(tokens, j - 1, "false") and (j - 1 == i + 1 or is_punct(tokens, j - 2, ",")):
+                    i = matching(tokens, j) + 1
+                    continue
+            if name in SHEETS and is_punct(tokens, i - 1, ".") and is_punct(tokens, i + 1, "("):
+                i = matching(tokens, i + 1) + 1
+                while is_punct(tokens, i, "{") or (is_ident(tokens, i) and is_punct(tokens, i + 1, ":")):
+                    i = matching(tokens, i if is_punct(tokens, i, "{") else i + 2) + 1
+                continue
+            if name == "content" and is_punct(tokens, i + 1, "(") and is_punct(tokens, i + 2, ")"):
+                if context["content"] is not None and not is_punct(tokens, i - 1, "."):
+                    section = self.process(context["content"], section, context["outer"])
+                    i += 3
+                    continue
+            if name in ("Slider", "SliderView") and is_punct(tokens, i + 1, "("):
+                end = matching(tokens, i + 1)
+                if pending and i - pending_end < 40:
+                    self.add_slider(pending, split_arguments(tokens[i + 2 : end]), section, context)
+                pending = ""
+                i = end + 1
+                continue
             if name == "Section":
                 i, section = self.process_section(tokens, i, section, context)
                 continue
@@ -532,21 +670,67 @@ class Extractor:
                 end = matching(tokens, i + 1)
                 arguments = split_arguments(tokens[i + 2 : end])
                 if arguments and arguments[0][0] in (None, "text"):
-                    text = clean(literal(arguments[0][1]))
-                    if text and (name != "Text" or len(text) >= 40):
+                    raw = literal(arguments[0][1]) or ""
+                    for key, value in context["strings"].items():
+                        raw = raw.replace(f"\x01{key}\x02", value)
+                    text = clean(raw)
+                    if text and re.fullmatch(r"\{[^{}…]+\}", text) and name == "Text":
+                        item = {"type": "variable", "label": text}
+                        if "description" in context["strings"]:
+                            item["description"] = context["strings"]["description"]
+                        add_item(section, item)
+                    elif text and (name != "Text" or len(text) >= 40):
                         add_item(section, {"type": "note", "label": text})
+                    elif text and name == "Text":
+                        pending = text
+                        pending_end = end + 1
                 i = end + 1
                 continue
             if name in context["helpers"] and name not in context["called"]:
                 if not is_punct(tokens, i - 1, "."):
                     context["called"].add(name)
                     section = self.process(context["helpers"][name], section, context)
-            if name in self.structs and is_punct(tokens, i + 1, "("):
-                if not is_punct(tokens, i - 1, "."):
+            if self.struct(name, context["file"]) and not is_punct(tokens, i - 1, "."):
+                if is_punct(tokens, i + 1, "("):
                     i, section = self.process_view_call(tokens, i, section, context)
+                    continue
+                if is_punct(tokens, i + 1, "{"):
+                    end = matching(tokens, i + 1)
+                    section = self.walk(
+                        name,
+                        {},
+                        context["page"],
+                        section,
+                        context["stack"] + [name],
+                        file=context["file"],
+                        content=tokens[i + 2 : end],
+                        outer=context,
+                    )
+                    i = end + 1
                     continue
             i += 1
         return section
+
+    def add_slider(self, label, arguments, section, context):
+        item = {"type": "setting", "label": label}
+        low = high = None
+        for name, value in arguments:
+            text = "".join(token.value for token in value)
+            if name == "in":
+                match = re.fullmatch(r"(-?[\d.]*\d)\.\.\.(-?[\d.]*\d)", text)
+                if match:
+                    low, high = match.groups()
+            elif name == "minimum" and re.fullmatch(r"-?[\d.]+", text):
+                low = text
+            elif name == "maximum" and re.fullmatch(r"-?[\d.]+", text):
+                high = text
+            elif name == "value":
+                prop = self.resolve_binding(value, context["scope"])
+                if prop and prop[1] and prop[1][0] == "number":
+                    item["default"] = re.sub(r"\.0$", "", prop[1][1].replace("_", ""))
+        if low is not None and high is not None:
+            item["range"] = re.sub(r"\.0$", "", low) + " – " + re.sub(r"\.0$", "", high)
+        add_item(section, item)
 
     def process_section(self, tokens, i, section, context):
         page = context["page"]
@@ -597,6 +781,7 @@ class Extractor:
         end = matching(tokens, j)
         body = tokens[j + 1 : end]
         branches = []
+        default: list = []
         k = 0
         while k < len(body):
             if is_ident(body, k, "case") and is_punct(body, k + 1, ".") and is_ident(body, k + 2):
@@ -616,6 +801,9 @@ class Extractor:
                 branches.append((case, body[start + 1 : stop]))
                 k = stop
                 continue
+            if is_ident(body, k, "default") and is_punct(body, k + 1, ":"):
+                default = body[k + 2 :]
+                break
             if body[k].kind == "punct" and body[k].value in OPEN:
                 k = matching(body, k)
             k += 1
@@ -624,7 +812,7 @@ class Extractor:
             if (
                 branch
                 and branch[0].kind == "ident"
-                and branch[0].value in self.structs
+                and self.struct(branch[0].value, context["file"])
                 and is_punct(branch, 1, "(")
             ):
                 views.append((case, branch))
@@ -637,9 +825,12 @@ class Extractor:
             call_end = matching(branch, 1)
             scope = self.argument_scope(split_arguments(branch[2:call_end]), context)
 
-            build = functools.partial(self.walk, view, scope, stack=context["stack"] + [view])
-            child = self.make_page(title, (page["id"], title), page, build, extend=True)
+            build = functools.partial(
+                self.walk, view, scope, stack=context["stack"] + [view], file=context["file"]
+            )
+            child = self.make_page(title, (enum_name, title), page, build, extend=True)
             add_item(section, {"type": "page", "label": title, "page": child["id"]})
+        self.process(default, section, context)
         return end + 1
 
     def footer_text(self, tokens):
@@ -654,14 +845,57 @@ class Extractor:
                 end = matching(tokens, i + 1)
                 arguments = split_arguments(tokens[i + 2 : end])
                 if arguments:
-                    text = clean(literal(arguments[0][1]))
+                    raw = literal(arguments[0][1])
+                    text = clean(raw)
                     if text:
                         texts.append(text)
+                    elif raw == "":
+                        texts.append("")
                 i = end + 1
                 continue
             i += 1
-        texts = dedupe(texts)
-        return "\n\n".join(texts) if texts else None
+        lines = []
+        for text in texts:
+            if text == "" or text not in lines:
+                lines.append(text)
+        return re.sub(r"\n{3,}", "\n\n", "\n".join(lines)).strip() or None
+
+    def navigation_title(self, tokens):
+        title = None
+        i = 0
+        while i < len(tokens):
+            if tokens[i].kind == "punct" and tokens[i].value in OPEN:
+                i = matching(tokens, i) + 1
+                continue
+            if is_ident(tokens, i, "navigationTitle") and is_punct(tokens, i + 1, "("):
+                end = matching(tokens, i + 1)
+                title = clean(literal(tokens[i + 2 : end])) or title
+            i += 1
+        if title and PLACEHOLDER in title:
+            return None
+        return title
+
+    def view_navigation_title(self, struct):
+        tokens = struct.tokens
+        for i in range(len(tokens) - 1):
+            if is_ident(tokens, i, "body") and is_punct(tokens, i + 1, ":"):
+                k = i
+                while k < len(tokens) and not is_punct(tokens, k, "{"):
+                    k += 1
+                return self.navigation_title(tokens[k + 1 : matching(tokens, k)])
+        return None
+
+    def label_toggle(self, label, title, section, context):
+        for k in range(len(label) - 1):
+            if is_ident(label, k, "Toggle") and is_punct(label, k + 1, "("):
+                item = {"type": "toggle", "label": title}
+                for name, value in split_arguments(label[k + 2 : matching(label, k + 1)]):
+                    if name == "isOn":
+                        prop = self.resolve_binding(value, context["scope"])
+                        if prop and prop[1] and prop[1][0] == "bool":
+                            item["default"] = "On" if prop[1][1] == "true" else "Off"
+                add_item(section, item)
+                return
 
     def process_navigation_link(self, tokens, i, section, context):
         page = context["page"]
@@ -689,7 +923,7 @@ class Extractor:
             label = tokens[j + 3 : end]
             j = end + 1
         if title is None and label is not None:
-            title = self.label_text(label, strings=context["strings"])
+            title = self.label_text(label, strings=context["strings"], file=context["file"])
         if title and (PLACEHOLDER in title or title.startswith("--")):
             title = None
         destination = destination or []
@@ -701,7 +935,7 @@ class Extractor:
         view = None
         if (
             is_ident(destination, k)
-            and destination[k].value in self.structs
+            and self.struct(destination[k].value, context["file"])
             and is_punct(destination, k + 1, "(")
         ):
             call_end = matching(destination, k + 1)
@@ -713,40 +947,50 @@ class Extractor:
                 if title:
                     add_item(section, {"type": "setting", "label": title})
                 return j
+            static = title is not None
+            title = title or self.navigation_title(destination)
             title = title or self.fallback_title(context["stack"][-1], page)
-            key = (context["stack"][-1], title)
+            key = (context["stack"][-1], context["file"], title)
 
             def build_inline(child, child_section):
                 child_context = dict(context, page=child, called=set())
                 self.process(destination, child_section, child_context)
 
+            if label is not None and static:
+                self.label_toggle(label, title, section, context)
             child = self.make_page(title, key, page, build_inline)
             add_item(section, {"type": "page", "label": title, "page": child["id"]})
             return j
         arguments = split_arguments(destination[k + 2 : call_end])
-        setting = self.title_setting(view, arguments)
+        struct = self.struct(view, context["file"])
+        setting = self.title_setting(view, arguments, context)
         if setting is not None:
             setting["label"] = title or setting["label"]
             add_item(section, setting)
             return j
-        if view in context["stack"] or len(context["stack"]) > MAX_VIEW_DEPTH or "Wizard" in view:
+        if view in INLINE_ONLY or "Wizard" in view:
             return j
-        title = title or self.fallback_title(view, page)
+        static = title is not None
+        title = title or self.navigation_title(destination) or self.view_navigation_title(struct)
+        title = title or self.fallback_title(view, page, context["stack"][0])
         scope = self.argument_scope(arguments, context)
+        file = context["file"]
 
         def build_view(child, child_section):
-            self.walk(view, scope, child, child_section, context["stack"] + [view])
+            self.walk(view, scope, child, child_section, [view], file=file)
 
-        child = self.make_page(title, view, page, build_view)
+        if label is not None and static:
+            self.label_toggle(label, title, section, context)
+        child = self.make_page(title, (view, struct.file, title), page, build_view)
         add_item(section, {"type": "page", "label": title, "page": child["id"]})
         return j
 
-    def fallback_title(self, view, page):
+    def fallback_title(self, view, page, parent=None):
         title = humanize(view)
-        prefix = page["title"].lower() + " "
-        if title.lower().startswith(prefix) and len(title) > len(prefix):
-            title = title[len(prefix) :]
-            title = title[0].upper() + title[1:]
+        for prefix in (page["title"].lower() + " ", humanize(parent or view).lower() + " "):
+            if title.lower().startswith(prefix) and len(title) > len(prefix):
+                title = title[len(prefix) :]
+                return title[0].upper() + title[1:]
         return title
 
     def argument_scope(self, arguments, context):
@@ -756,9 +1000,18 @@ class Extractor:
                 resolved = self.resolve_type(value, context["scope"])
                 if resolved:
                     scope[name] = resolved
+                    overrides = self.resolve_overrides(value, context["scope"])
+                    if overrides:
+                        scope["#" + name] = overrides
         return scope
 
-    def label_text(self, tokens, depth=0, strings=None):
+    def resolve_overrides(self, value, scope):
+        if len(value) < 3:
+            return scope.get("#" + value[0].value) if value else None
+        owner = self.resolve_type(value[:-2], scope)
+        return self.inits.get((owner, value[-1].value))
+
+    def label_text(self, tokens, depth=0, strings=None, file=None):
         if not tokens or depth > 2:
             return None
         strings = strings or {}
@@ -791,12 +1044,13 @@ class Extractor:
                 return strings[tokens[k].value]
             if (
                 is_ident(tokens, k)
-                and tokens[k].value in self.structs
+                and self.struct(tokens[k].value, file)
                 and tokens[k].value not in ("GrayTextView", "Image")
                 and is_punct(tokens, k + 1, "(")
                 and not is_punct(tokens, k - 1, ".")
             ):
-                text = self.label_text(self.structs[tokens[k].value].tokens, depth + 1)
+                struct = self.struct(tokens[k].value, file)
+                text = self.label_text(struct.tokens, depth + 1, file=struct.file)
                 if text:
                     return text
             if (
@@ -811,42 +1065,83 @@ class Extractor:
             k += 1
         return None
 
-    def title_setting(self, view, arguments):
+    def title_setting(self, view, arguments, context):
         names = {name for name, _ in arguments}
         if "title" not in names:
             return None
-        struct = self.structs[view]
+        struct = self.struct(view, context["file"])
         if any(is_ident([t], 0, "NavigationLink") or is_ident([t], 0, "Form") for t in struct.tokens):
-            if view not in ("TextEditNavigationView", "MultiLineTextFieldNavigationView"):
+            if view not in INLINE_ONLY:
                 return None
         title = None
         description = []
+        item = {"type": "setting"}
         for name, value in arguments:
             if name == "title":
                 title = clean(literal(value))
             elif name in ("footers", "footer"):
                 description += [clean(s) for s in strings_in(value) if clean(s)]
+            elif name == "description":
+                description += [clean(literal(value))] if clean(literal(value)) else []
+            elif name == "value" and "sensitive" not in names:
+                prop = self.resolve_property(value, context["scope"])
+                if prop and prop[1] and prop[1][0] in ("number", "string") and clean(prop[1][1]):
+                    item["default"] = prop[1][1].replace("_", "") if prop[1][0] == "number" else prop[1][1]
+            elif name == "items" and value and value[0].kind == "ident" and value[0].value in self.enums:
+                enum_name = value[0].value
+                options = [self.enum_string(enum_name, case) for case in self.enums[enum_name]["cases"]]
+                if options and all(options) and is_ident(value, 2, "allCases"):
+                    item["type"] = "picker"
+                    item["options"] = dedupe(options)
         if not title:
             return None
-        item = {"type": "setting", "label": title}
+        item["label"] = title
+        if re.fullmatch(r"\{[^{}]+\}", title):
+            item["type"] = "variable"
         if description:
             item["description"] = "\n\n".join(dedupe(description))
-        return item
+        return {"type": item.pop("type"), "label": item.pop("label"), **item}
 
     def process_view_call(self, tokens, i, section, context):
         view = tokens[i].value
         end = matching(tokens, i + 1)
         arguments = split_arguments(tokens[i + 2 : end])
         j = end + 1
-        setting = self.title_setting(view, arguments)
+        if view == "SettingsSearchResultsView":
+            return j, section
+        setting = self.title_setting(view, arguments, context)
         if setting is not None:
             add_item(section, setting)
+            return j, section
+        if view in INLINE_ONLY:
             return j, section
         if view in context["stack"] or len(context["stack"]) > MAX_VIEW_DEPTH or "Wizard" in view:
             return j, section
         scope = self.argument_scope(arguments, context)
         strings = {name: clean(literal(value)) for name, value in arguments if name and clean(literal(value))}
-        return j, self.walk(view, scope, context["page"], section, context["stack"] + [view], strings)
+        for name, value in arguments:
+            if name and len(value) == 1 and value[0].kind == "ident" and value[0].value in context["strings"]:
+                strings[name] = context["strings"][value[0].value]
+        content = None
+        outer = None
+        if is_punct(tokens, j, "{"):
+            closure_end = matching(tokens, j)
+            if any(is_ident(self.struct(view, context["file"]).tokens, k, "content") for k in range(40)):
+                content = tokens[j + 1 : closure_end]
+                outer = context
+                j = closure_end + 1
+        section = self.walk(
+            view,
+            scope,
+            context["page"],
+            section,
+            context["stack"] + [view],
+            strings,
+            file=context["file"],
+            content=content,
+            outer=outer,
+        )
+        return j, section
 
     def resolve_type(self, value, scope):
         if not value or value[0].kind != "ident":
@@ -865,15 +1160,40 @@ class Extractor:
         return current
 
     def resolve_binding(self, tokens, scope):
-        if not is_punct(tokens, 0, "$"):
+        if is_ident(tokens, 0, "Binding") and is_punct(tokens, 1, "("):
+            for name, value in split_arguments(tokens[2 : matching(tokens, 1)]):
+                if name == "get" and is_punct(value, 0, "{"):
+                    getter = value[1 : matching(value, 0)]
+                    if is_ident(getter, 0, "return"):
+                        getter = getter[1:]
+                    return self.resolve_property(getter, scope)
             return None
-        path = tokens[1:]
-        if len(path) < 3:
+        if not tokens or tokens[0].kind != "ident" or not tokens[0].value.startswith("$"):
+            return None
+        return self.resolve_property(tokens, scope)
+
+    def resolve_property(self, tokens, scope):
+        if (
+            is_ident(tokens, 0, "String")
+            and is_punct(tokens, 1, "(")
+            and matching(tokens, 1) == len(tokens) - 1
+        ):
+            tokens = tokens[2:-1]
+        if not tokens or tokens[0].kind != "ident":
+            return None
+        path = [Token("ident", tokens[0].value.lstrip("$"))] + tokens[1:]
+        if len(path) < 3 or not is_punct(path, -2 + len(path), ".") or not is_ident(path, len(path) - 1):
             return None
         owner = self.resolve_type(path[:-2], scope)
         if owner is None or owner not in self.classes:
             return None
-        return self.classes[owner].get(path[-1].value)
+        prop = self.classes[owner].get(path[-1].value)
+        if prop is None:
+            return None
+        overrides = self.resolve_overrides(path[:-2], scope) or {}
+        if path[-1].value in overrides:
+            return (prop[0], overrides[path[-1].value])
+        return prop
 
     def process_control(self, tokens, i, section, context):
         kind = tokens[i].value
@@ -896,10 +1216,10 @@ class Extractor:
             j = closure_end + 1
         if is_ident(tokens, j, "label") and is_punct(tokens, j + 1, ":") and is_punct(tokens, j + 2, "{"):
             closure_end = matching(tokens, j + 2)
-            label = label or self.label_text(tokens[j + 3 : closure_end])
+            label = label or self.label_text(tokens[j + 3 : closure_end], file=context["file"])
             j = closure_end + 1
         if label is None and kind == "Toggle" and content:
-            label = self.label_text(content)
+            label = self.label_text(content, file=context["file"])
         if label is None:
             return j
         item = {
@@ -908,12 +1228,20 @@ class Extractor:
         }
         prop = self.resolve_binding(binding, context["scope"]) if binding else None
         options = None
+        values: dict = {}
         if kind == "Picker":
-            options = self.picker_options(content)
-            if options:
+            options, values = self.picker_options(content)
+            if options and len(options) <= 5 and len("".join(options)) <= 60:
                 item["options"] = options
         if prop and prop[1]:
-            default = self.format_default(prop, kind)
+            if kind == "Picker":
+                default = values.get(prop[1][1].replace("_", ""))
+                if default is None and prop[1][0] == "case" and prop[0]:
+                    default = self.enum_string(prop[0], prop[1][1])
+                if default not in (options or []):
+                    default = None
+            else:
+                default = self.format_default(prop, kind)
             if default is not None:
                 item["default"] = default
         add_item(section, item)
@@ -925,44 +1253,101 @@ class Extractor:
             return None
         return clean(enum["strings"].get(case) or enum["raw"].get(case))
 
-    def picker_options(self, content):
-        for k in range(len(content) - 3):
-            if is_ident(content, k, "ForEach") and is_punct(content, k + 1, "("):
-                end = matching(content, k + 1)
-                source = content[k + 2 : end]
-                if source and source[0].kind == "ident" and source[0].value in self.enums:
-                    enum_name = source[0].value
-                    enum = self.enums[enum_name]
-                    options = [self.enum_string(enum_name, case) for case in enum["cases"]]
-                    options = [option for option in options if option]
-                    if len(options) == len(enum["cases"]) and options:
-                        return dedupe(options)
+    def option_text(self, tokens, param, value):
+        if len(tokens) == 1 and tokens[0].kind == "string":
+            names = INTERPOLATION.findall(tokens[0].value)
+            if all(name == param for name in names):
+                return clean(tokens[0].value.replace(f"\x01{param}\x02", value))
+            return None
+        if is_ident(tokens, 0, "String") and is_punct(tokens, 1, "(") and len(tokens) == 4:
+            tokens = tokens[2:3]
+        if len(tokens) == 1 and is_ident(tokens, 0, param):
+            return value
+        return None
+
+    def for_each_options(self, source, closure):
+        param = "$0"
+        if is_ident(closure, 0) and is_ident(closure, 1, "in"):
+            param = closure[0].value
+        text = None
+        for k in range(len(closure) - 1):
+            if is_ident(closure, k, "Text") and is_punct(closure, k + 1, "("):
+                text = closure[k + 2 : matching(closure, k + 1)]
+                break
+        if text is None:
+            return None
+        source = split_arguments(source)[0][1]
+        if source and source[0].kind == "ident" and source[0].value in self.enums:
+            if len(source) != 3 or not is_ident(source, 2, "allCases"):
                 return None
+            if not (is_ident(text, 0, param) and is_ident(text, 2, "toString") and len(text) == 5):
+                return None
+            enum_name = source[0].value
+            cases = self.enums[enum_name]["cases"]
+            options = [(case, self.enum_string(enum_name, case)) for case in cases]
+            return options if options and all(option for _, option in options) else None
+        values = None
+        if is_punct(source, 0, "[") and matching(source, 0) == len(source) - 1:
+            values = literal_list(source[1:-1])
+        elif len(source) == 1 and source[0].kind == "ident":
+            values = self.arrays.get(source[0].value)
+        else:
+            match = re.fullmatch(r"(\d+)(\.\.\.|\.\.<)(\d+)", "".join(token.value for token in source))
+            if match and int(match.group(3)) - int(match.group(1)) <= 20:
+                stop = int(match.group(3)) + (1 if match.group(2) == "..." else 0)
+                values = [str(number) for number in range(int(match.group(1)), stop)]
+        if not values:
+            return None
+        options = [(value, self.option_text(text, param, value)) for value in values]
+        return options if all(option for _, option in options) else None
+
+    def picker_options(self, content):
         options = []
+        values: dict = {}
         k = 0
         while k < len(content):
+            if is_ident(content, k, "ForEach") and is_punct(content, k + 1, "("):
+                end = matching(content, k + 1)
+                if not is_punct(content, end + 1, "{"):
+                    return None, {}
+                closure_end = matching(content, end + 1)
+                found = self.for_each_options(content[k + 2 : end], content[end + 2 : closure_end])
+                if found is None:
+                    return None, {}
+                for value, option in found:
+                    options.append(option)
+                    values.setdefault(value, option)
+                k = closure_end + 1
+                continue
+            if is_ident(content, k, "if") or is_ident(content, k, "switch"):
+                return None, {}
             if is_ident(content, k, "Text") and is_punct(content, k + 1, "("):
                 end = matching(content, k + 1)
                 text = clean(literal(content[k + 2 : end]))
-                if text:
-                    options.append(text)
+                if text is None or PLACEHOLDER in text:
+                    return None, {}
+                options.append(text)
+                if is_punct(content, end + 1, ".") and is_ident(content, end + 2, "tag"):
+                    tag = content[end + 4 : matching(content, end + 3)]
+                    if is_punct(tag, 0, "."):
+                        tag = tag[1:]
+                    if tag:
+                        values.setdefault(tag[0].value, text)
                 k = end + 1
                 continue
             k += 1
-        return dedupe(options) or None
+        return dedupe(options) or None, values
 
     def format_default(self, prop, kind):
-        type_name, (value_kind, value) = prop
+        _, (value_kind, value) = prop
         if value_kind == "bool":
             return "On" if value == "true" else "Off"
         if kind == "Toggle":
             return None
-        if value_kind == "case" and type_name:
-            return self.enum_string(type_name, value)
-        if value_kind == "number" and kind in ("Picker", "Stepper"):
+        if value_kind == "number" and kind == "Stepper":
             return value.replace("_", "")
         if value_kind == "string" and value:
-            return value
+            return clean(value)
         return None
 
 
@@ -1020,7 +1405,6 @@ def slug(text):
 
 
 def collapse_trivial_pages(pages):
-    by_id = {page["id"]: page for page in pages}
     removed = set()
     for page in reversed(pages):
         if page["parent"] is None:
@@ -1039,16 +1423,16 @@ def collapse_trivial_pages(pages):
         texts += [section["footer"] for section in page["sections"] if section["footer"]]
         if settings and settings[0].get("description"):
             texts.insert(0, settings[0]["description"])
-        parent = by_id[page["parent"]]
-        for section in parent["sections"]:
-            for item in section["items"]:
-                if item.get("page") == page["id"]:
-                    del item["page"]
-                    item["type"] = settings[0]["type"] if settings else "setting"
-                    if settings and "default" in settings[0]:
-                        item["default"] = settings[0]["default"]
-                    if texts:
-                        item["description"] = "\n\n".join(dedupe(texts))
+        for other in pages:
+            for section in other["sections"]:
+                for item in section["items"]:
+                    if item.get("page") == page["id"]:
+                        del item["page"]
+                        item["type"] = settings[0]["type"] if settings else "setting"
+                        if settings and "default" in settings[0]:
+                            item["default"] = settings[0]["default"]
+                        if texts:
+                            item["description"] = "\n\n".join(dedupe(texts))
         removed.add(page["id"])
     return [page for page in pages if page["id"] not in removed]
 
@@ -1078,6 +1462,135 @@ def merge_sections(page):
     page["sections"] = merged
 
 
+def place_pages(pages):
+    by_id = {page["id"]: page for page in pages}
+    order = {page["id"]: index for index, page in enumerate(pages)}
+    costs = {pages[0]["id"]: 0}
+    queue = [(0, 0, pages[0]["id"])]
+    while queue:
+        cost, _, page_id = heapq.heappop(queue)
+        if cost > costs[page_id]:
+            continue
+        page = by_id[page_id]
+        for section in page["sections"]:
+            step = 100 if section["header"] == "Shortcut" else 1
+            for item in section["items"]:
+                child = by_id.get(item.get("page"))
+                if child and cost + step < costs.get(child["id"], 1_000_000):
+                    costs[child["id"]] = cost + step
+                    child["parent"] = page_id
+                    heapq.heappush(queue, (cost + step, order[child["id"]], child["id"]))
+
+
+def page_shape(page, by_id):
+    return json.dumps(
+        [
+            [
+                section["header"],
+                section["footer"],
+                [
+                    [
+                        item["type"],
+                        item["label"],
+                        item.get("options"),
+                        item.get("description"),
+                        item.get("range"),
+                        by_id[item["page"]]["title"] if "page" in item else None,
+                    ]
+                    for item in section["items"]
+                ],
+            ]
+            for section in page["sections"]
+        ]
+    )
+
+
+def merge_defaults(group):
+    for section_index, section in enumerate(group[0]["sections"]):
+        for item_index, item in enumerate(section["items"]):
+            values: dict = {}
+            for page in group:
+                value = page["sections"][section_index]["items"][item_index].get("default")
+                values.setdefault(value, []).append(page["title"])
+            if len(values) < 2:
+                continue
+            common = max(values.items(), key=lambda entry: len(entry[1]))[0]
+            others = [
+                f"{value} for {', '.join(titles)}" for value, titles in values.items() if value != common
+            ]
+            if common is None or None in values or sum(len(v) for k, v in values.items() if k != common) > 4:
+                item.pop("default", None)
+            else:
+                item["default"] = f"{common} ({'; '.join(others)})"
+
+
+def merge_repeated_pages(pages):
+    by_id = {page["id"]: page for page in pages}
+    groups: dict = {}
+    for page in pages[1:]:
+        parent = by_id[page["parent"]]
+        for ancestor in (parent, by_id.get(parent["parent"])):
+            if ancestor and ancestor["title"].endswith("s"):
+                groups.setdefault((ancestor["id"], page_shape(page, by_id)), []).append(page)
+    removed: dict = {}
+    for (ancestor_id, _), group in groups.items():
+        group = [page for page in group if page["id"] not in removed and page["sections"]]
+        if len(group) < 3 or any(removed.get(page["id"]) for page in group):
+            continue
+        merge_defaults(group)
+        keep = group[0]
+        names = [page["title"] for page in group]
+        if len({page["parent"] for page in group}) > 1:
+            names = [f"{by_id[page['parent']]['title']} {page['title'].lower()}" for page in group]
+        titles = ", ".join(names)
+        keep["title"] = by_id[ancestor_id]["title"][:-1]
+        keep["sections"].insert(
+            0,
+            {"header": None, "footer": None, "items": [{"type": "note", "label": f"The same for {titles}."}]},
+        )
+        for page in group[1:]:
+            removed[page["id"]] = keep["id"]
+    for page in pages:
+        if page["parent"] in removed:
+            page["parent"] = removed[page["parent"]]
+        for section in page["sections"]:
+            for item in section["items"]:
+                if item.get("page") in removed:
+                    item["page"] = removed[item["page"]]
+    pages[:] = [page for page in pages if page["id"] not in removed]
+
+
+def name_pages(pages):
+    by_id = {page["id"]: page for page in pages}
+    for page in pages[1:]:
+        path = [page["title"]]
+        parent = by_id.get(page["parent"])
+        while parent:
+            path.insert(0, parent["title"])
+            parent = by_id.get(parent["parent"])
+        page["path"] = path
+    renamed: dict = {}
+    taken = set()
+    for page in sorted(pages, key=lambda page: len(page["path"])):
+        base = slug(page["title"])
+        page_id = base
+        if page_id in taken and page["parent"]:
+            page_id = f"{renamed[page['parent']]}-{base}"
+        counter = 2
+        while page_id in taken:
+            page_id = f"{base}-{counter}"
+            counter += 1
+        taken.add(page_id)
+        renamed[page["id"]] = page_id
+    for page in pages:
+        page["id"] = renamed[page["id"]]
+        page["parent"] = renamed.get(page["parent"])
+        for section in page["sections"]:
+            for item in section["items"]:
+                if "page" in item:
+                    item["page"] = renamed[item["page"]]
+
+
 def git(moblin, *args):
     return subprocess.run(
         ["git", "-C", str(moblin), *args], capture_output=True, text=True, check=True
@@ -1089,11 +1602,19 @@ def main():
     parser.add_argument("moblin", type=Path)
     parser.add_argument("output", type=Path)
     args = parser.parse_args()
-    tokens = []
-    for path in sorted((args.moblin / "Moblin").rglob("*.swift")):
-        tokens += tokenize(path.read_text())
-    structs, classes, enums = parse_declarations(tokens)
-    extractor = Extractor(structs, classes, enums)
+    structs: dict = {}
+    file_structs: dict = {}
+    classes: dict = {}
+    enums: dict = {}
+    inits: dict = {}
+    arrays: dict = {}
+    paths = sorted((args.moblin / "Moblin").rglob("*.swift"))
+    paths += sorted((args.moblin / "Moblin Watch" / "Shared").rglob("*.swift"))
+    for file, path in enumerate(paths):
+        tokens = tokenize(path.read_text())
+        parse_declarations(tokens, file, structs, file_structs, classes, enums, inits)
+        parse_arrays(tokens, arrays)
+    extractor = Extractor(structs, file_structs, classes, enums, inits, arrays)
     extractor.make_page(
         "Settings",
         "SettingsView",
@@ -1103,14 +1624,29 @@ def main():
     for page in extractor.pages:
         merge_sections(page)
     extractor.pages = collapse_trivial_pages(extractor.pages)
+    for page in extractor.pages:
+        linked = set()
+        for section in page["sections"]:
+            items = []
+            for item in section["items"]:
+                if item.get("page") not in linked:
+                    items.append(item)
+                if "page" in item:
+                    linked.add(item["page"])
+            section["items"] = items
+        page["sections"] = [s for s in page["sections"] if s["items"] or s["footer"]]
+    place_pages(extractor.pages)
+    merge_repeated_pages(extractor.pages)
+    place_pages(extractor.pages)
+    name_pages(extractor.pages)
     output = {
         "commit": git(args.moblin, "rev-parse", "HEAD"),
         "date": git(args.moblin, "log", "-1", "--format=%cs"),
         "pages": extractor.pages,
     }
     args.output.write_text(json.dumps(output, ensure_ascii=False, indent=1) + "\n")
-    items = sum(len(s["items"]) for p in extractor.pages for s in p["sections"])
-    print(f"{len(extractor.pages)} pages, {items} items")
+    count = sum(len(s["items"]) for p in extractor.pages for s in p["sections"])
+    print(f"{len(extractor.pages)} pages, {count} items")
 
 
 if __name__ == "__main__":
