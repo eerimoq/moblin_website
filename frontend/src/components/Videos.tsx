@@ -12,9 +12,7 @@ function VideoCard(props: { video: Video }) {
     `https://i.ytimg.com/vi/${props.video.id}/${short ? "oar2" : "hqdefault"}.jpg`,
   );
   return (
-    <li
-      class={`shrink-0 snap-start ${short ? "w-[220px] sm:w-[248px]" : "w-[min(784px,calc(100vw-40px))]"}`}
-    >
+    <li class={`shrink-0 snap-start ${short ? "w-min" : "w-[min(784px,calc(100vw-40px))]"}`}>
       <a
         href={
           short
@@ -26,7 +24,8 @@ function VideoCard(props: { video: Video }) {
         class="group flex flex-col gap-3"
       >
         <div
-          class={`relative flex items-center justify-center overflow-hidden rounded-2xl border-[1.5px] border-line bg-well ${short ? "aspect-[9/16]" : "aspect-video"}`}
+          class={`relative flex items-center justify-center overflow-hidden rounded-2xl border-[1.5px] border-line bg-well ${short ? "h-[391px] sm:h-[441px]" : ""}`}
+          style={{ "aspect-ratio": props.video.aspect ?? (short ? "9 / 16" : "16 / 9") }}
         >
           <img
             src={thumbnail()}
