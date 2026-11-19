@@ -9,17 +9,17 @@ export const videos: Video[] = [
   {
     id: "MHUT8al6Wg8",
     kind: "short",
-    title: "Moblin: Chat snapshots to Discord!",
+    title: "Chat snapshots to Discord!",
   },
   {
     id: "r-60-f4prss",
     kind: "short",
-    title: "Moblin: Twitch raid",
+    title: "Twitch raid",
     aspect: "3 / 4",
   },
   {
     id: "5v07BwaDe0s",
     kind: "short",
-    title: "Moblin: Zoom and scene controls layouts!",
+    title: "Zoom and scene controls layouts!",
   },
 ];
