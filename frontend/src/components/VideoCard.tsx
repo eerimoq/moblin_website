@@ -5,7 +5,7 @@ import BrandIcon from "./BrandIcon";
 export default function VideoCard(props: { video: Video; compact?: boolean }) {
   const short = props.video.kind === "short";
   const [thumbnail, setThumbnail] = createSignal(
-    `https://i.ytimg.com/vi/${props.video.id}/${short ? "oar2" : "hqdefault"}.jpg`,
+    `https://i.ytimg.com/vi/${props.video.id}/${short ? "maxresdefault" : "hqdefault"}.jpg`,
   );
   return (
     <a
@@ -17,7 +17,7 @@ export default function VideoCard(props: { video: Video; compact?: boolean }) {
     >
       <div
         class={`relative flex items-center justify-center overflow-hidden rounded-2xl border-[1.5px] border-line bg-well ${short ? (props.compact ? "h-[350px]" : "h-[391px] sm:h-[441px]") : ""}`}
-        style={{ "aspect-ratio": props.video.aspect ?? (short ? "9 / 16" : "16 / 9") }}
+        style={{ "aspect-ratio": short ? "9 / 16" : "16 / 9" }}
       >
         <img
           src={thumbnail()}

@@ -2,7 +2,6 @@ export type Video = {
   id: string;
   kind: "short" | "video";
   title: string;
-  aspect?: string;
   settings?: string[];
 };
 
@@ -23,7 +22,6 @@ export const videos: Video[] = [
     id: "r-60-f4prss",
     kind: "short",
     title: "Twitch raid",
-    aspect: "3 / 4",
     settings: ["twitch"],
   },
   {
