@@ -1426,6 +1426,7 @@ export const guides: Guide[] = [
         ],
       },
       { type: "h", text: t("Step 3: Connect and go live") },
+      { type: "video", id: "_4ISwYTKV3s" },
       {
         type: "steps",
         items: [
