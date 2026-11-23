@@ -10,10 +10,14 @@ import {
   Show,
   Switch,
 } from "solid-js";
+import type { CardId } from "../cardArt";
+import CardLightbox from "../components/CardLightbox";
 import Footer from "../components/Footer";
 import Icon from "../components/Icon";
 import Nav from "../components/Nav";
+import TradingCard from "../components/TradingCard";
 import VideoCard from "../components/VideoCard";
+import { cards } from "../data/cards";
 import { guides, type Guide, type GuideBlock } from "../data/docs/guides";
 import {
   hashToRoute,
@@ -98,12 +102,31 @@ function VideoLink(props: { video: Video; id?: string }) {
   return (
     <div
       id={props.id}
-      class={`docs-target ${props.video.kind === "short" ? "w-min sm:float-right sm:mb-2 sm:ml-6" : "w-full max-w-[520px]"}`}
+      class={`docs-target ${props.video.kind === "short" ? "w-min sm:float-right sm:clear-right sm:mb-4 sm:ml-6" : "w-full max-w-[520px]"}`}
     >
       <VideoCard video={props.video} compact />
     </div>
   );
 }
+
+function CardFigure(props: { card: CardId; id?: string; class: string }) {
+  const [open, setOpen] = createSignal(false);
+  const card = () => cards.find((card) => card.id === props.card)!;
+  return (
+    <div id={props.id} class={`docs-target w-fit ${props.class}`}>
+      <div class="[zoom:0.8]">
+        <TradingCard card={card()} onOpen={() => setOpen(true)} />
+      </div>
+      <Show when={open()}>
+        <CardLightbox onClose={() => setOpen(false)}>
+          <TradingCard card={card()} />
+        </CardLightbox>
+      </Show>
+    </div>
+  );
+}
+
+const floatedCard = "mx-auto sm:float-right sm:clear-right sm:mb-4 sm:ml-6";
 
 function SearchBox(props: {
   query: string;
@@ -400,6 +423,9 @@ function SettingsPageView(props: { page: SettingsPage }) {
       <For each={videos.filter((video) => video.settings?.includes(props.page.id))}>
         {(video) => <VideoLink video={video} />}
       </For>
+      <For each={cards.filter((card) => card.settings?.includes(props.page.id))}>
+        {(card) => <CardFigure card={card.id} class={floatedCard} />}
+      </For>
       <Show
         when={props.page.sections.length > 0}
         fallback={<p class="text-ink-2">{t("This page has no settings of its own.")}</p>}
@@ -453,7 +479,7 @@ function Block(props: { block: GuideBlock; id: string }) {
   switch (block.type) {
     case "h":
       return (
-        <h2 id={props.id} class="docs-target clear-both pt-4 text-[26px] font-semibold">
+        <h2 id={props.id} class="docs-target pt-4 text-[26px] font-semibold">
           {block.text}
         </h2>
       );
@@ -467,7 +493,7 @@ function Block(props: { block: GuideBlock; id: string }) {
       return (
         <p
           id={props.id}
-          class="docs-target rounded-2xl border-[1.5px] border-amber-line bg-amber-bg px-5 py-4 text-amber-ink"
+          class="docs-target flow-root rounded-2xl border-[1.5px] border-amber-line bg-amber-bg px-5 py-4 text-amber-ink"
         >
           {block.text}
         </p>
@@ -527,6 +553,8 @@ function Block(props: { block: GuideBlock; id: string }) {
       const video = videos.find((video) => video.id === block.id);
       return video && <VideoLink video={video} id={props.id} />;
     }
+    case "card":
+      return <CardFigure card={block.id} id={props.id} class={floatedCard} />;
   }
 }
 
@@ -548,6 +576,9 @@ function GuideView(props: { guide: Guide }) {
         <p class="text-lg text-ink-2 sm:text-[19px]">{props.guide.summary}</p>
         <AiNotice compact />
       </header>
+      <Show when={props.guide.card} keyed>
+        {(card) => <CardFigure card={card} class={floatedCard} />}
+      </Show>
       <For each={props.guide.blocks}>
         {(block, index) => <Block block={block} id={`block-${index()}`} />}
       </For>

@@ -1,5 +1,6 @@
-import { createSignal, For, onCleanup, onMount, Show } from "solid-js";
+import { createSignal, For, Show } from "solid-js";
 import CardBack from "../components/CardBack";
+import CardLightbox from "../components/CardLightbox";
 import Footer from "../components/Footer";
 import Mascot from "../components/Mascot";
 import Nav from "../components/Nav";
@@ -9,23 +10,6 @@ import { links } from "../data/links";
 
 export default function Cards() {
   const [selected, setSelected] = createSignal<Card | "back" | null>(null);
-  const [zoom, setZoom] = createSignal(1.5);
-
-  const open = (card: Card | "back") => {
-    setZoom(Math.min(1.5, (innerWidth - 32) / 284, (innerHeight - 32) / 396));
-    setSelected(card);
-  };
-
-  onMount(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        setSelected(null);
-      }
-    };
-    addEventListener("keydown", onKey);
-    onCleanup(() => removeEventListener("keydown", onKey));
-  });
-
   return (
     <>
       <Nav />
@@ -72,7 +56,9 @@ export default function Cards() {
                       <p class="max-w-[70ch] text-[15px] text-muted">{rarity.note}</p>
                     </div>
                     <div class="flex flex-wrap gap-5 max-[420px]:justify-center">
-                      <For each={mine}>{(card) => <TradingCard card={card} onOpen={open} />}</For>
+                      <For each={mine}>
+                        {(card) => <TradingCard card={card} onOpen={setSelected} />}
+                      </For>
                     </div>
                   </section>
                 );
@@ -86,7 +72,7 @@ export default function Cards() {
                 </p>
               </div>
               <div class="flex flex-wrap gap-5 max-[420px]:justify-center">
-                <CardBack onOpen={() => open("back")} />
+                <CardBack onOpen={() => setSelected("back")} />
               </div>
             </section>
           </div>
@@ -111,19 +97,11 @@ export default function Cards() {
       <Footer />
       <Show when={selected()}>
         {(card) => (
-          <div
-            class="tcard-lightbox"
-            style={{ "--zoom": zoom().toFixed(2) }}
-            onClick={(e) => {
-              if (!(e.target as HTMLElement).closest("a")) {
-                setSelected(null);
-              }
-            }}
-          >
+          <CardLightbox onClose={() => setSelected(null)}>
             <Show when={card() !== "back"} fallback={<CardBack />}>
               <TradingCard card={card() as Card} />
             </Show>
-          </div>
+          </CardLightbox>
         )}
       </Show>
     </>

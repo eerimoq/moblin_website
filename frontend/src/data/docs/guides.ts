@@ -1,3 +1,4 @@
+import type { CardId } from "../../cardArt";
 import { t } from "../../i18n";
 
 export type GuideBlock =
@@ -7,12 +8,14 @@ export type GuideBlock =
   | { type: "list"; items: string[]; links?: Record<string, { text: string; url: string }> }
   | { type: "tip"; text: string }
   | { type: "links"; items: { text: string; url: string }[] }
-  | { type: "video"; id: string };
+  | { type: "video"; id: string }
+  | { type: "card"; id: CardId };
 
 export type Guide = {
   id: string;
   title: string;
   summary: string;
+  card?: CardId;
   blocks: GuideBlock[];
   related: string[];
 };
@@ -131,6 +134,7 @@ export const guides: Guide[] = [
         ),
       },
       { type: "h", text: t("Useful buttons") },
+      { type: "card", id: "pixellate" },
       {
         type: "list",
         items: [
@@ -441,6 +445,7 @@ export const guides: Guide[] = [
     id: "bonding",
     title: t("Bonding with SRTLA and Moblink"),
     summary: t("Combine cellular, WiFi, Ethernet and other phones into one stable connection."),
+    card: "bonding",
     blocks: [
       {
         type: "p",
@@ -475,6 +480,7 @@ export const guides: Guide[] = [
         ],
       },
       { type: "h", text: t("Moblink: phones as extra connections") },
+      { type: "card", id: "moblink" },
       {
         type: "steps",
         items: [
@@ -566,6 +572,7 @@ export const guides: Guide[] = [
         ],
       },
       { type: "h", text: t("Widget types") },
+      { type: "card", id: "pip" },
       {
         type: "list",
         items: [
@@ -614,6 +621,7 @@ export const guides: Guide[] = [
     id: "text-widget-variables",
     title: t("Text widget variables"),
     summary: t("Show live data such as time, speed, weather and bitrate in a text widget."),
+    card: "textwidget",
     blocks: [
       {
         type: "p",
@@ -672,6 +680,7 @@ export const guides: Guide[] = [
     id: "chat",
     title: t("Chat and text to speech"),
     summary: t("Show, filter and read chat aloud from Twitch, Kick, YouTube and more."),
+    card: "chat",
     blocks: [
       {
         type: "p",
@@ -984,6 +993,7 @@ export const guides: Guide[] = [
     id: "chat-bot",
     title: t("Chat bot"),
     summary: t("Let you and your moderators control Moblin with !moblin chat commands."),
+    card: "chatbot",
     blocks: [
       {
         type: "p",
@@ -1088,6 +1098,7 @@ export const guides: Guide[] = [
         ),
       },
       { type: "h", text: t("Snapshots") },
+      { type: "card", id: "snapshot" },
       {
         type: "list",
         items: [
@@ -1179,6 +1190,7 @@ export const guides: Guide[] = [
     id: "remote-control",
     title: t("Remote control"),
     summary: t("Monitor and control the streaming phone from another device or a web browser."),
+    card: "remote",
     blocks: [
       {
         type: "p",
@@ -1243,6 +1255,7 @@ export const guides: Guide[] = [
     id: "ingests",
     title: t("Ingests: drones, DJI, GoPro and other cameras"),
     summary: t("Receive video from drones, action cameras and other phones and use it in scenes."),
+    card: "ingests",
     blocks: [
       {
         type: "p",
@@ -1341,6 +1354,7 @@ export const guides: Guide[] = [
     id: "mobcam",
     title: t("Mobcam: the phone as a USB camera"),
     summary: t("Use Moblin as a low latency camera in OBS Studio over a USB cable."),
+    card: "mobcam",
     blocks: [
       { type: "h", text: t("What you need") },
       {
@@ -1453,6 +1467,7 @@ export const guides: Guide[] = [
     id: "apple-watch",
     title: t("Apple Watch"),
     summary: t("See status and chat and control your stream from the Apple Watch app."),
+    card: "watch",
     blocks: [
       { type: "h", text: t("What the watch app does") },
       {
@@ -1541,6 +1556,7 @@ export const guides: Guide[] = [
     id: "troubleshooting",
     title: t("Troubleshooting"),
     summary: t("Fixes for hidden settings, greyed out options and unstable streams."),
+    card: "community",
     blocks: [
       { type: "h", text: t("Settings") },
       {

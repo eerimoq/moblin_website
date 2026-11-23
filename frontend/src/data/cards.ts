@@ -16,6 +16,7 @@ export type Card = {
   credit: string;
   also?: string;
   version: string;
+  settings?: string[];
 };
 
 export const rarities: { key: Rarity; label: string; note: string }[] = [
@@ -80,6 +81,7 @@ export const cards: Card[] = [
     credit: nobody,
     also: '"Will use more power ofc." Less frame dropping: xcopy94',
     version: "v0.397.0",
+    settings: ["video-source"],
   },
   {
     id: "chat",
@@ -92,6 +94,7 @@ export const cards: Card[] = [
     credit: nobody,
     also: "Redesigned once. Nobody wanted the old one back.",
     version: "v0.50.0",
+    settings: ["chat", "widget-chat"],
   },
   {
     id: "ingests",
@@ -103,6 +106,7 @@ export const cards: Card[] = [
     credit: "💡 JohannesLiv",
     also: "The Ingests page. RTMP server since v0.117.0.",
     version: "v26.2005.0",
+    settings: ["ingests"],
   },
   {
     id: "pixellate",
@@ -126,6 +130,7 @@ export const cards: Card[] = [
     credit: nobody,
     also: "Most buttons since: djandrea.",
     version: "v0.152.0",
+    settings: ["remote-control"],
   },
   {
     id: "website",
@@ -138,6 +143,7 @@ export const cards: Card[] = [
     credit: "💡 JohannesLiv",
     also: "Discord first, in v26.1.0, coded by JohannesLiv too. Website since v35.1.0.",
     version: "v26.1.0",
+    settings: ["go-live-notification"],
   },
   {
     id: "gamepad",
@@ -149,6 +155,7 @@ export const cards: Card[] = [
     credit: nobody,
     also: "Started as mute (B) and torch (A).",
     version: "v0.132.0",
+    settings: ["game-controllers", "keyboard"],
   },
   {
     id: "background",
@@ -160,6 +167,7 @@ export const cards: Card[] = [
     text: "Strap on an action camera, feed it over RTMP and lock the phone in your pocket. Moblin keeps broadcasting in the background.",
     credit: "💡 tokon2000",
     version: "v0.299.0",
+    settings: ["background-streaming"],
   },
   {
     id: "mobcam",
@@ -181,6 +189,7 @@ export const cards: Card[] = [
     text: 'Freezes one perfect frame and flings it into Discord. Chat can fire it with "!moblin snapshot". Set your stream delay and it rewinds to the frame they hopefully saw.',
     credit: "💡 DJMarkOxford and others",
     version: "v0.324.0",
+    settings: ["snapshot", "widget-snapshot"],
   },
   {
     id: "vtuber",
@@ -192,6 +201,7 @@ export const cards: Card[] = [
     credit: nobody,
     also: "Live2D: Aislynn Bloomtear & Spillmaker · PNGTuber: mikeful",
     version: "v0.399.0",
+    settings: ["vtuber", "pngtuber"],
   },
   {
     id: "chatbot",
@@ -202,6 +212,7 @@ export const cards: Card[] = [
     text: 'Obeys "!moblin reaction fireworks" before you even read it. Dozens more commands where that came from, "!moblin help" lists them. Secretly runs the whole channel.',
     credit: "💡 disco",
     version: "v0.310.0",
+    settings: ["bot"],
   },
   {
     id: "watch",
@@ -212,6 +223,7 @@ export const cards: Card[] = [
     text: "Puts chat, zoom and scene switching on your wrist, plus a scoreboard. Tap + while playing padel, no phone needed.",
     credit: "💡 mikeful and others",
     version: "v0.184.0",
+    settings: ["apple-watch"],
   },
   {
     id: "textwidget",
@@ -223,6 +235,7 @@ export const cards: Card[] = [
     credit: nobody,
     also: "Grew out of the time widget.",
     version: "v0.308.0",
+    settings: ["text"],
   },
   {
     id: "macros",
@@ -234,6 +247,7 @@ export const cards: Card[] = [
     credit: "💡 AUTdany",
     also: "Most actions since: Crozbo",
     version: "v33.4.0",
+    settings: ["macros"],
   },
   {
     id: "moblink",
@@ -245,6 +259,7 @@ export const cards: Card[] = [
     credit: "💡 Rick9K & xcopy94",
     also: "Rebuilt on request of mikeful",
     version: "v0.391.0",
+    settings: ["moblink"],
   },
   {
     id: "photoshoot",
@@ -266,6 +281,7 @@ export const cards: Card[] = [
     credit: "💡 Lots of people",
     also: "Second algorithm by Rick · BELABOX by mikeful",
     version: "v0.36.0",
+    settings: ["adaptive-bitrate"],
   },
   {
     id: "bonding",
@@ -278,6 +294,7 @@ export const cards: Card[] = [
     credit: nobody,
     also: 'SRTLA, "only tested locally", six days after v0.1.0',
     version: "v0.14.0",
+    settings: ["srt-la"],
   },
   {
     id: "selfie",
@@ -289,6 +306,7 @@ export const cards: Card[] = [
     credit: "💡 G and others",
     also: "More functions: xcopy94",
     version: "v0.400.0",
+    settings: ["selfie-stick"],
   },
   {
     id: "wifiaware",

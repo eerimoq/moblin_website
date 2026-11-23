@@ -58,7 +58,7 @@ function buildIndex(): SearchEntry[] {
         heading = block.text;
         return;
       }
-      if (block.type === "video") {
+      if (block.type === "video" || block.type === "card") {
         return;
       }
       const text =
