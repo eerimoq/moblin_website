@@ -61,7 +61,16 @@ function buildIndex(): SearchEntry[] {
       if (block.type === "video") {
         return;
       }
-      const text = "items" in block ? block.items.join(" ") : block.text;
+      const text =
+        block.type === "links"
+          ? block.items.map((item) => item.text).join(" ")
+          : block.type === "list"
+            ? block.items
+                .join(" ")
+                .replace(/\{(\w+)\}/g, (match, name: string) => block.links?.[name]?.text ?? match)
+            : "items" in block
+              ? block.items.join(" ")
+              : block.text;
       entries.push(
         entry(
           "guide",

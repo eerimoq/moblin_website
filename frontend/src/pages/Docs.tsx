@@ -37,7 +37,7 @@ import {
 } from "../data/docs/settings";
 import { links } from "../data/links";
 import { videos, type Video } from "../data/videos";
-import { t, tRich } from "../i18n";
+import { fill, t, tRich } from "../i18n";
 
 const guidesById = new Map(guides.map((guide) => [guide.id, guide]));
 
@@ -490,7 +490,37 @@ function Block(props: { block: GuideBlock; id: string }) {
     case "list":
       return (
         <ul id={props.id} class="docs-target flex list-disc flex-col gap-2 pl-6 text-ink-2">
-          <For each={block.items}>{(item) => <li>{item}</li>}</For>
+          <For each={block.items}>
+            {(item) => (
+              <li>
+                {fill(
+                  item,
+                  Object.fromEntries(
+                    Object.entries(block.links ?? {}).map(([name, link]) => [
+                      name,
+                      <a href={link.url} target="_blank" rel="noopener" class={linkClass}>
+                        {link.text}
+                      </a>,
+                    ]),
+                  ),
+                )}
+              </li>
+            )}
+          </For>
+        </ul>
+      );
+    case "links":
+      return (
+        <ul id={props.id} class="docs-target flex list-disc flex-col gap-2 pl-6">
+          <For each={block.items}>
+            {(item) => (
+              <li>
+                <a href={item.url} target="_blank" rel="noopener" class={linkClass}>
+                  {item.text}
+                </a>
+              </li>
+            )}
+          </For>
         </ul>
       );
     case "video": {

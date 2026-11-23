@@ -5,8 +5,7 @@ export type Feature = {
   icon: IconName;
   title: string;
   text: string;
-  /** Screenshots shown faintly behind the top right corner of the card. */
-  shots?: { src: string; alt: string }[];
+  guides: { label: string; id: string }[];
 };
 
 export const shopIcons = [
@@ -27,6 +26,7 @@ export const features: Feature[] = [
     text: t(
       "Twitch, YouTube and Kick chat over your camera view. Read it, and show it on stream if you want.",
     ),
+    guides: [{ label: t("Guide"), id: "chat" }],
   },
   {
     icon: "bell",
@@ -34,6 +34,10 @@ export const features: Feature[] = [
     text: t(
       "Follows, subs, text, a live map, QR codes and more. Drop them anywhere on the picture.",
     ),
+    guides: [
+      { label: t("Alerts"), id: "alerts" },
+      { label: t("Scenes and widgets"), id: "scenes-and-widgets" },
+    ],
   },
   {
     icon: "bonding",
@@ -41,23 +45,7 @@ export const features: Feature[] = [
     text: t(
       "Use WiFi and cellular at the same time, or add spare phones. When one drops, the stream keeps going.",
     ),
-  },
-  {
-    icon: "watch",
-    title: t("Apple Watch companion"),
-    text: t(
-      "Preview, audio level, bitrate and viewer count on your wrist. The phone stays in your pocket.",
-    ),
-    shots: [
-      {
-        src: "screenshots/watch.webp",
-        alt: t("Apple Watch showing the stream preview, bitrate, zoom and scene controls"),
-      },
-      {
-        src: "screenshots/watch-chat.webp",
-        alt: t("Apple Watch showing Twitch chat messages"),
-      },
-    ],
+    guides: [{ label: t("Guide"), id: "bonding" }],
   },
   {
     icon: "remote",
@@ -65,6 +53,7 @@ export const features: Feature[] = [
     text: t(
       "Run OBS at home from your phone, or let a friend keep an eye on your stream while you walk.",
     ),
+    guides: [{ label: t("Guide"), id: "remote-control" }],
   },
   {
     icon: "plug",
@@ -72,6 +61,15 @@ export const features: Feature[] = [
     text: t(
       "Works with GoPro and DJI cameras, gimbals, game controllers, heart rate monitors and even your Tesla.",
     ),
+    guides: [{ label: t("Guide"), id: "ingests" }],
+  },
+  {
+    icon: "video",
+    title: t("Mobcam"),
+    text: t(
+      "Your phone as a low latency camera in OBS Studio over a USB cable. Plug it in and go live.",
+    ),
+    guides: [{ label: t("Guide"), id: "mobcam" }],
   },
 ];
 

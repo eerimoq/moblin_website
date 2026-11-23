@@ -4,8 +4,9 @@ export type GuideBlock =
   | { type: "p"; text: string }
   | { type: "h"; text: string }
   | { type: "steps"; items: string[] }
-  | { type: "list"; items: string[] }
+  | { type: "list"; items: string[]; links?: Record<string, { text: string; url: string }> }
   | { type: "tip"; text: string }
+  | { type: "links"; items: { text: string; url: string }[] }
   | { type: "video"; id: string };
 
 export type Guide = {
@@ -1341,19 +1342,100 @@ export const guides: Guide[] = [
     title: t("Mobcam: the phone as a USB camera"),
     summary: t("Use Moblin as a low latency camera in OBS Studio over a USB cable."),
     blocks: [
+      { type: "h", text: t("What you need") },
+      {
+        type: "list",
+        items: [
+          t("An iPhone or iPad with Moblin."),
+          t("A computer with OBS Studio 28 or newer: macOS 12 or newer, Windows or Linux."),
+          t("A USB cable between the two."),
+        ],
+      },
+      { type: "h", text: t("Step 1: Install the plugin on the computer") },
+      {
+        type: "p",
+        text: t(
+          "Quit OBS Studio, download the mobcam-obs-plugin file for your operating system and " +
+            "install it.",
+        ),
+      },
+      {
+        type: "links",
+        items: [
+          {
+            text: t("Download the Mobcam OBS Plugin for macOS, Windows and Linux"),
+            url: "https://github.com/eerimoq/mobcam/releases/latest",
+          },
+        ],
+      },
+      {
+        type: "list",
+        items: [
+          t("macOS: open the .pkg file and follow the installer."),
+          t(
+            "Windows: first install {appleDevices} from the Microsoft Store, or {itunes}, so the " +
+              "computer can talk to the phone. Then run the Installer.exe file, click More " +
+              "info and Run anyway if Windows asks, and select the folder OBS Studio is " +
+              "installed in.",
+          ),
+          t(
+            "Linux: first install usbmuxd. Then install the .deb file on Debian and Ubuntu, or " +
+              "unpack the .tar.xz file into /usr on other distributions. OBS Studio installed " +
+              "as a Flatpak or a Snap does not find the plugin.",
+          ),
+        ],
+        links: {
+          appleDevices: {
+            text: "Apple Devices",
+            url: "https://apps.microsoft.com/detail/9np83lwlpz9k",
+          },
+          itunes: { text: "iTunes", url: "https://www.apple.com/itunes/" },
+        },
+      },
+      {
+        type: "links",
+        items: [
+          {
+            text: t("Full install and uninstall instructions for each operating system"),
+            url: "https://github.com/eerimoq/mobcam/tree/main/crates/obs-plugin#install",
+          },
+        ],
+      },
+      { type: "h", text: t("Step 2: Create a Mobcam stream in Moblin") },
       {
         type: "steps",
         items: [
-          t("Install the Mobcam OBS Plugin on the computer."),
-          t(
-            "In Moblin, open the create stream wizard (Settings → Streams → Create) and pick " +
-              "Mobcam, then name the stream and tap Create.",
-          ),
-          t("Connect the phone to the computer with a USB cable."),
-          t("Add a Mobcam source in OBS."),
-          t("Tap Go Live in Moblin to start the stream to OBS."),
+          t("Open Settings → Streams → Create."),
+          t("Pick Mobcam."),
+          t("Name the stream and tap Create."),
+          t("Select the new stream if it is not selected already."),
         ],
       },
+      { type: "h", text: t("Step 3: Connect and go live") },
+      {
+        type: "steps",
+        items: [
+          t("Connect the phone to the computer with the USB cable."),
+          t("The first time, unlock the phone and tap Trust when it asks."),
+          t("Start OBS Studio and add a source of the type Mobcam to your scene."),
+          t("Tap Go Live in Moblin. The camera shows up in OBS."),
+        ],
+      },
+      { type: "h", text: t("If it does not work") },
+      {
+        type: "list",
+        items: [
+          t(
+            "Mobcam is not in the list of source types in OBS: the plugin is not installed " +
+              "where OBS looks for it. Install it again and restart OBS Studio.",
+          ),
+          t(
+            "No video in OBS: check that the phone is unlocked and trusted by the computer, " +
+              "that the Mobcam stream is selected in Moblin and that Moblin is live.",
+          ),
+        ],
+      },
+      { type: "h", text: t("Good to know") },
       {
         type: "list",
         items: [

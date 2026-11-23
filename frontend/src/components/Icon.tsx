@@ -4,7 +4,6 @@ export type IconName =
   | "chat"
   | "bell"
   | "bonding"
-  | "watch"
   | "remote"
   | "plug"
   | "tap"
@@ -62,10 +61,6 @@ export default function Icon(props: Props) {
         </Match>
         <Match when={props.name === "bonding"}>
           <path d="M4 12h5l2-5 3 10 2-5h4" />
-        </Match>
-        <Match when={props.name === "watch"}>
-          <rect x="7" y="6" width="10" height="12" rx="3" />
-          <path d="M9 6V3h6v3M9 18v3h6v-3" />
         </Match>
         <Match when={props.name === "remote"}>
           <rect x="3" y="5" width="18" height="12" rx="2" />
