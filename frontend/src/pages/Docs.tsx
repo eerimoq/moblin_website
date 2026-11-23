@@ -114,8 +114,10 @@ function CardFigure(props: { card: CardId; id?: string; class: string }) {
   const card = () => cards.find((card) => card.id === props.card)!;
   return (
     <div id={props.id} class={`docs-target w-fit ${props.class}`}>
-      <div class="[zoom:0.8]">
-        <TradingCard card={card()} onOpen={() => setOpen(true)} />
+      <div class="h-[314px] w-[224px]">
+        <div class="w-[280px] origin-top-left scale-80">
+          <TradingCard card={card()} onOpen={() => setOpen(true)} />
+        </div>
       </div>
       <Show when={open()}>
         <CardLightbox onClose={() => setOpen(false)}>
