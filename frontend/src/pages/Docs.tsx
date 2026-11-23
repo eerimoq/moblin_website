@@ -69,13 +69,11 @@ function Paragraphs(props: { text: string; class?: string }) {
   );
 }
 
-function AiNotice(props: { compact?: boolean }) {
+function AiNotice() {
   return (
     <div
       role="note"
-      class={`flex items-start gap-3 rounded-2xl border-[1.5px] border-amber-line bg-amber-bg text-amber-ink ${
-        props.compact ? "px-4 py-3 text-[15px]" : "px-5 py-4"
-      }`}
+      class="flex items-start gap-3 rounded-2xl border-[1.5px] border-amber-line bg-amber-bg px-5 py-4 text-amber-ink"
     >
       <Icon name="warning" class="mt-0.5 size-5 shrink-0" />
       <p>
@@ -420,7 +418,6 @@ function SettingsPageView(props: { page: SettingsPage }) {
       <header class="flex flex-col gap-3">
         <Breadcrumbs page={props.page} />
         <h1 class="text-[34px] leading-tight font-bold sm:text-[44px]">{props.page.title}</h1>
-        <AiNotice compact />
       </header>
       <For each={videos.filter((video) => video.settings?.includes(props.page.id))}>
         {(video) => <VideoLink video={video} />}
@@ -576,7 +573,6 @@ function GuideView(props: { guide: Guide }) {
         </span>
         <h1 class="text-[34px] leading-tight font-bold sm:text-[44px]">{props.guide.title}</h1>
         <p class="text-lg text-ink-2 sm:text-[19px]">{props.guide.summary}</p>
-        <AiNotice compact />
       </header>
       <Show when={props.guide.card} keyed>
         {(card) => <CardFigure card={card} class={floatedCard} />}
