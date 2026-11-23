@@ -1455,13 +1455,17 @@ export const guides: Guide[] = [
         items: [
           t("Mobcam streams use a mobcam:// URL, and the wizard sets H.265/HEVC video."),
           t(
+            "For the lowest latency, set Settings → Camera → Video stabilization to Off and " +
+              "Settings → Debug → Builtin audio and video delay to 0.",
+          ),
+          t(
             "Turn on Auto go live on the stream to go live automatically when the app enters " +
               "the foreground.",
           ),
         ],
       },
     ],
-    related: ["stream", "streams"],
+    related: ["stream", "streams", "camera", "debug"],
   },
   {
     id: "apple-watch",

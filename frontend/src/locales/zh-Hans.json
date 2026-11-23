@@ -137,6 +137,7 @@
   "Fixes for hidden settings, greyed out options and unstable streams.": "解决设置被隐藏、选项变灰和推流不稳定的问题。",
   "Follows, subs, text, a live map, QR codes and more. Drop them anywhere on the picture.": "关注、订阅、文字、实时地图、二维码等等。可放在画面的任意位置。",
   "For Twitch alerts, log in to Twitch in Settings → Streams → <your stream> → Twitch. Kick events only need the channel name.": "使用 Twitch 提醒时,请在 Settings → Streams → <你的直播> → Twitch 中登录 Twitch。Kick 事件只需要频道名称。",
+  "For the lowest latency, set Settings → Camera → Video stabilization to Off and Settings → Debug → Builtin audio and video delay to 0.": "要获得最低延迟，请将 设置 → 相机 → 视频防抖 设为关闭，并将 设置 → 调试 → 内置音视频延迟 设为 0。",
   "Free on the App Store for iPhone and iPad. Nothing to sign up for.": "在 App Store 免费下载,支持 iPhone 和 iPad。无需注册。",
   "Free · Open source · iPhone, iPad and Mac": "免费 · 开源 · 支持 iPhone、iPad 和 Mac",
   "Full install and uninstall instructions for each operating system": "各操作系统的完整安装和卸载说明",

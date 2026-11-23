@@ -137,6 +137,7 @@
   "Fixes for hidden settings, greyed out options and unstable streams.": "Gizli ayarlar, grileşen seçenekler ve kararsız yayınlar için çözümler.",
   "Follows, subs, text, a live map, QR codes and more. Drop them anywhere on the picture.": "Takipler, abonelikler, metin, canlı harita, QR kodları ve daha fazlası. Görüntünün istediğin yerine bırak.",
   "For Twitch alerts, log in to Twitch in Settings → Streams → <your stream> → Twitch. Kick events only need the channel name.": "Twitch uyarıları için Settings → Streams → <yayının> → Twitch bölümünden Twitch'e giriş yap. Kick olayları için yalnızca kanal adı yeterli.",
+  "For the lowest latency, set Settings → Camera → Video stabilization to Off and Settings → Debug → Builtin audio and video delay to 0.": "En düşük gecikme için Ayarlar → Kamera → Video sabitleme seçeneğini Kapalı, Ayarlar → Debug → Dahili ses ve video gecikmesi değerini 0 yapın.",
   "Free on the App Store for iPhone and iPad. Nothing to sign up for.": "iPhone ve iPad için App Store'da ücretsiz. Kayıt gerekmez.",
   "Free · Open source · iPhone, iPad and Mac": "Ücretsiz · Açık kaynak · iPhone, iPad ve Mac",
   "Full install and uninstall instructions for each operating system": "Her işletim sistemi için tam kurulum ve kaldırma talimatları",

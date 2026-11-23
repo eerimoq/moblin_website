@@ -137,6 +137,7 @@
   "Fixes for hidden settings, greyed out options and unstable streams.": "Cách xử lý cài đặt bị ẩn, tùy chọn bị mờ và stream không ổn định.",
   "Follows, subs, text, a live map, QR codes and more. Drop them anywhere on the picture.": "Follow, sub, văn bản, bản đồ trực tiếp, mã QR và hơn thế nữa. Đặt chúng ở bất kỳ đâu trên hình.",
   "For Twitch alerts, log in to Twitch in Settings → Streams → <your stream> → Twitch. Kick events only need the channel name.": "Với cảnh báo Twitch, hãy đăng nhập Twitch tại Settings → Streams → <stream của bạn> → Twitch. Sự kiện Kick chỉ cần tên kênh.",
+  "For the lowest latency, set Settings → Camera → Video stabilization to Off and Settings → Debug → Builtin audio and video delay to 0.": "Để có độ trễ thấp nhất, hãy đặt Cài đặt → Camera → Chống rung video thành Tắt và Cài đặt → Debug → Độ trễ âm thanh và video tích hợp thành 0.",
   "Free on the App Store for iPhone and iPad. Nothing to sign up for.": "Miễn phí trên App Store cho iPhone và iPad. Không cần đăng ký.",
   "Free · Open source · iPhone, iPad and Mac": "Miễn phí · Mã nguồn mở · iPhone, iPad và Mac",
   "Full install and uninstall instructions for each operating system": "Hướng dẫn cài đặt và gỡ cài đặt đầy đủ cho từng hệ điều hành",

@@ -137,6 +137,7 @@
   "Fixes for hidden settings, greyed out options and unstable streams.": "Soluções para configurações ocultas, opções esmaecidas e transmissões instáveis.",
   "Follows, subs, text, a live map, QR codes and more. Drop them anywhere on the picture.": "Seguidores, inscrições, texto, um mapa ao vivo, códigos QR e mais. Coloque onde quiser na imagem.",
   "For Twitch alerts, log in to Twitch in Settings → Streams → <your stream> → Twitch. Kick events only need the channel name.": "Para alertas da Twitch, faça login na Twitch em Settings → Streams → <sua stream> → Twitch. Os eventos da Kick só precisam do nome do canal.",
+  "For the lowest latency, set Settings → Camera → Video stabilization to Off and Settings → Debug → Builtin audio and video delay to 0.": "Para a menor latência, defina Configurações → Câmera → Estabilização de vídeo como Desligado e Configurações → Debug → Atraso de áudio e vídeo integrado como 0.",
   "Free on the App Store for iPhone and iPad. Nothing to sign up for.": "Grátis na App Store para iPhone e iPad. Sem precisar de cadastro.",
   "Free · Open source · iPhone, iPad and Mac": "Grátis · Código aberto · iPhone, iPad e Mac",
   "Full install and uninstall instructions for each operating system": "Instruções completas de instalação e desinstalação para cada sistema operacional",

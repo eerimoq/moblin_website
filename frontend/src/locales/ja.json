@@ -137,6 +137,7 @@
   "Fixes for hidden settings, greyed out options and unstable streams.": "非表示の設定、グレーアウトした項目、不安定な配信の対処法。",
   "Follows, subs, text, a live map, QR codes and more. Drop them anywhere on the picture.": "フォロー、サブスク、テキスト、ライブマップ、QRコードなど。映像の好きな場所に配置できます。",
   "For Twitch alerts, log in to Twitch in Settings → Streams → <your stream> → Twitch. Kick events only need the channel name.": "Twitchのアラートを使うには、Settings → Streams → <あなたの配信> → Twitch でTwitchにログインします。Kickのイベントはチャンネル名だけで使えます。",
+  "For the lowest latency, set Settings → Camera → Video stabilization to Off and Settings → Debug → Builtin audio and video delay to 0.": "最も低い遅延にするには、設定 → カメラ → 手ブレ補正をオフに、設定 → デバッグ → 内蔵の音声と映像の遅延を0にしてください。",
   "Free on the App Store for iPhone and iPad. Nothing to sign up for.": "iPhone・iPad向けにApp Storeで無料。登録不要です。",
   "Free · Open source · iPhone, iPad and Mac": "無料 · オープンソース · iPhone、iPad、Mac対応",
   "Full install and uninstall instructions for each operating system": "各OSの詳しいインストール・アンインストール手順",

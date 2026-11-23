@@ -137,6 +137,7 @@
   "Fixes for hidden settings, greyed out options and unstable streams.": "छिपी सेटिंग्स, ग्रे हुए विकल्पों और अस्थिर स्ट्रीम के समाधान।",
   "Follows, subs, text, a live map, QR codes and more. Drop them anywhere on the picture.": "फॉलो, सब्स, टेक्स्ट, लाइव मैप, QR कोड और बहुत कुछ। इन्हें तस्वीर में कहीं भी रखें।",
   "For Twitch alerts, log in to Twitch in Settings → Streams → <your stream> → Twitch. Kick events only need the channel name.": "Twitch अलर्ट के लिए Settings → Streams → <आपकी स्ट्रीम> → Twitch में Twitch पर लॉग इन करें। Kick इवेंट के लिए सिर्फ़ चैनल का नाम चाहिए।",
+  "For the lowest latency, set Settings → Camera → Video stabilization to Off and Settings → Debug → Builtin audio and video delay to 0.": "सबसे कम लेटेंसी के लिए Settings → Camera → Video stabilization को Off और Settings → Debug → Builtin audio and video delay को 0 पर सेट करें।",
   "Free on the App Store for iPhone and iPad. Nothing to sign up for.": "iPhone और iPad के लिए App Store पर मुफ़्त। साइन अप की ज़रूरत नहीं।",
   "Free · Open source · iPhone, iPad and Mac": "मुफ़्त · ओपन सोर्स · iPhone, iPad और Mac",
   "Full install and uninstall instructions for each operating system": "हर ऑपरेटिंग सिस्टम के लिए इंस्टॉल और अनइंस्टॉल के पूरे निर्देश",

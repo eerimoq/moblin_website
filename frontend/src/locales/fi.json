@@ -137,6 +137,7 @@
   "Fixes for hidden settings, greyed out options and unstable streams.": "Ratkaisuja piilotettuihin asetuksiin, harmaina oleviin valintoihin ja epävakaisiin striimeihin.",
   "Follows, subs, text, a live map, QR codes and more. Drop them anywhere on the picture.": "Seuraukset, tilaukset, teksti, live-kartta, QR-koodit ja paljon muuta. Pudota ne mihin tahansa kuvaan.",
   "For Twitch alerts, log in to Twitch in Settings → Streams → <your stream> → Twitch. Kick events only need the channel name.": "Twitch-ilmoituksia varten kirjaudu Twitchiin kohdassa Settings → Streams → <streamisi> → Twitch. Kick-tapahtumiin riittää kanavan nimi.",
+  "For the lowest latency, set Settings → Camera → Video stabilization to Off and Settings → Debug → Builtin audio and video delay to 0.": "Pienintä viivettä varten aseta Asetukset → Kamera → Videon vakautus -asetukseksi Pois ja Asetukset → Debug → Sisäänrakennettu ääni- ja videoviive arvoon 0.",
   "Free on the App Store for iPhone and iPad. Nothing to sign up for.": "Ilmainen App Storessa iPhonelle ja iPadille. Ei rekisteröitymistä.",
   "Free · Open source · iPhone, iPad and Mac": "Ilmainen · Avoin lähdekoodi · iPhone, iPad ja Mac",
   "Full install and uninstall instructions for each operating system": "Täydelliset asennus- ja poisto-ohjeet jokaiselle käyttöjärjestelmälle",

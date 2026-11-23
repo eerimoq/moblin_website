@@ -137,6 +137,7 @@
   "Fixes for hidden settings, greyed out options and unstable streams.": "Riešenia pre skryté nastavenia, zašednuté možnosti a nestabilné streamy.",
   "Follows, subs, text, a live map, QR codes and more. Drop them anywhere on the picture.": "Sledovania, suby, text, živá mapa, QR kódy a ďalšie. Umiestni ich kdekoľvek na obraz.",
   "For Twitch alerts, log in to Twitch in Settings → Streams → <your stream> → Twitch. Kick events only need the channel name.": "Pre upozornenia z Twitchu sa prihláste na Twitch v Settings → Streams → <váš stream> → Twitch. Udalosti z Kicku potrebujú iba názov kanála.",
+  "For the lowest latency, set Settings → Camera → Video stabilization to Off and Settings → Debug → Builtin audio and video delay to 0.": "Pre najnižšiu latenciu nastavte Nastavenia → Kamera → Stabilizácia videa na Vypnuté a Nastavenia → Debug → Vstavané oneskorenie zvuku a videa na 0.",
   "Free on the App Store for iPhone and iPad. Nothing to sign up for.": "Zadarmo v App Store pre iPhone a iPad. Bez registrácie.",
   "Free · Open source · iPhone, iPad and Mac": "Zadarmo · Open source · iPhone, iPad a Mac",
   "Full install and uninstall instructions for each operating system": "Úplný návod na inštaláciu a odinštalovanie pre každý operačný systém",
