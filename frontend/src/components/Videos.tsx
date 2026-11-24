@@ -22,17 +22,31 @@ export default function Videos() {
             {t("More on YouTube")}
           </Button>
         </div>
-        <ul class="-mx-5 flex snap-x snap-mandatory scroll-px-5 items-start gap-5 overflow-x-auto px-5 pb-2 sm:-mx-8 sm:scroll-px-8 sm:px-8">
-          <For each={videos}>
-            {(video) => (
-              <li
-                class={`shrink-0 snap-start ${video.kind === "short" ? "w-min" : "w-[min(784px,calc(100vw-40px))]"}`}
-              >
-                <VideoCard video={video} />
-              </li>
-            )}
-          </For>
-        </ul>
+        <For
+          each={
+            [
+              { kind: "short", title: t("Shorts") },
+              { kind: "video", title: t("Videos") },
+            ] as const
+          }
+        >
+          {(row) => (
+            <div class="flex flex-col gap-4">
+              <h3 class="text-2xl font-semibold">{row.title}</h3>
+              <ul class="-mx-5 flex snap-x snap-mandatory scroll-px-5 items-start gap-5 overflow-x-auto px-5 pb-2 sm:-mx-8 sm:scroll-px-8 sm:px-8">
+                <For each={videos.filter((video) => video.kind === row.kind)}>
+                  {(video) => (
+                    <li
+                      class={`shrink-0 snap-start ${row.kind === "short" ? "w-min" : "w-[min(480px,calc(100vw-40px))]"}`}
+                    >
+                      <VideoCard video={video} />
+                    </li>
+                  )}
+                </For>
+              </ul>
+            </div>
+          )}
+        </For>
       </div>
     </section>
   );

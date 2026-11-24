@@ -376,6 +376,7 @@
   "Settings → Streams → Create → OBS (or pick a platform and the Moblin → OBS → platform network setup).": "Ayarlar → Yayınlar → Oluştur → OBS (veya bir platform ile Moblin → OBS → platform ağ kurulumunu seç).",
   "Share stream setups with moblin:// links and back up your settings.": "Yayın kurulumlarını moblin:// bağlantılarıyla paylaş ve ayarlarını yedekle.",
   "Share where you are with a map widget, location text and RealtimeIRL.": "Harita widget'ı, konum metni ve RealtimeIRL ile nerede olduğunuzu paylaşın.",
+  "Shorts": "Shorts",
   "Show follow, subscription, raid and other alerts on stream with sound and speech.": "Takip, abonelik, raid ve diğer uyarıları yayında ses ve konuşmayla göster.",
   "Show live data such as time, speed, weather and bitrate in a text widget.": "Saat, hız, hava durumu ve bitrate gibi canlı verileri bir metin widget'ında göster.",
   "Show messages on stream": "Mesajları yayında göster",

@@ -376,6 +376,7 @@
   "Settings → Streams → Create → OBS (or pick a platform and the Moblin → OBS → platform network setup).": "设置 → 直播流 → 创建 → OBS(或选择一个平台以及 Moblin → OBS → 平台 的网络方案)。",
   "Share stream setups with moblin:// links and back up your settings.": "用 moblin:// 链接分享直播配置,并备份你的设置。",
   "Share where you are with a map widget, location text and RealtimeIRL.": "通过地图小组件、位置文字和 RealtimeIRL 分享你的位置。",
+  "Shorts": "Shorts",
   "Show follow, subscription, raid and other alerts on stream with sound and speech.": "在直播中显示关注、订阅、突袭等提醒,并配有声音和语音。",
   "Show live data such as time, speed, weather and bitrate in a text widget.": "在文本小组件中显示时间、速度、天气和码率等实时数据。",
   "Show messages on stream": "在直播中显示留言",

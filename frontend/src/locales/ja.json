@@ -376,6 +376,7 @@
   "Settings → Streams → Create → OBS (or pick a platform and the Moblin → OBS → platform network setup).": "設定 → ストリーム → 作成 → OBS(またはプラットフォームを選び、ネットワーク構成で Moblin → OBS → プラットフォーム を選択)。",
   "Share stream setups with moblin:// links and back up your settings.": "moblin://リンクで配信設定を共有し、設定をバックアップできます。",
   "Share where you are with a map widget, location text and RealtimeIRL.": "マップウィジェット、位置情報テキスト、RealtimeIRLで今いる場所を共有しましょう。",
+  "Shorts": "ショート",
   "Show follow, subscription, raid and other alerts on stream with sound and speech.": "フォロー、サブスク、レイドなどのアラートを、サウンドと音声付きで配信に表示します。",
   "Show live data such as time, speed, weather and bitrate in a text widget.": "時刻、速度、天気、ビットレートなどのライブデータをテキストウィジェットに表示します。",
   "Show messages on stream": "配信にメッセージを表示",

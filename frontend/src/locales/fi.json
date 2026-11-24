@@ -376,6 +376,7 @@
   "Settings → Streams → Create → OBS (or pick a platform and the Moblin → OBS → platform network setup).": "Asetukset → Streamit → Luo → OBS (tai valitse alusta ja verkkoasetelma Moblin → OBS → alusta).",
   "Share stream setups with moblin:// links and back up your settings.": "Jaa striimiasetukset moblin://-linkeillä ja varmuuskopioi asetuksesi.",
   "Share where you are with a map widget, location text and RealtimeIRL.": "Jaa sijaintisi karttawidgetillä, sijaintitekstillä ja RealtimeIRL:llä.",
+  "Shorts": "Shortsit",
   "Show follow, subscription, raid and other alerts on stream with sound and speech.": "Näytä seuraus-, tilaus-, raid- ja muut ilmoitukset streamissa äänen ja puheen kanssa.",
   "Show live data such as time, speed, weather and bitrate in a text widget.": "Näytä reaaliaikaista dataa, kuten aikaa, nopeutta, säätä ja bitrate-arvoa, tekstiwidgetissä.",
   "Show messages on stream": "Näytä viestit streamissa",

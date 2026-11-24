@@ -13,6 +13,11 @@ export function videoUrl(video: Video): string {
 
 export const videos: Video[] = [
   {
+    id: "biypDyBuCzw",
+    kind: "video",
+    title: "Use your iPhone as a webcam in OBS on Windows and Mac",
+  },
+  {
     id: "_4ISwYTKV3s",
     kind: "short",
     title: "Use your iPhone as a webcam in OBS!",
