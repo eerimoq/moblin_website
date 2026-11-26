@@ -18,6 +18,11 @@ export const videos: Video[] = [
     title: "Use your iPhone as a webcam in OBS on Windows and Mac",
   },
   {
+    id: "QWYT2eC-cio",
+    kind: "short",
+    title: "Find quick buttons fast in Moblin",
+  },
+  {
     id: "qJaUdIUuIhM",
     kind: "short",
     title: "Sound board in Moblin!",
