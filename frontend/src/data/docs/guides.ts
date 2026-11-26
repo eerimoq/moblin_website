@@ -125,6 +125,7 @@ export const guides: Guide[] = [
         text: t("Long press any quick button in the control bar to open its settings directly."),
       },
       { type: "h", text: t("Find a button quickly") },
+      { type: "video", id: "QWYT2eC-cio" },
       {
         type: "p",
         text: t(

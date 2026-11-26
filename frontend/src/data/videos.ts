@@ -21,6 +21,7 @@ export const videos: Video[] = [
     id: "QWYT2eC-cio",
     kind: "short",
     title: "Find quick buttons fast in Moblin",
+    settings: ["quick-buttons"],
   },
   {
     id: "qJaUdIUuIhM",
