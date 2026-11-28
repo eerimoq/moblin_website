@@ -16,10 +16,10 @@
   },
   "devDependencies": {
     "@solidjs/vite-plugin": "^3.0.1",
-    "@tailwindcss/vite": "^4.3.3",
-    "playwright-core": "^1.64.0",
-    "tailwindcss": "^4.3.3",
+    "@tailwindcss/vite": "^4.3.5",
+    "playwright-core": "^1.65.1",
+    "tailwindcss": "^4.3.5",
     "typescript": "^7.0.2",
-    "vite": "^8.2.2"
+    "vite": "^8.4.0"
   }
 }
