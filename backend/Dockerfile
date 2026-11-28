@@ -19,10 +19,10 @@ RUN case "$TARGETARCH" in \
 COPY Cargo.toml Cargo.lock ./
 RUN mkdir src && echo 'fn main() {}' > src/main.rs \
     && cargo build --release --locked --target "$(cat /rust-target)" \
-    && rm -rf src "target/$(cat /rust-target)/release/moblin-website-backend"* \
-       "target/$(cat /rust-target)/release/deps/moblin_website_backend"*
+    && rm -rf src
 COPY src ./src
-RUN cargo build --release --locked --target "$(cat /rust-target)" \
+RUN touch src/main.rs \
+    && cargo build --release --locked --target "$(cat /rust-target)" \
     && cp "target/$(cat /rust-target)/release/moblin-website-backend" /moblin-website-backend
 
 FROM gcr.io/distroless/cc-debian13:nonroot
