@@ -1,5 +1,5 @@
 /** Streamers who recently went live with Moblin, served by the backend in `backend/`. */
-import { createResource, createRoot } from "solid-js";
+import { createMemo, createRoot } from "solid-js";
 import { links } from "./links";
 
 export type StreamerPlatform = "twitch" | "youtube" | "kick";
@@ -54,4 +54,4 @@ async function fetchStreamers(): Promise<Streamer[]> {
 }
 
 /** Fetched once; the section shows placeholders until it answers. */
-export const [streamers] = createRoot(() => createResource(fetchStreamers));
+export const streamers = createRoot(() => createMemo(() => fetchStreamers()));

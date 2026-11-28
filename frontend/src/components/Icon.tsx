@@ -1,4 +1,5 @@
-import { Match, Switch, type JSX } from "solid-js";
+import { Match, Switch } from "solid-js";
+import type { JSX } from "@solidjs/web";
 
 export type IconName =
   | "chat"

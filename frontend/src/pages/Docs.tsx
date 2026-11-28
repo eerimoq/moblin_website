@@ -4,9 +4,7 @@ import {
   createSignal,
   For,
   Match,
-  on,
-  onCleanup,
-  onMount,
+  onSettled,
   Show,
   Switch,
 } from "solid-js";
@@ -187,8 +185,8 @@ function TreeNode(props: { page: SettingsPage; current?: SettingsPage }) {
     props.current !== undefined &&
     ancestors(props.current).some((ancestor) => ancestor.id === props.page.id);
   const [open, setOpen] = createSignal(false);
-  createEffect(() => {
-    if (containsCurrent()) {
+  createEffect(containsCurrent, (contains) => {
+    if (contains) {
       setOpen(true);
     }
   });
@@ -207,7 +205,7 @@ function TreeNode(props: { page: SettingsPage; current?: SettingsPage }) {
                 ? t("Collapse {page}", { page: props.page.title })
                 : t("Expand {page}", { page: props.page.title })
             }
-            aria-expanded={open()}
+            aria-expanded={open() ? "true" : "false"}
             onClick={() => setOpen(!open())}
           >
             <svg
@@ -799,13 +797,13 @@ export default function Docs() {
       setQuery("");
     }
   };
-  onMount(() => {
+  onSettled(() => {
     window.addEventListener("hashchange", onHashChange);
     window.addEventListener("keydown", onKeyDown);
-  });
-  onCleanup(() => {
-    window.removeEventListener("hashchange", onHashChange);
-    window.removeEventListener("keydown", onKeyDown);
+    return () => {
+      window.removeEventListener("hashchange", onHashChange);
+      window.removeEventListener("keydown", onKeyDown);
+    };
   });
 
   const title = () => {
@@ -822,35 +820,31 @@ export default function Docs() {
     return undefined;
   };
 
-  createEffect(() => {
-    document.title = title()
-      ? t("{title} – Moblin docs", { title: title()! })
-      : t("Documentation – Moblin");
+  createEffect(title, (title) => {
+    document.title = title ? t("{title} – Moblin docs", { title }) : t("Documentation – Moblin");
   });
 
-  createEffect(
-    on(route, (current) => {
-      requestAnimationFrame(() => {
-        if (current.kind === "search") {
-          const scroll = (history.state as { scroll?: number } | null)?.scroll;
-          if (scroll !== undefined) {
-            window.scrollTo(0, scroll);
-          }
-          return;
+  createEffect(route, (current) => {
+    requestAnimationFrame(() => {
+      if (current.kind === "search") {
+        const scroll = (history.state as { scroll?: number } | null)?.scroll;
+        if (scroll !== undefined) {
+          window.scrollTo(0, scroll);
         }
-        const anchor = current.kind === "home" ? undefined : current.anchor;
-        const element = anchor ? document.getElementById(anchor) : null;
-        if (element) {
-          element.scrollIntoView({ block: "center" });
-          element.classList.remove("docs-flash");
-          void element.offsetWidth;
-          element.classList.add("docs-flash");
-        } else if (main && main.getBoundingClientRect().top < 0) {
-          main.scrollIntoView();
-        }
-      });
-    }),
-  );
+        return;
+      }
+      const anchor = current.kind === "home" ? undefined : current.anchor;
+      const element = anchor ? document.getElementById(anchor) : null;
+      if (element) {
+        element.scrollIntoView({ block: "center" });
+        element.classList.remove("docs-flash");
+        void element.offsetWidth;
+        element.classList.add("docs-flash");
+      } else if (main && main.getBoundingClientRect().top < 0) {
+        main.scrollIntoView();
+      }
+    });
+  });
 
   return (
     <>
@@ -881,7 +875,7 @@ export default function Docs() {
             <button
               type="button"
               class="flex w-full items-center justify-between rounded-2xl border-[1.5px] border-line bg-card px-5 py-3 font-bold"
-              aria-expanded={menuOpen()}
+              aria-expanded={menuOpen() ? "true" : "false"}
               onClick={() => setMenuOpen(!menuOpen())}
             >
               {t("Browse guides and settings")}

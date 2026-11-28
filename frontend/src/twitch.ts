@@ -1,4 +1,4 @@
-import { createSignal, onCleanup, onMount } from "solid-js";
+import { createSignal, onSettled } from "solid-js";
 import { links } from "./data/links";
 import { poll } from "./poll";
 
@@ -21,9 +21,9 @@ export function createTwitchLive(refreshMs = 5 * 60 * 1000) {
     }
   };
 
-  onMount(() => {
+  onSettled(() => {
     void check();
-    onCleanup(poll(() => void check(), refreshMs));
+    return poll(() => void check(), refreshMs);
   });
 
   return live;

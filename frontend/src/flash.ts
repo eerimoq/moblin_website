@@ -1,9 +1,9 @@
-import { createSignal, onCleanup } from "solid-js";
+import { createSignal, onSettled } from "solid-js";
 
 export function createFlash(duration: number) {
   const [shown, setShown] = createSignal(false);
   let timer: ReturnType<typeof setTimeout> | undefined;
-  onCleanup(() => clearTimeout(timer));
+  onSettled(() => () => clearTimeout(timer));
 
   const flash = () => {
     setShown(true);

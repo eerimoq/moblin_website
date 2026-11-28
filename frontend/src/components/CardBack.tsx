@@ -12,7 +12,7 @@ export default function CardBack(props: Props) {
     <div
       class={`tcard tcard-back${interactive() ? " tcard-button" : ""}`}
       role={interactive() ? "button" : "img"}
-      tabIndex={interactive() ? 0 : undefined}
+      tabindex={interactive() ? 0 : undefined}
       aria-label="Card back"
       innerHTML={cardBack()}
       onClick={() => props.onOpen?.()}

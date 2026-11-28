@@ -32,7 +32,7 @@ export default function Nav() {
             type="button"
             class="flex size-11 items-center justify-center rounded-full text-ink hover:bg-ghost md:hidden"
             aria-label={open() ? t("Close menu") : t("Open menu")}
-            aria-expanded={open()}
+            aria-expanded={open() ? "true" : "false"}
             onClick={() => setOpen(!open())}
           >
             <Icon name={open() ? "close" : "menu"} class="size-6" />

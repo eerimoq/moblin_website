@@ -1,4 +1,4 @@
-import { createSignal, For, Match, Show, Switch } from "solid-js";
+import { createSignal, Errored, For, Loading, Show } from "solid-js";
 import {
   channelLabel,
   channelUrl,
@@ -187,28 +187,36 @@ export default function Streamers() {
             )}
           </p>
         </div>
-        <Switch>
-          <Match when={streamers.loading}>
-            <ul class="grid gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3" aria-busy="true">
-              <For each={Array.from({ length: placeholderCount })}>{() => <PlaceholderCard />}</For>
-            </ul>
-          </Match>
-          <Match when={streamers.error}>
+        <Errored
+          fallback={
             <p class="text-lg text-muted">
               {t("Couldn't load streamers right now. Try again in a bit.")}
             </p>
-          </Match>
-          <Match when={streamers()?.length === 0}>
-            <p class="text-lg text-muted">
-              {t("Nobody has gone live with Moblin lately. Be the first!")}
-            </p>
-          </Match>
-          <Match when={streamers()}>
-            <ul class="grid gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
-              <For each={streamers()}>{(streamer) => <StreamerCard streamer={streamer} />}</For>
-            </ul>
-          </Match>
-        </Switch>
+          }
+        >
+          <Loading
+            fallback={
+              <ul class="grid gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3" aria-busy="true">
+                <For each={Array.from({ length: placeholderCount })}>
+                  {() => <PlaceholderCard />}
+                </For>
+              </ul>
+            }
+          >
+            <Show
+              when={streamers().length > 0}
+              fallback={
+                <p class="text-lg text-muted">
+                  {t("Nobody has gone live with Moblin lately. Be the first!")}
+                </p>
+              }
+            >
+              <ul class="grid gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
+                <For each={streamers()}>{(streamer) => <StreamerCard streamer={streamer} />}</For>
+              </ul>
+            </Show>
+          </Loading>
+        </Errored>
       </div>
     </section>
   );

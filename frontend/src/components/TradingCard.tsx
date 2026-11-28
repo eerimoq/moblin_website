@@ -15,7 +15,7 @@ export default function TradingCard(props: Props) {
   return (
     <article
       class={`tcard tcard-${props.card.rarity}${props.card.full ? " tcard-full" : ""}${interactive() ? " tcard-button" : ""}`}
-      tabIndex={interactive() ? 0 : undefined}
+      tabindex={interactive() ? 0 : undefined}
       role={interactive() ? "button" : undefined}
       data-card={props.card.id}
       aria-label={`${props.card.name}, ${rarity().label}, power ${props.card.power}`}
