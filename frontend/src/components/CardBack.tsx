@@ -10,7 +10,7 @@ export default function CardBack(props: Props) {
 
   return (
     <div
-      class={`tcard tcard-back${interactive() ? " tcard-button" : ""}`}
+      class={["tcard tcard-back", { "tcard-button": interactive() }]}
       role={interactive() ? "button" : "img"}
       tabindex={interactive() ? 0 : undefined}
       aria-label="Card back"

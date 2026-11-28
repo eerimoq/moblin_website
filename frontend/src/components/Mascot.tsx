@@ -15,7 +15,7 @@ export default function Mascot(props: Props) {
     <img
       src={asset(`logos/logo-${props.variant}.png`)}
       alt={props.alt ?? ""}
-      class={`${props.sticker ? "sticker " : ""}${props.class ?? ""}`}
+      class={[{ sticker: props.sticker }, props.class]}
       loading="lazy"
       decoding="async"
     />

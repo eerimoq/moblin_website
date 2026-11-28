@@ -37,7 +37,10 @@ export default function Videos() {
                 <For each={videos.filter((video) => video.kind === row.kind)}>
                   {(video) => (
                     <li
-                      class={`shrink-0 snap-start ${row.kind === "short" ? "w-min" : "w-[min(480px,calc(100vw-40px))]"}`}
+                      class={[
+                        "shrink-0 snap-start",
+                        row.kind === "short" ? "w-min" : "w-[min(480px,calc(100vw-40px))]",
+                      ]}
                     >
                       <VideoCard video={video} />
                     </li>

@@ -62,7 +62,7 @@ function Highlighted(props: { text: string; words: string[] }) {
 function Paragraphs(props: { text: string; class?: string }) {
   return (
     <For each={props.text.split(/\n{2,}/)}>
-      {(paragraph) => <p class={`whitespace-pre-line ${props.class ?? ""}`}>{paragraph}</p>}
+      {(paragraph) => <p class={["whitespace-pre-line", props.class]}>{paragraph}</p>}
     </For>
   );
 }
@@ -98,7 +98,12 @@ function VideoLink(props: { video: Video; id?: string }) {
   return (
     <div
       id={props.id}
-      class={`docs-target ${props.video.kind === "short" ? "w-min sm:float-right sm:clear-right sm:mb-4 sm:ml-6" : "w-full max-w-[520px]"}`}
+      class={[
+        "docs-target",
+        props.video.kind === "short"
+          ? "w-min sm:float-right sm:clear-right sm:mb-4 sm:ml-6"
+          : "w-full max-w-[520px]",
+      ]}
     >
       <VideoCard video={props.video} compact />
     </div>
@@ -109,7 +114,7 @@ function CardFigure(props: { card: CardId; id?: string; class: string }) {
   const [open, setOpen] = createSignal(false);
   const card = () => cards.find((card) => card.id === props.card)!;
   return (
-    <div id={props.id} class={`docs-target w-fit ${props.class}`}>
+    <div id={props.id} class={["docs-target w-fit", props.class]}>
       <div class="h-[314px] w-[224px]">
         <div class="w-[280px] origin-top-left scale-80">
           <TradingCard card={card()} onOpen={() => setOpen(true)} />
@@ -154,7 +159,7 @@ function SearchBox(props: {
         onInput={(event) => props.onInput(event.currentTarget.value)}
         placeholder={t("Search settings and guides")}
         autocomplete="off"
-        spellcheck={false}
+        spellcheck="false"
         class="h-14 w-full rounded-2xl border-[1.5px] border-line bg-card pr-14 pl-12 text-[17px] text-ink placeholder:text-muted focus:border-leaf focus:outline-none"
       />
       <Show
@@ -184,12 +189,7 @@ function TreeNode(props: { page: SettingsPage; current?: SettingsPage }) {
   const containsCurrent = () =>
     props.current !== undefined &&
     ancestors(props.current).some((ancestor) => ancestor.id === props.page.id);
-  const [open, setOpen] = createSignal(false);
-  createEffect(containsCurrent, (contains) => {
-    if (contains) {
-      setOpen(true);
-    }
-  });
+  const [open, setOpen] = createSignal((opened = false) => containsCurrent() || opened);
   return (
     <li>
       <div class="flex items-center">
@@ -210,7 +210,7 @@ function TreeNode(props: { page: SettingsPage; current?: SettingsPage }) {
           >
             <svg
               viewBox="0 0 24 24"
-              class={`size-4 transition-transform ${open() ? "rotate-90" : ""}`}
+              class={["size-4 transition-transform", { "rotate-90": open() }]}
               fill="none"
               stroke="currentColor"
               stroke-width="2.5"
@@ -224,11 +224,12 @@ function TreeNode(props: { page: SettingsPage; current?: SettingsPage }) {
         </Show>
         <a
           href={routeToHash({ kind: "settings", id: props.page.id })}
-          class={`min-w-0 flex-1 truncate rounded-lg px-2 py-1 text-[15px] ${
+          class={[
+            "min-w-0 flex-1 truncate rounded-lg px-2 py-1 text-[15px]",
             isCurrent()
               ? "bg-ghost font-bold text-leaf"
-              : "text-ink-2 hover:bg-ghost hover:text-ink"
-          }`}
+              : "text-ink-2 hover:bg-ghost hover:text-ink",
+          ]}
           aria-current={isCurrent() ? "page" : undefined}
           title={props.page.title}
         >
@@ -255,9 +256,10 @@ function Sidebar(props: { route: Route }) {
       <div class="flex flex-col gap-1">
         <a
           href="#"
-          class={`rounded-lg px-2 py-1 font-display text-[15px] font-semibold uppercase tracking-[0.08em] ${
-            props.route.kind === "home" ? "text-leaf" : "text-muted hover:text-ink"
-          }`}
+          class={[
+            "rounded-lg px-2 py-1 font-display text-[15px] font-semibold uppercase tracking-[0.08em]",
+            props.route.kind === "home" ? "text-leaf" : "text-muted hover:text-ink",
+          ]}
         >
           {t("Overview")}
         </a>
@@ -272,11 +274,12 @@ function Sidebar(props: { route: Route }) {
               <li>
                 <a
                   href={routeToHash({ kind: "guide", id: guide.id })}
-                  class={`block truncate rounded-lg px-2 py-1 text-[15px] ${
+                  class={[
+                    "block truncate rounded-lg px-2 py-1 text-[15px]",
                     currentGuide() === guide.id
                       ? "bg-ghost font-bold text-leaf"
-                      : "text-ink-2 hover:bg-ghost hover:text-ink"
-                  }`}
+                      : "text-ink-2 hover:bg-ghost hover:text-ink",
+                  ]}
                   aria-current={currentGuide() === guide.id ? "page" : undefined}
                   title={guide.title}
                 >
@@ -472,87 +475,100 @@ function SettingsPageView(props: { page: SettingsPage }) {
 }
 
 function Block(props: { block: GuideBlock; id: string }) {
-  const block = props.block;
-  switch (block.type) {
-    case "h":
-      return (
-        <h2 id={props.id} class="docs-target pt-4 text-[26px] font-semibold">
-          {block.text}
-        </h2>
-      );
-    case "p":
-      return (
-        <p id={props.id} class="docs-target text-ink-2">
-          {block.text}
-        </p>
-      );
-    case "tip":
-      return (
-        <p
-          id={props.id}
-          class="docs-target flow-root rounded-2xl border-[1.5px] border-amber-line bg-amber-bg px-5 py-4 text-amber-ink"
-        >
-          {block.text}
-        </p>
-      );
-    case "steps":
-      return (
-        <ol id={props.id} class="docs-target flex flex-col gap-3">
-          <For each={block.items}>
-            {(item, index) => (
-              <li class="flex gap-3">
-                <span class="flex size-7 shrink-0 items-center justify-center rounded-full bg-moss font-display text-[15px] font-semibold text-white">
-                  {index() + 1}
-                </span>
-                <span class="pt-0.5 text-ink-2">{item}</span>
-              </li>
-            )}
-          </For>
-        </ol>
-      );
-    case "list":
-      return (
-        <ul id={props.id} class="docs-target flex list-disc flex-col gap-2 pl-6 text-ink-2">
-          <For each={block.items}>
-            {(item) => (
-              <li>
-                {fill(
-                  item,
-                  Object.fromEntries(
-                    Object.entries(block.links ?? {}).map(([name, link]) => [
-                      name,
-                      <a href={link.url} target="_blank" rel="noopener" class={linkClass}>
-                        {link.text}
-                      </a>,
-                    ]),
-                  ),
-                )}
-              </li>
-            )}
-          </For>
-        </ul>
-      );
-    case "links":
-      return (
-        <ul id={props.id} class="docs-target flex list-disc flex-col gap-2 pl-6">
-          <For each={block.items}>
-            {(item) => (
-              <li>
-                <a href={item.url} target="_blank" rel="noopener" class={linkClass}>
-                  {item.text}
-                </a>
-              </li>
-            )}
-          </For>
-        </ul>
-      );
-    case "video": {
-      const video = videos.find((video) => video.id === block.id);
-      return video && <VideoLink video={video} id={props.id} />;
-    }
-    case "card":
-      return <CardFigure card={block.id} id={props.id} class={floatedCard} />;
-  }
+  const block = <Type extends GuideBlock["type"]>(type: Type) =>
+    props.block.type === type && (props.block as Extract<GuideBlock, { type: Type }>);
+  return (
+    <Switch>
+      <Match when={block("h")}>
+        {(block) => (
+          <h2 id={props.id} class="docs-target pt-4 text-[26px] font-semibold">
+            {block().text}
+          </h2>
+        )}
+      </Match>
+      <Match when={block("p")}>
+        {(block) => (
+          <p id={props.id} class="docs-target text-ink-2">
+            {block().text}
+          </p>
+        )}
+      </Match>
+      <Match when={block("tip")}>
+        {(block) => (
+          <p
+            id={props.id}
+            class="docs-target flow-root rounded-2xl border-[1.5px] border-amber-line bg-amber-bg px-5 py-4 text-amber-ink"
+          >
+            {block().text}
+          </p>
+        )}
+      </Match>
+      <Match when={block("steps")}>
+        {(block) => (
+          <ol id={props.id} class="docs-target flex flex-col gap-3">
+            <For each={block().items}>
+              {(item, index) => (
+                <li class="flex gap-3">
+                  <span class="flex size-7 shrink-0 items-center justify-center rounded-full bg-moss font-display text-[15px] font-semibold text-white">
+                    {index() + 1}
+                  </span>
+                  <span class="pt-0.5 text-ink-2">{item}</span>
+                </li>
+              )}
+            </For>
+          </ol>
+        )}
+      </Match>
+      <Match when={block("list")}>
+        {(block) => (
+          <ul id={props.id} class="docs-target flex list-disc flex-col gap-2 pl-6 text-ink-2">
+            <For each={block().items}>
+              {(item) => (
+                <li>
+                  {fill(
+                    item,
+                    Object.fromEntries(
+                      Object.entries(block().links ?? {}).map(([name, link]) => [
+                        name,
+                        <a href={link.url} target="_blank" rel="noopener" class={linkClass}>
+                          {link.text}
+                        </a>,
+                      ]),
+                    ),
+                  )}
+                </li>
+              )}
+            </For>
+          </ul>
+        )}
+      </Match>
+      <Match when={block("links")}>
+        {(block) => (
+          <ul id={props.id} class="docs-target flex list-disc flex-col gap-2 pl-6">
+            <For each={block().items}>
+              {(item) => (
+                <li>
+                  <a href={item.url} target="_blank" rel="noopener" class={linkClass}>
+                    {item.text}
+                  </a>
+                </li>
+              )}
+            </For>
+          </ul>
+        )}
+      </Match>
+      <Match when={block("video")}>
+        {(block) => (
+          <Show when={videos.find((video) => video.id === block().id)}>
+            {(video) => <VideoLink video={video()} id={props.id} />}
+          </Show>
+        )}
+      </Match>
+      <Match when={block("card")}>
+        {(block) => <CardFigure card={block().id} id={props.id} class={floatedCard} />}
+      </Match>
+    </Switch>
+  );
 }
 
 function GuideView(props: { guide: Guide }) {

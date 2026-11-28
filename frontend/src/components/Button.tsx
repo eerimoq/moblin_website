@@ -27,7 +27,12 @@ export default function Button(props: Props) {
       href={props.href}
       target={isExternal(props.href) ? "_blank" : undefined}
       rel={isExternal(props.href) ? "noopener" : undefined}
-      class={`inline-flex items-center justify-center gap-2.5 rounded-full font-display font-semibold whitespace-nowrap transition-colors ${variant()} ${size()} ${props.class ?? ""}`}
+      class={[
+        "inline-flex items-center justify-center gap-2.5 rounded-full font-display font-semibold whitespace-nowrap transition-colors",
+        variant(),
+        size(),
+        props.class,
+      ]}
     >
       {props.children}
     </a>

@@ -14,7 +14,11 @@ export default function TradingCard(props: Props) {
 
   return (
     <article
-      class={`tcard tcard-${props.card.rarity}${props.card.full ? " tcard-full" : ""}${interactive() ? " tcard-button" : ""}`}
+      class={[
+        "tcard",
+        `tcard-${props.card.rarity}`,
+        { "tcard-full": props.card.full, "tcard-button": interactive() },
+      ]}
       tabindex={interactive() ? 0 : undefined}
       role={interactive() ? "button" : undefined}
       data-card={props.card.id}

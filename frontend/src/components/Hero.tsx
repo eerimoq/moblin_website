@@ -204,7 +204,7 @@ export default function Hero() {
             <For each={confetti}>
               {(c) => (
                 <span
-                  class={`confetti ${c.shape}`}
+                  class={["confetti", c.shape]}
                   style={{
                     left: c.left,
                     "--fall": `${c.fall}s`,
